@@ -4,7 +4,7 @@ name: Release
 on:
   push:
     branches:
-      - chore/maven_build
+      - main
 
 jobs:
   release:
