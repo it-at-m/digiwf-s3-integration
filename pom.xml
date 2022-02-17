@@ -175,5 +175,36 @@
         </snapshotRepository>
     </distributionManagement>
 
+    <developers>
+        <developer>
+            <name>Alexander Boxhorn</name>
+            <organization>Landeshauptstadt München</organization>
+            <url>https://github.com/boal</url>
+            <roles>
+                <role>initiator</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Dominik Horn</name>
+            <organization>FlowSquad GmbH</organization>
+            <url>https://github.com/dominikhorn93</url>
+            <roles>
+                <role>initiator</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/it-at-m/digiwf-s3-integration</url>
+        <connection>scm:git:git@github.com:it-at-m/digiwf-s3-integration.git</connection>
+        <developerConnection>scm:git:git@github.com:it-at-m/digiwf-s3-integration.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
 
 </project>
