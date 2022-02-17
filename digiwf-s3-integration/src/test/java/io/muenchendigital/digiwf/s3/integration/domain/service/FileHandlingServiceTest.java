@@ -156,7 +156,7 @@ class FileHandlingServiceTest {
         final String filename = "test.txt";
         final String filePath = uuid + "/" + filename;
         final int expiresInMinutes = 5;
-        
+
         Mockito.reset(this.s3Repository);
         Mockito.when(this.s3Repository.getFilepathesFromFolder(uuid.toString())).thenReturn(new HashSet<>(List.of(filePath)));
         this.fileHandlingService.deleteFile(uuid.toString(), filename, expiresInMinutes);
