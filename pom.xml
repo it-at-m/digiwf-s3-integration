@@ -150,6 +150,7 @@
                                     <goal>sign</goal>
                                 </goals>
                                 <configuration>
+                                    <doclint>none</doclint>
                                     <!-- Prevent `gpg` from using pinentry programs -->
                                     <gpgArguments>
                                         <arg>--pinentry-mode</arg>
