@@ -1,6 +1,5 @@
 package io.muenchendigital.digiwf.s3.integration.domain.service;
 
-import io.muenchendigital.digiwf.s3.integration.domain.exception.BrokenFileException;
 import io.muenchendigital.digiwf.s3.integration.domain.exception.FileExistanceException;
 import io.muenchendigital.digiwf.s3.integration.domain.model.FileData;
 import io.muenchendigital.digiwf.s3.integration.domain.model.FileResource;
@@ -15,7 +14,6 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 import java.util.Set;
@@ -81,44 +79,42 @@ public class FileHandlingService {
     }
 
     /**
-     * Speichert die im Parameter angegebene Datei die im S3-Storage noch nicht existieren darf.
+     * Erstellt eine Presigned-URL zum Speichern der im Parameter angegebenen Datei im S3-Storage.
+     * Die Datei darf noch nicht existieren.
      *
-     * @param fileData mit der Datei und den Dateimetadaten zum initialen Speichern.
+     * @param fileData         mit den Dateimetadaten zum erneuten Speichern.
+     * @param expiresInMinutes zur Definition des Gültigkeitszeitraums der Presigned-URL.
      * @throws FileExistanceException falls die Datei bereits existiert.
-     * @throws BrokenFileException    falls aus der {@link FileData#getMultipartFile()} der Inpustream nicht lesbar.
      * @throws S3AccessException      falls nicht auf den S3-Storage zugegriffen werden kann.
      */
-    public void saveFile(final FileData fileData) throws FileExistanceException, BrokenFileException, S3AccessException {
+    public FileResponse saveFile(final FileData fileData, final int expiresInMinutes) throws FileExistanceException, S3AccessException {
         final String pathToFolder = fileData.getRefId();
         final String pathToFile = FileHandlingService.createFilePath(
                 pathToFolder,
-                fileData.getMultipartFile().getOriginalFilename()
+                fileData.getFilename()
         );
         final Set<String> filepathesInFolder = this.s3Repository.getFilepathesFromFolder(pathToFolder);
         if (filepathesInFolder.contains(pathToFile)) {
             throw new FileExistanceException("Die Datei existiert bereits.");
         } else {
-            this.updateFile(fileData);
+            return this.updateFile(fileData, expiresInMinutes);
         }
     }
 
     /**
-     * Uberschreibt die im Parameter angegebene Datei die im S3-Storage bereits existiert.
+     * Erstellt eine Presigned-URL zum Überschreiben der im Parameter angegebenen Datei im S3-Storage.
      * Des Weiteren wird in der Datenbank der Eintrag bezüglich {@link Folder#getEndOfLife()} angepasst.
      * <p>
      * Gibt es die Datei noch nicht im S3-Storage, so wird diese neu angelegt und in der Datenbank
      * ein entsprechender {@link Folder} persistiert.
      *
-     * @param fileData mit der Datei und den Dateimetadaten zum erneuten Speichern.
-     * @throws BrokenFileException falls aus der {@link FileData#getMultipartFile()} der Inpustream nicht lesbar.
-     * @throws S3AccessException   falls nicht auf den S3-Storage zugegriffen werden kann.
+     * @param fileData         mit den Dateimetadaten zum erneuten Speichern.
+     * @param expiresInMinutes zur Definition des Gültigkeitszeitraums der Presigned-URL.
+     * @throws S3AccessException falls nicht auf den S3-Storage zugegriffen werden kann.
      */
-    public void updateFile(final FileData fileData) throws BrokenFileException, S3AccessException {
-        final String pathToFile = FileHandlingService.createFilePath(
-                fileData.getRefId(),
-                fileData.getMultipartFile().getOriginalFilename()
-        );
-        final Optional<Folder> folderOptional = this.folderRepository.findByRefId(fileData.getRefId());
+    public FileResponse updateFile(final FileData fileData, final int expiresInMinutes) throws S3AccessException {
+        final String pathToFolder = fileData.getRefId();
+        final Optional<Folder> folderOptional = this.folderRepository.findByRefId(pathToFolder);
         if (folderOptional.isEmpty()) {
             // Fall noch kein Ordner existiert.
             final var folder = new Folder();
@@ -131,15 +127,12 @@ public class FileHandlingService {
             folder.setEndOfLife(fileData.getEndOfLife());
             this.folderRepository.save(folder);
         }
-        try {
-            this.s3Repository.uploadFile(
-                    pathToFile,
-                    fileData.getMultipartFile().getInputStream()
-            );
-        } catch (final IOException exception) {
-            this.folderRepository.deleteByRefId(fileData.getRefId());
-            throw new BrokenFileException("Die Datei konnte nicht hochgeladen werden.", exception);
-        }
+        final String pathToFile = FileHandlingService.createFilePath(
+                pathToFolder,
+                fileData.getFilename()
+        );
+        final String presignedUrl = this.s3Repository.getPresignedUrlForFileUpload(pathToFile, expiresInMinutes);
+        return new FileResponse(presignedUrl);
     }
 
     /**
