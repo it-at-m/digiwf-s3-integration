@@ -11,6 +11,8 @@ public class FileData {
 
     private String filename;
 
+    private Integer expiresInMinutes;
+
     private LocalDate endOfLife;
 
 }

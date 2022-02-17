@@ -2,7 +2,6 @@ package io.muenchendigital.digiwf.s3.integration.domain.service;
 
 import io.muenchendigital.digiwf.s3.integration.domain.exception.FileExistanceException;
 import io.muenchendigital.digiwf.s3.integration.domain.model.FileData;
-import io.muenchendigital.digiwf.s3.integration.domain.model.FileResource;
 import io.muenchendigital.digiwf.s3.integration.domain.model.FileResponse;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.entity.Folder;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AccessException;
@@ -10,11 +9,8 @@ import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.Folder
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.S3Repository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
-import java.io.InputStream;
 import java.util.Optional;
 import java.util.Set;
 
@@ -22,37 +18,11 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class FileHandlingService {
 
+    public static final int MIN_EXPIRES_IN_MINUTES = 1;
+
     private final S3Repository s3Repository;
 
     private final FolderRepository folderRepository;
-
-    /**
-     * Holt die in den Parameter angegebene Datei aus dem S3-Storage.
-     *
-     * @param refId    identifiziert den Namen des Ordners in welchem die Datei gespeichert ist.
-     * @param fileName identifiziert den Dateinamen.
-     * @return die Datei als {@link FileResource}.
-     * @throws FileExistanceException falls die Datei nicht im Ordner existiert.
-     * @throws S3AccessException      falls nicht auf den S3-Storage zugegriffen werden kann.
-     */
-    public FileResource getFile(final String refId, final String fileName) throws FileExistanceException, S3AccessException {
-        final String pathToFolder = refId;
-        final String pathToFile = FileHandlingService.createFilePath(
-                pathToFolder,
-                fileName
-        );
-        final Set<String> filepathesInFolder = this.s3Repository.getFilepathesFromFolder(pathToFolder);
-        if (filepathesInFolder.contains(pathToFile)) {
-            final InputStream file = this.s3Repository.downloadFile(pathToFile);
-            final Resource resource = new InputStreamResource(file);
-            final var fileResource = new FileResource();
-            fileResource.setResource(resource);
-            fileResource.setFilename(fileName);
-            return fileResource;
-        } else {
-            throw new FileExistanceException("Die Datei existiert nicht.");
-        }
-    }
 
     /**
      * Erstellt eine Presigned-URL zum Holen der im Parameter angegebenen Datei aus dem S3-Storage.
@@ -82,12 +52,11 @@ public class FileHandlingService {
      * Erstellt eine Presigned-URL zum Speichern der im Parameter angegebenen Datei im S3-Storage.
      * Die Datei darf noch nicht existieren.
      *
-     * @param fileData         mit den Dateimetadaten zum erneuten Speichern.
-     * @param expiresInMinutes zur Definition des Gültigkeitszeitraums der Presigned-URL.
+     * @param fileData mit den Dateimetadaten zum erneuten Speichern.
      * @throws FileExistanceException falls die Datei bereits existiert.
      * @throws S3AccessException      falls nicht auf den S3-Storage zugegriffen werden kann.
      */
-    public FileResponse saveFile(final FileData fileData, final int expiresInMinutes) throws FileExistanceException, S3AccessException {
+    public FileResponse saveFile(final FileData fileData) throws FileExistanceException, S3AccessException {
         final String pathToFolder = fileData.getRefId();
         final String pathToFile = FileHandlingService.createFilePath(
                 pathToFolder,
@@ -97,7 +66,7 @@ public class FileHandlingService {
         if (filepathesInFolder.contains(pathToFile)) {
             throw new FileExistanceException("Die Datei existiert bereits.");
         } else {
-            return this.updateFile(fileData, expiresInMinutes);
+            return this.updateFile(fileData);
         }
     }
 
@@ -108,15 +77,14 @@ public class FileHandlingService {
      * Gibt es die Datei noch nicht im S3-Storage, so wird diese neu angelegt und in der Datenbank
      * ein entsprechender {@link Folder} persistiert.
      *
-     * @param fileData         mit den Dateimetadaten zum erneuten Speichern.
-     * @param expiresInMinutes zur Definition des Gültigkeitszeitraums der Presigned-URL.
+     * @param fileData mit den Dateimetadaten zum erneuten Speichern.
      * @throws S3AccessException falls nicht auf den S3-Storage zugegriffen werden kann.
      */
-    public FileResponse updateFile(final FileData fileData, final int expiresInMinutes) throws S3AccessException {
+    public FileResponse updateFile(final FileData fileData) throws S3AccessException {
         final String pathToFolder = fileData.getRefId();
         final Optional<Folder> folderOptional = this.folderRepository.findByRefId(pathToFolder);
         if (folderOptional.isEmpty()) {
-            // Fall noch kein Ordner existiert.
+            // Falls noch kein Ordner existiert.
             final var folder = new Folder();
             folder.setRefId(fileData.getRefId());
             folder.setEndOfLife(fileData.getEndOfLife());
@@ -131,30 +99,11 @@ public class FileHandlingService {
                 pathToFolder,
                 fileData.getFilename()
         );
-        final String presignedUrl = this.s3Repository.getPresignedUrlForFileUpload(pathToFile, expiresInMinutes);
-        return new FileResponse(presignedUrl);
-    }
-
-    /**
-     * Löscht die in den Parameter angegebene Datei aus dem S3-Storage.
-     *
-     * @param refId    identifiziert den Namen des Ordners in welchem die Datei gespeichert ist.
-     * @param fileName identifiziert den Dateinamen.
-     * @throws FileExistanceException falls die Datei nicht im Ordner existiert.
-     * @throws S3AccessException      falls nicht auf den S3-Storage zugegriffen werden kann.
-     */
-    public void deleteFile(final String refId, final String fileName) throws FileExistanceException, S3AccessException {
-        final String pathToFolder = refId;
-        final String pathToFile = FileHandlingService.createFilePath(
-                pathToFolder,
-                fileName
+        final String presignedUrl = this.s3Repository.getPresignedUrlForFileUpload(
+                pathToFile,
+                fileData.getExpiresInMinutes()
         );
-        final Set<String> filepathesInFolder = this.s3Repository.getFilepathesFromFolder(pathToFolder);
-        if (filepathesInFolder.contains(pathToFile)) {
-            this.s3Repository.deleteFile(pathToFile);
-        } else {
-            throw new FileExistanceException("Die Datei existiert nicht.");
-        }
+        return new FileResponse(presignedUrl);
     }
 
     /**

@@ -1,11 +1,9 @@
 package io.muenchendigital.digiwf.s3.integration.infrastructure.repository;
 
 import io.minio.BucketExistsArgs;
-import io.minio.GetObjectArgs;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.ListObjectsArgs;
 import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
 import io.minio.Result;
 import io.minio.errors.ErrorResponseException;
@@ -21,7 +19,6 @@ import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3Acces
 import org.apache.commons.collections4.IteratorUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
@@ -73,56 +70,6 @@ public class S3Repository {
             return filepathesFromFolder;
         } catch (final MinioException | InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException exception) {
             throw new S3AccessException(String.format("Failed to extract file pathes from folder %s.", folder), exception);
-        }
-    }
-
-    /**
-     * Hochladen einer Datei in einen gegebenen Ordner.
-     *
-     * @param file       als Inputstream.
-     * @param pathToFile Der Pfad zur Datei.
-     *                   Der Pfad ist absolut und ohne Angabe des Buckets anzugeben.
-     *                   Beispiel:
-     *                   Datei in Bucket: "BUCKET/outerFolder/innerFolder/thefile.csv"
-     *                   Angabe in Parameter: "outerFolder/innerFolder/thefile.csv"
-     * @throws S3AccessException falls die Datei nicht hochgeladen werden kann.
-     */
-    public void uploadFile(final String pathToFile, final InputStream file) throws S3AccessException {
-        try {
-            final PutObjectArgs putObjectArgs = PutObjectArgs.builder()
-                    .bucket(this.bucketName)
-                    .object(pathToFile)
-                    .stream(file, file.available(), -1)
-                    .build();
-            this.client.putObject(putObjectArgs);
-        } catch (final MinioException | InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException exception) {
-            throw new S3AccessException(String.format("Failed to upload file %s.", pathToFile), exception);
-        }
-    }
-
-
-    /**
-     * Herunterladen einer Datei von einem gegebenen Ordner.
-     *
-     * @param pathToFile Der Pfad zur Datei.
-     *                   Der Pfad ist absolut und ohne Angabe des Buckets anzugeben.
-     *                   Beispiel:
-     *                   Datei in Bucket: "BUCKET/outerFolder/innerFolder/thefile.csv"
-     *                   Angabe in Parameter: "outerFolder/innerFolder/thefile.csv"
-     * @return die heruntergeladene Datei als InputStream.
-     * @throws S3AccessException falls die Datei nicht heruntergeladen werden kann.
-     */
-    public InputStream downloadFile(final String pathToFile) throws S3AccessException {
-        final GetObjectArgs getObjectArgs = GetObjectArgs.builder()
-                .bucket(this.bucketName)
-                .object(pathToFile)
-                .build();
-        try {
-            return this.client.getObject(getObjectArgs);
-        } catch (final InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException
-                | InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException
-                | IllegalArgumentException | IOException exception) {
-            throw new S3AccessException(String.format("Failed to download file %s.", pathToFile), exception);
         }
     }
 

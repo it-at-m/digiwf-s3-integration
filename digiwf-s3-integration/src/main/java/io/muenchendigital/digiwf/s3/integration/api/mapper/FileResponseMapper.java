@@ -8,6 +8,6 @@ import org.mapstruct.Mapper;
 @Mapper(config = MapstructConfiguration.class)
 public interface FileResponseMapper {
 
-    FileResponseDto dto2Model(final FileResponse fileResponse);
+    FileResponseDto model2Dto(final FileResponse fileResponse);
 
 }
