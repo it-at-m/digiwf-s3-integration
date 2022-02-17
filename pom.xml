@@ -135,6 +135,9 @@
                                 </goals>
                             </execution>
                         </executions>
+                        <configuration>
+                            <doclint>none</doclint>
+                        </configuration>
                     </plugin>
 
                     <!-- GPG plugin -->
@@ -150,7 +153,6 @@
                                     <goal>sign</goal>
                                 </goals>
                                 <configuration>
-                                    <doclint>none</doclint>
                                     <!-- Prevent `gpg` from using pinentry programs -->
                                     <gpgArguments>
                                         <arg>--pinentry-mode</arg>
