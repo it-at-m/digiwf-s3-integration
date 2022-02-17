@@ -162,7 +162,7 @@ public class S3Repository {
      * @return die Presigned URL zum holen einer Datei.
      * @throws S3AccessException falls die Datei nicht heruntergeladen werden kann.
      */
-    public String presignedUrlForFileDownload(final String pathToFile, final int expiresInMinutes) throws S3AccessException {
+    public String getPresignedUrlForFileDownload(final String pathToFile, final int expiresInMinutes) throws S3AccessException {
         try {
             final GetPresignedObjectUrlArgs downloadArgs = GetPresignedObjectUrlArgs.builder()
                     .method(Method.GET)
@@ -190,7 +190,7 @@ public class S3Repository {
      * @return die Presigned URL zum holen einer Datei.
      * @throws S3AccessException falls die Datei nicht heruntergeladen werden kann.
      */
-    public String presignedUrlForFileDeletion(final String pathToFile, final int expiresInMinutes) throws S3AccessException {
+    public String getPresignedUrlForFileDeletion(final String pathToFile, final int expiresInMinutes) throws S3AccessException {
         try {
             final GetPresignedObjectUrlArgs deletionArgs = GetPresignedObjectUrlArgs.builder()
                     .method(Method.DELETE)
@@ -218,7 +218,7 @@ public class S3Repository {
      * @return die Presigned URL zum holen einer Datei.
      * @throws S3AccessException falls die Datei nicht heruntergeladen werden kann.
      */
-    public String presignedUrlForFileUpload(final String pathToFile, final int expiresInMinutes) throws S3AccessException {
+    public String getPresignedUrlForFileUpload(final String pathToFile, final int expiresInMinutes) throws S3AccessException {
         try {
             final GetPresignedObjectUrlArgs uploadArgs = GetPresignedObjectUrlArgs.builder()
                     .method(Method.PUT)
