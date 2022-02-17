@@ -8,6 +8,7 @@
     <version>0.0.1</version>
     <name>digiwf-s3-integration-parent</name>
     <packaging>pom</packaging>
+    <description>S3 integration used by DigiWF</description>
     <url>https://github.com/it-at-m/digiwf-s3-integration</url>
 
     <properties>
