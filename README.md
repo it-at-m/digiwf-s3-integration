@@ -122,6 +122,8 @@ To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
+tbd.
+
 This is an example of how to list things you need to use the software and how to install them.
 * npm
   ```sh
@@ -160,17 +162,13 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
-
 <!-- ROADMAP -->
 ## Roadmap
 
-- [x] Add Changelog
-- [x] Add back to top links
-- [ ] Add Additional Templates w/ Examples
-- [ ] Add "components" document to easily copy & paste sections of the readme
-- [ ] Multi-language Support
-    - [ ] Chinese
-    - [ ] Spanish
+- [ ] Add Maven Central deployment
+- [ ] Add comprehensiv documentation
+- [ ] Add presigned urls
+- [ ] Add async spring cloud stream api
 
 See the [open issues](https://github.com/it-at-m/digiwf-s3-integration/issues) for a full list of proposed features (and known issues).
 
@@ -195,11 +193,10 @@ Don't forget to give the project a star! Thanks again!
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
-
 <!-- LICENSE -->
 ## License
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+Distributed under the MIT License. See `LICENSE` for more information.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -208,9 +205,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
-
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
+it@m - opensource@muenchendigital.io
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
