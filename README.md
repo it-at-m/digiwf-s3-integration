@@ -28,7 +28,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/it-at-m/digiwf-s3-integration">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="images/logo.png" alt="Logo" height="200">
   </a>
 
 <h3 align="center">DigiWF S3 Integration</h3>
