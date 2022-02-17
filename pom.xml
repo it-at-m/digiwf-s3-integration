@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>io.muenchendigital.digiwf</groupId>
+    <artifactId>digiwf-s3-integration-parent</artifactId>
+    <version>0.0.1</version>
+    <name>digiwf-s3-integration-parent</name>
+    <description>Basic Enterprise Application Integration (EAI) von DigiWF für zur Anbindung des S3-Storage
+    </description>
+    <packaging>pom</packaging>
+
+    <properties>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <java.version>11</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring.boot.version>2.6.3</spring.boot.version>
+        <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+        <okhttp.version>4.8.1</okhttp.version>
+        <minio.version>8.3.4</minio.version>
+        <lombok.version>1.18.22</lombok.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <!-- Import dependency management from Spring Boot -->
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <modules>
+        <module>digiwf-s3-integration</module>
+        <module>digiwf-s3-integration-starter</module>
+        <module>example</module>
+    </modules>
+
+</project>
