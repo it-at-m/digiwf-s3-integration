@@ -31,16 +31,16 @@
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
-<h3 align="center">Best-README-Template</h3>
+<h3 align="center">DigiWF S3 Integration</h3>
 
   <p align="center">
-    An awesome README template to jumpstart your projects!
+    This is a Spring Boot Starter library to connect to S3 compatible services.
+     <!-- <br />
+   <a href="https://github.com/it-at-m/digiwf-s3-integration"><strong>Explore the docs »</strong></a> -->
     <br />
-    <a href="https://github.com/it-at-m/digiwf-s3-integration"><strong>Explore the docs »</strong></a>
     <br />
-    <br />
-    <a href="https://github.com/it-at-m/digiwf-s3-integration">View Demo</a>
-    ·
+     <!-- <a href="https://github.com/it-at-m/digiwf-s3-integration">View Demo</a>
+    · -->
     <a href="https://github.com/it-at-m/digiwf-s3-integration/issues">Report Bug</a>
     ·
     <a href="https://github.com/it-at-m/digiwf-s3-integration/issues">Request Feature</a>
