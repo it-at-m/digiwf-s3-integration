@@ -87,7 +87,7 @@ This project is built with:
 
 _Below is an example of how you can installing and setup up your service_
 
-1. Use the spring initalizer and areate a Spring Boot application with `Spring Web` dependencies [https://start.spring.io](https://start.spring.io)
+1. Use the spring initalizer and create a Spring Boot application with `Spring Web` dependencies [https://start.spring.io](https://start.spring.io)
 2. Add the digiwf-s3-integration dependency
 
 With Maven:
@@ -103,10 +103,12 @@ With Gradle:
 implementation group: 'io.muenchendigital.digiwf', name: 'digiwf-s3-integration-starter', version: '${digiwf.version}'
 ```
 3. Configure your S3 bucket with the following properties:
-    - `io.muenchendigital.digiwf.s3.bucketName`
+   - `io.muenchendigital.digiwf.s3.bucketName`
    - `io.muenchendigital.digiwf.s3.secretKey`
    - `io.muenchendigital.digiwf.s3.accessKey`
    - `io.muenchendigital.digiwf.s3.url`
+
+If you want to use the cron job cleanup, take a look at the <a href="#cron-job-cleanup">usage exmaple</a> .
   
 5. Enjoy the [OpenAPI definition](http://localhost:8089/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config) 
 
