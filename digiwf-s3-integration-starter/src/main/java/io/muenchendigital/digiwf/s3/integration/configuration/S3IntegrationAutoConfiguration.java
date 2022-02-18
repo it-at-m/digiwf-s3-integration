@@ -11,8 +11,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import javax.validation.constraints.Min;
-
 
 @RequiredArgsConstructor
 @EnableJpaRepositories(basePackages = "io.muenchendigital.digiwf.s3.integration")
