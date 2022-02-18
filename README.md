@@ -18,7 +18,7 @@
 <h3 align="center">DigiWF S3 Integration</h3>
 
   <p align="center">
-    This is a Spring Boot Starter library to connect to S3 compatible services.
+    This is a Spring Boot Starter library to connect to S3 compatible services
      <!-- <br />
    <a href="https://github.com/it-at-m/digiwf-s3-integration"><strong>Explore the docs »</strong></a> -->
     <br />
@@ -58,18 +58,14 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
-
-There are many great README templates available on GitHub; however, I didn't find one that really suited my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
-
+There are several ways to store files in S3 compatible storage. Each project often has to implement the same functionalities and solve the same problems. With this library, we create the possibility to store and clean up files to specific references / folders in a structured and simple way.
 Here's why:
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
-* You should implement DRY principles to the rest of your life :smile:
+* Files often need to be stored in folder structures
+* Folders often must be stored in a structured way and enriched with metadata
+* Cleaning up the data must be done in a structured way
+* Synchronous and asynchronous interfaces are often required
 
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to all the people have contributed to expanding this template!
-
-Use the `BLANK_README.md` to get started.
+Of course, one service is not suitable for all projects, as your needs may be different. That's why we decided to provide a Spring Boot Starter library that can be easily customized
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
