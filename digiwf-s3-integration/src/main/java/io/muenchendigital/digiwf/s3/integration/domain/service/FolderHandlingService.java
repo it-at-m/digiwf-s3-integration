@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 import java.util.Set;
 
@@ -28,6 +29,7 @@ public class FolderHandlingService {
      * @throws S3AndDatabaseAsyncException falls im S3-Storage der Ordner vorhanden ist und in der Datenbank nicht und umgekehrt.
      * @throws S3AccessException           falls nicht auf den S3-Storage zugegriffen werden kann.
      */
+    @Transactional
     public void deleteFolder(final String refId) throws S3AndDatabaseAsyncException, S3AccessException {
         final String pathToFolder = refId;
         final Optional<Folder> folderOptional = this.folderRepository.findByRefId(refId);
