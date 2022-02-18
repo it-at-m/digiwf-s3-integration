@@ -1,9 +1,12 @@
 package io.muenchendigital.digiwf.s3.integration.api.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import io.muenchendigital.digiwf.s3.integration.domain.service.FileHandlingService;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FolderRepository;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -28,7 +31,8 @@ public class FileDataDto {
     @Min(FileHandlingService.MIN_EXPIRES_IN_MINUTES)
     private Integer expiresInMinutes;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate endOfLife;
 
 }
