@@ -46,18 +46,18 @@ public class S3Repository {
     }
 
     /**
-     * Gibt die Pfade zu den Dateien in einen gegebenen Ordner zurück.
+     * Returns the paths to the files in a given folder.
      *
-     * @param folder Der Ordner.
-     *               Der Pfad ist absolut und ohne Angabe des Buckets anzugeben.
-     *               Beispiel 1:
-     *               Datei in Bucket: "BUCKET/folder"
-     *               Angabe in Parameter: "folder"
-     *               Beispiel 2:
-     *               Datei in Bucket: "BUCKET/folder/subfolder"
-     *               Angabe in Parameter: "folder/subfolder"
-     * @return die Pfade zu den Dateien in einen gegebenen Ordner. Gibt auch die Pfade der Dateien in Unterordner zurück.
-     * @throws S3AccessException falls die Datei nicht hochgeladen werden kann.
+     * @param folder The folder.
+     *               The path must be absolute and without specifying the bucket.
+     *               Example 1:
+     *               Folder in bucket: "BUCKET/folder"
+     *               Specification in parameter: "folder"
+     *               Example 2:
+     *               Folder in bucket: "BUCKET/folder/subfolder"
+     *               Specification in parameter: "folder/subfolder"
+     * @return the paths to the files in a given folder. Also returns the paths to the files in subfolders.
+     * @throws S3AccessException if the paths cannot be downloaded.
      */
     public Set<String> getFilepathesFromFolder(final String folder) throws S3AccessException {
         try {
@@ -80,14 +80,14 @@ public class S3Repository {
     }
 
     /**
-     * Löscht die Datei in einen gegebenen Ordner.
+     * Deletes the file given in the parameter.
      *
-     * @param pathToFile Der Pfad zur Datei.
-     *                   Der Pfad ist absolut und ohne Angabe des Buckets anzugeben.
-     *                   Beispiel:
-     *                   Datei in Bucket: "BUCKET/outerFolder/innerFolder/thefile.csv"
-     *                   Angabe in Parameter: "outerFolder/innerFolder/thefile.csv"
-     * @throws S3AccessException falls die Datei nicht gelöscht werden kann.
+     * @param pathToFile The path to the file.
+     *                   The path must be absolute and without specifying the bucket.
+     *                   Example:
+     *                   File in bucket: "BUCKET/outerFolder/innerFolder/thefile.csv"
+     *                   Specification in parameter: "outerFolder/innerFolder/thefile.csv"
+     * @throws S3AccessException if the file cannot be deleted.
      */
     public void deleteFile(final String pathToFile) throws S3AccessException {
         try {
@@ -106,16 +106,16 @@ public class S3Repository {
     }
 
     /**
-     * Erstellt die Presigned-URL zum Herunterladen einer Datei von einem gegebenen Dateipfad.
+     * Creates the presigned URL for downloading a file from a given file path.
      *
-     * @param pathToFile       Der Pfad zur Datei.
-     *                         Der Pfad ist absolut und ohne Angabe des Buckets anzugeben.
-     *                         Beispiel:
-     *                         Datei in Bucket: "BUCKET/outerFolder/innerFolder/thefile.csv"
-     *                         Angabe in Parameter: "outerFolder/innerFolder/thefile.csv"
-     * @param expiresInMinutes zur Definition des Gültigkeitszeitraums der Presigned-URL.
-     * @return die Presigned URL zum holen einer Datei.
-     * @throws S3AccessException falls die Datei nicht heruntergeladen werden kann.
+     * @param pathToFile       The path to the file.
+     *                         The path must be absolute and without specifying the bucket.
+     *                         Example:
+     *                         File in bucket: "BUCKET/outerFolder/innerFolder/thefile.csv"
+     *                         Specification in parameter: "outerFolder/innerFolder/thefile.csv"
+     * @param expiresInMinutes to define the validity period of the presigned URL.
+     * @return the presigned URL to fetch a file.
+     * @throws S3AccessException if the presigned URL cannot be created.
      */
     public String getPresignedUrlForFileDownload(final String pathToFile, final int expiresInMinutes) throws S3AccessException {
         try {
@@ -136,16 +136,16 @@ public class S3Repository {
     }
 
     /**
-     * Erstellt die Presigned-URL zum Löschen einer Datei gegeben durch Dateipfad.
+     * Creates the presigned URL to delete a file given by file path.
      *
-     * @param pathToFile       Der Pfad zur Datei.
-     *                         Der Pfad ist absolut und ohne Angabe des Buckets anzugeben.
-     *                         Beispiel:
-     *                         Datei in Bucket: "BUCKET/outerFolder/innerFolder/thefile.csv"
-     *                         Angabe in Parameter: "outerFolder/innerFolder/thefile.csv"
-     * @param expiresInMinutes zur Definition des Gültigkeitszeitraums der Presigned-URL.
-     * @return die Presigned URL zum holen einer Datei.
-     * @throws S3AccessException falls die Datei nicht heruntergeladen werden kann.
+     * @param pathToFile       The path to the file.
+     *                         The path must be absolute and without specifying the bucket.
+     *                         Example:
+     *                         File in bucket: "BUCKET/outerFolder/innerFolder/thefile.csv"
+     *                         Specification in parameter: "outerFolder/innerFolder/thefile.csv"
+     * @param expiresInMinutes to define the validity period of the presigned URL.
+     * @return the presigned URL to delete a file.
+     * @throws S3AccessException if the presigned URL cannot be created.
      */
     public String getPresignedUrlForFileDeletion(final String pathToFile, final int expiresInMinutes) throws S3AccessException {
         try {
@@ -166,16 +166,16 @@ public class S3Repository {
     }
 
     /**
-     * Erstellt die Presigned-URL zum Hochladen einer Datei in den gegebenen Dateipfad.
+     * Creates the presigned URL for uploading a file to the given file path.
      *
-     * @param pathToFile       Der Pfad zur Datei.
-     *                         Der Pfad ist absolut und ohne Angabe des Buckets anzugeben.
-     *                         Beispiel:
-     *                         Datei in Bucket: "BUCKET/outerFolder/innerFolder/thefile.csv"
-     *                         Angabe in Parameter: "outerFolder/innerFolder/thefile.csv"
-     * @param expiresInMinutes zur Definition des Gültigkeitszeitraums der Presigned-URL.
-     * @return die Presigned URL zum holen einer Datei.
-     * @throws S3AccessException falls die Datei nicht heruntergeladen werden kann.
+     * @param pathToFile       The path to the file.
+     *                         The path must be absolute and without specifying the bucket.
+     *                         Example:
+     *                         File in bucket: "BUCKET/outerFolder/innerFolder/thefile.csv"
+     *                         Specification in parameter: "outerFolder/innerFolder/thefile.csv"
+     * @param expiresInMinutes to define the validity period of the presigned URL.
+     * @return the presigned URL to upload a file.
+     * @throws S3AccessException if the presigned URL cannot be created.
      */
     public String getPresignedUrlForFileUpload(final String pathToFile, final int expiresInMinutes) throws S3AccessException {
         try {
