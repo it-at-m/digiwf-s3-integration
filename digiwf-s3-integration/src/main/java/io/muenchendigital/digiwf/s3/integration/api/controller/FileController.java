@@ -59,10 +59,10 @@ public class FileController {
     }
 
     @PostMapping
-    public ResponseEntity<FileResponseDto> save(@RequestBody @NotNull @Valid final FileDataDto file) {
+    public ResponseEntity<FileResponseDto> save(@RequestBody @NotNull @Valid final FileDataDto fileData) {
         try {
             log.info("Received a request for S3 presigned url to upload a new file");
-            final FileResponse fileResponse = this.fileHandlingService.saveFile(this.fileMapper.dto2Model(file));
+            final FileResponse fileResponse = this.fileHandlingService.saveFile(this.fileMapper.dto2Model(fileData));
             final FileResponseDto fileResponseDto = this.fileResponseMapper.model2Dto(fileResponse);
             return ResponseEntity.ok(fileResponseDto);
         } catch (final FileExistanceException exception) {
@@ -73,10 +73,10 @@ public class FileController {
     }
 
     @PutMapping
-    public ResponseEntity<FileResponseDto> update(@RequestBody @NotNull @Valid final FileDataDto file) {
+    public ResponseEntity<FileResponseDto> update(@RequestBody @NotNull @Valid final FileDataDto fileData) {
         try {
             log.info("Received a request for S3 presigned url to upload a existing file");
-            final FileResponse fileResponse = this.fileHandlingService.updateFile(this.fileMapper.dto2Model(file));
+            final FileResponse fileResponse = this.fileHandlingService.updateFile(this.fileMapper.dto2Model(fileData));
             final FileResponseDto fileResponseDto = this.fileResponseMapper.model2Dto(fileResponse);
             return ResponseEntity.ok(fileResponseDto);
         } catch (final Exception exception) {
