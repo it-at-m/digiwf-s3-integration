@@ -1,33 +1,47 @@
 package io.muenchendigital.digiwf.s3.integration.infrastructure.repository;
 
-import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AccessException;
-import io.minio.*;
-import io.minio.errors.*;
+import io.minio.BucketExistsArgs;
+import io.minio.GetPresignedObjectUrlArgs;
+import io.minio.ListObjectsArgs;
+import io.minio.MinioClient;
+import io.minio.RemoveObjectArgs;
+import io.minio.Result;
+import io.minio.errors.ErrorResponseException;
+import io.minio.errors.InsufficientDataException;
+import io.minio.errors.InternalException;
+import io.minio.errors.InvalidResponseException;
+import io.minio.errors.MinioException;
+import io.minio.errors.ServerException;
+import io.minio.errors.XmlParserException;
+import io.minio.http.Method;
 import io.minio.messages.Item;
+import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AccessException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.IteratorUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public class S3Repository {
 
     private final String bucketName;
     private final MinioClient client;
 
-    public S3Repository(String bucketName, MinioClient client) throws S3AccessException {
+    public S3Repository(final String bucketName, final MinioClient client) throws S3AccessException {
         this.bucketName = bucketName;
         this.client = client;
         try {
             this.client.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
-        } catch (final MinioException | InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException e) {
-            throw new S3AccessException("S3 initialization failed.", e);
+        } catch (final MinioException | InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException exception) {
+            final String message = "S3 initialization failed.";
+            log.error(message, exception);
+            throw new S3AccessException(message, exception);
         }
     }
 
@@ -59,57 +73,9 @@ public class S3Repository {
             }
             return filepathesFromFolder;
         } catch (final MinioException | InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException exception) {
-            throw new S3AccessException(String.format("Failed to extract file pathes from folder %s.", folder), exception);
-        }
-    }
-
-    /**
-     * Hochladen einer Datei in einen gegebenen Ordner.
-     *
-     * @param file       als Inputstream.
-     * @param pathToFile Der Pfad zur Datei.
-     *                   Der Pfad ist absolut und ohne Angabe des Buckets anzugeben.
-     *                   Beispiel:
-     *                   Datei in Bucket: "BUCKET/outerFolder/innerFolder/thefile.csv"
-     *                   Angabe in Parameter: "outerFolder/innerFolder/thefile.csv"
-     * @throws S3AccessException falls die Datei nicht hochgeladen werden kann.
-     */
-    public void uploadFile(final String pathToFile, final InputStream file) throws S3AccessException {
-        try {
-            final PutObjectArgs putObjectArgs = PutObjectArgs.builder()
-                    .bucket(this.bucketName)
-                    .object(pathToFile)
-                    .stream(file, file.available(), -1)
-                    .build();
-            this.client.putObject(putObjectArgs);
-        } catch (final MinioException | InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException exception) {
-            throw new S3AccessException(String.format("Failed to upload file %s.", pathToFile), exception);
-        }
-    }
-
-
-    /**
-     * Herunterladen einer Datei von einem gegebenen Ordner.
-     *
-     * @param pathToFile Der Pfad zur Datei.
-     *                   Der Pfad ist absolut und ohne Angabe des Buckets anzugeben.
-     *                   Beispiel:
-     *                   Datei in Bucket: "BUCKET/outerFolder/innerFolder/thefile.csv"
-     *                   Angabe in Parameter: "outerFolder/innerFolder/thefile.csv"
-     * @return die heruntergeladene Datei als InputStream.
-     * @throws S3AccessException falls die Datei nicht heruntergeladen werden kann.
-     */
-    public InputStream downloadFile(final String pathToFile) throws S3AccessException {
-        final GetObjectArgs getObjectArgs = GetObjectArgs.builder()
-                .bucket(this.bucketName)
-                .object(pathToFile)
-                .build();
-        try {
-            return this.client.getObject(getObjectArgs);
-        } catch (final InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException
-                | InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException
-                | IllegalArgumentException | IOException exception) {
-            throw new S3AccessException(String.format("Failed to download file %s.", pathToFile), exception);
+            final String message = String.format("Failed to extract file pathes from folder %s.", folder);
+            log.error(message, exception);
+            throw new S3AccessException(message, exception);
         }
     }
 
@@ -133,7 +99,99 @@ public class S3Repository {
         } catch (final InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException
                 | InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException
                 | IllegalArgumentException | IOException exception) {
-            throw new S3AccessException(String.format("Failed to delete file %s.", pathToFile), exception);
+            final String message = String.format("Failed to delete file %s.", pathToFile);
+            log.error(message, exception);
+            throw new S3AccessException(message, exception);
+        }
+    }
+
+    /**
+     * Erstellt die Presigned-URL zum Herunterladen einer Datei von einem gegebenen Dateipfad.
+     *
+     * @param pathToFile       Der Pfad zur Datei.
+     *                         Der Pfad ist absolut und ohne Angabe des Buckets anzugeben.
+     *                         Beispiel:
+     *                         Datei in Bucket: "BUCKET/outerFolder/innerFolder/thefile.csv"
+     *                         Angabe in Parameter: "outerFolder/innerFolder/thefile.csv"
+     * @param expiresInMinutes zur Definition des Gültigkeitszeitraums der Presigned-URL.
+     * @return die Presigned URL zum holen einer Datei.
+     * @throws S3AccessException falls die Datei nicht heruntergeladen werden kann.
+     */
+    public String getPresignedUrlForFileDownload(final String pathToFile, final int expiresInMinutes) throws S3AccessException {
+        try {
+            final GetPresignedObjectUrlArgs downloadArgs = GetPresignedObjectUrlArgs.builder()
+                    .method(Method.GET)
+                    .bucket(this.bucketName)
+                    .object(pathToFile)
+                    .expiry(expiresInMinutes, TimeUnit.MINUTES)
+                    .build();
+            return this.client.getPresignedObjectUrl(downloadArgs);
+        } catch (final InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException
+                | InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException
+                | IllegalArgumentException | IOException exception) {
+            final String message = String.format("Failed to create a download presigned url for file %s.", pathToFile);
+            log.error(message, exception);
+            throw new S3AccessException(message, exception);
+        }
+    }
+
+    /**
+     * Erstellt die Presigned-URL zum Löschen einer Datei gegeben durch Dateipfad.
+     *
+     * @param pathToFile       Der Pfad zur Datei.
+     *                         Der Pfad ist absolut und ohne Angabe des Buckets anzugeben.
+     *                         Beispiel:
+     *                         Datei in Bucket: "BUCKET/outerFolder/innerFolder/thefile.csv"
+     *                         Angabe in Parameter: "outerFolder/innerFolder/thefile.csv"
+     * @param expiresInMinutes zur Definition des Gültigkeitszeitraums der Presigned-URL.
+     * @return die Presigned URL zum holen einer Datei.
+     * @throws S3AccessException falls die Datei nicht heruntergeladen werden kann.
+     */
+    public String getPresignedUrlForFileDeletion(final String pathToFile, final int expiresInMinutes) throws S3AccessException {
+        try {
+            final GetPresignedObjectUrlArgs deletionArgs = GetPresignedObjectUrlArgs.builder()
+                    .method(Method.DELETE)
+                    .bucket(this.bucketName)
+                    .object(pathToFile)
+                    .expiry(expiresInMinutes, TimeUnit.MINUTES)
+                    .build();
+            return this.client.getPresignedObjectUrl(deletionArgs);
+        } catch (final InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException
+                | InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException
+                | IllegalArgumentException | IOException exception) {
+            final String message = String.format("Failed to create a deletion presigned url for file %s.", pathToFile);
+            log.error(message, exception);
+            throw new S3AccessException(message, exception);
+        }
+    }
+
+    /**
+     * Erstellt die Presigned-URL zum Hochladen einer Datei in den gegebenen Dateipfad.
+     *
+     * @param pathToFile       Der Pfad zur Datei.
+     *                         Der Pfad ist absolut und ohne Angabe des Buckets anzugeben.
+     *                         Beispiel:
+     *                         Datei in Bucket: "BUCKET/outerFolder/innerFolder/thefile.csv"
+     *                         Angabe in Parameter: "outerFolder/innerFolder/thefile.csv"
+     * @param expiresInMinutes zur Definition des Gültigkeitszeitraums der Presigned-URL.
+     * @return die Presigned URL zum holen einer Datei.
+     * @throws S3AccessException falls die Datei nicht heruntergeladen werden kann.
+     */
+    public String getPresignedUrlForFileUpload(final String pathToFile, final int expiresInMinutes) throws S3AccessException {
+        try {
+            final GetPresignedObjectUrlArgs uploadArgs = GetPresignedObjectUrlArgs.builder()
+                    .method(Method.PUT)
+                    .bucket(this.bucketName)
+                    .object(pathToFile)
+                    .expiry(expiresInMinutes, TimeUnit.MINUTES)
+                    .build();
+            return this.client.getPresignedObjectUrl(uploadArgs);
+        } catch (final InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException
+                | InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException
+                | IllegalArgumentException | IOException exception) {
+            final String message = String.format("Failed to create a upload presigned url for file %s.", pathToFile);
+            log.error(message, exception);
+            throw new S3AccessException(message, exception);
         }
     }
 

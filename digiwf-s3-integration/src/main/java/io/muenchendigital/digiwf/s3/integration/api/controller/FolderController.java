@@ -1,7 +1,6 @@
 package io.muenchendigital.digiwf.s3.integration.api.controller;
 
 import io.muenchendigital.digiwf.s3.integration.domain.service.FolderHandlingService;
-import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AccessException;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FolderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,8 +26,6 @@ public class FolderController {
         try {
             this.folderHandlingService.deleteFolder(refId);
             return ResponseEntity.noContent().build();
-        } catch (final S3AccessException exception) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
         } catch (final Exception exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
         }

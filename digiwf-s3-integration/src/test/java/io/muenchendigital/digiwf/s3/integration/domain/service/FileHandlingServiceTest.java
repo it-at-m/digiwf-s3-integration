@@ -1,14 +1,12 @@
 package io.muenchendigital.digiwf.s3.integration.domain.service;
 
-import io.muenchendigital.digiwf.s3.integration.domain.exception.BrokenFileException;
 import io.muenchendigital.digiwf.s3.integration.domain.exception.FileExistanceException;
 import io.muenchendigital.digiwf.s3.integration.domain.model.FileData;
-import io.muenchendigital.digiwf.s3.integration.domain.model.FileResource;
+import io.muenchendigital.digiwf.s3.integration.domain.model.FileResponse;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.entity.Folder;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AccessException;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FolderRepository;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.S3Repository;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,11 +16,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -54,8 +49,9 @@ class FileHandlingServiceTest {
     void getFileException() throws Exception {
         final UUID uuid = UUID.randomUUID();
         final String filename = "test.txt";
+        final int expiresInMinutes = 5;
         Mockito.when(this.s3Repository.getFilepathesFromFolder(uuid.toString())).thenReturn(new HashSet<>());
-        Assertions.assertThrows(FileExistanceException.class, () -> this.fileHandlingService.getFile(uuid.toString(), filename));
+        Assertions.assertThrows(FileExistanceException.class, () -> this.fileHandlingService.getFile(uuid.toString(), filename, expiresInMinutes));
     }
 
     @Test
@@ -63,53 +59,48 @@ class FileHandlingServiceTest {
         final UUID uuid = UUID.randomUUID();
         final String filename = "test.txt";
         final String filePath = uuid + "/" + filename;
-        final InputStream file = IOUtils.toInputStream("the file content", "UTF-8");
+        final int expiresInMinutes = 5;
+        final String presignedUrl = "THE_PRESIGNED_URL";
 
         Mockito.when(this.s3Repository.getFilepathesFromFolder(uuid.toString())).thenReturn(new HashSet<>(List.of(filePath)));
-        Mockito.when(this.s3Repository.downloadFile(filePath)).thenReturn(file);
+        Mockito.when(this.s3Repository.getPresignedUrlForFileDownload(filePath, expiresInMinutes)).thenReturn(presignedUrl);
 
-        final FileResource result = this.fileHandlingService.getFile(uuid.toString(), filename);
+        final FileResponse result = this.fileHandlingService.getFile(uuid.toString(), filename, expiresInMinutes);
 
-        final FileResource expected = new FileResource();
-        expected.setResource(new InputStreamResource(file));
-        expected.setFilename(filename);
+        final FileResponse expected = new FileResponse(presignedUrl);
 
         assertThat(result, is(expected));
     }
 
     @Test
-    void saveFile() throws IOException, S3AccessException, BrokenFileException, FileExistanceException {
+    void saveFile() throws S3AccessException {
         final UUID uuid = UUID.randomUUID();
         final String filename = "test.txt";
         final String filePath = uuid + "/" + filename;
-        final InputStream file = IOUtils.toInputStream("the file content", "UTF-8");
-        final MultipartFile mockFile = Mockito.mock(MultipartFile.class);
-        Mockito.when(mockFile.getOriginalFilename()).thenReturn(filename);
-        Mockito.when(mockFile.getInputStream()).thenReturn(file);
 
         final FileData fileData = new FileData();
         fileData.setEndOfLife(LocalDate.of(2022, 1, 1));
         fileData.setRefId(uuid.toString());
-        fileData.setMultipartFile(mockFile);
+        fileData.setFilename(filename);
+        fileData.setExpiresInMinutes(5);
 
         Mockito.when(this.s3Repository.getFilepathesFromFolder(uuid.toString())).thenReturn(new HashSet<>(List.of(filePath)));
         Assertions.assertThrows(FileExistanceException.class, () -> this.fileHandlingService.saveFile(fileData));
+        // happy path is tested in updateFile
     }
 
+
     @Test
-    void updateFile() throws IOException, S3AccessException, BrokenFileException {
+    void updateFile() throws IOException, S3AccessException {
         final UUID uuid = UUID.randomUUID();
         final String filename = "test.txt";
         final String filePath = uuid + "/" + filename;
-        final InputStream file = IOUtils.toInputStream("the file content", "UTF-8");
-        final MultipartFile mockFile = Mockito.mock(MultipartFile.class);
-        Mockito.when(mockFile.getOriginalFilename()).thenReturn(filename);
-        Mockito.when(mockFile.getInputStream()).thenReturn(file);
 
         final FileData fileData = new FileData();
         fileData.setEndOfLife(LocalDate.of(2022, 1, 1));
         fileData.setRefId(uuid.toString());
-        fileData.setMultipartFile(mockFile);
+        fileData.setFilename(filename);
+        fileData.setExpiresInMinutes(5);
 
         Mockito.when(this.folderRepository.findByRefId(uuid.toString())).thenReturn(Optional.empty());
         this.fileHandlingService.updateFile(fileData);
@@ -117,7 +108,7 @@ class FileHandlingServiceTest {
         folderToSave1.setRefId(fileData.getRefId());
         folderToSave1.setEndOfLife(fileData.getEndOfLife());
         Mockito.verify(this.folderRepository, Mockito.times(1)).save(folderToSave1);
-        Mockito.verify(this.s3Repository, Mockito.times(1)).uploadFile(filePath, file);
+        Mockito.verify(this.s3Repository, Mockito.times(1)).getPresignedUrlForFileUpload(filePath, fileData.getExpiresInMinutes());
 
 
         Mockito.reset(this.folderRepository);
@@ -131,7 +122,7 @@ class FileHandlingServiceTest {
         folderToSave2.setRefId(folderToFind1.getRefId());
         folderToSave2.setEndOfLife(fileData.getEndOfLife());
         Mockito.verify(this.folderRepository, Mockito.times(1)).save(folderToSave2);
-        Mockito.verify(this.s3Repository, Mockito.times(1)).uploadFile(filePath, file);
+        Mockito.verify(this.s3Repository, Mockito.times(1)).getPresignedUrlForFileUpload(filePath, fileData.getExpiresInMinutes());
 
 
         Mockito.reset(this.folderRepository);
@@ -142,33 +133,21 @@ class FileHandlingServiceTest {
         Mockito.when(this.folderRepository.findByRefId(uuid.toString())).thenReturn(Optional.of(folderToFind2));
         this.fileHandlingService.updateFile(fileData);
         final var folderToSave3 = new Folder();
-        folderToSave2.setRefId(folderToFind2.getRefId());
-        folderToSave2.setEndOfLife(fileData.getEndOfLife());
-        Mockito.verify(this.folderRepository, Mockito.times(0)).save(folderToSave2);
-        Mockito.verify(this.s3Repository, Mockito.times(1)).uploadFile(filePath, file);
-
-
-        Mockito.reset(this.folderRepository);
-        Mockito.reset(this.s3Repository);
-        final var folderToFind3 = new Folder();
-        folderToFind3.setRefId(fileData.getRefId());
-        folderToFind3.setEndOfLife(fileData.getEndOfLife().plusYears(1));
-        Mockito.when(this.folderRepository.findByRefId(uuid.toString())).thenReturn(Optional.of(folderToFind3));
-        Mockito.doThrow(new IOException()).when(mockFile).getInputStream();
-        Assertions.assertThrows(BrokenFileException.class, () -> this.fileHandlingService.updateFile(fileData));
-        final var folderToSave4 = new Folder();
-        folderToSave4.setRefId(folderToFind3.getRefId());
-        folderToSave4.setEndOfLife(fileData.getEndOfLife());
-        Mockito.verify(this.folderRepository, Mockito.times(0)).save(folderToSave4);
-
+        folderToSave3.setRefId(folderToFind2.getRefId());
+        folderToSave3.setEndOfLife(fileData.getEndOfLife());
+        Mockito.verify(this.folderRepository, Mockito.times(0)).save(folderToSave3);
+        Mockito.verify(this.s3Repository, Mockito.times(1)).getPresignedUrlForFileUpload(filePath, fileData.getExpiresInMinutes());
     }
 
     @Test
     void deleteFileException() throws S3AccessException {
         final UUID uuid = UUID.randomUUID();
         final String filename = "test.txt";
+        final int expiresInMinutes = 5;
+
+        Mockito.reset(this.s3Repository);
         Mockito.when(this.s3Repository.getFilepathesFromFolder(uuid.toString())).thenReturn(new HashSet<>());
-        Assertions.assertThrows(FileExistanceException.class, () -> this.fileHandlingService.deleteFile(uuid.toString(), filename));
+        Assertions.assertThrows(FileExistanceException.class, () -> this.fileHandlingService.deleteFile(uuid.toString(), filename, expiresInMinutes));
     }
 
     @Test
@@ -176,9 +155,13 @@ class FileHandlingServiceTest {
         final UUID uuid = UUID.randomUUID();
         final String filename = "test.txt";
         final String filePath = uuid + "/" + filename;
+        final int expiresInMinutes = 5;
+
+        Mockito.reset(this.s3Repository);
         Mockito.when(this.s3Repository.getFilepathesFromFolder(uuid.toString())).thenReturn(new HashSet<>(List.of(filePath)));
-        this.fileHandlingService.deleteFile(uuid.toString(), filename);
-        Mockito.verify(this.s3Repository, Mockito.times(1)).deleteFile(filePath);
+        this.fileHandlingService.deleteFile(uuid.toString(), filename, expiresInMinutes);
+        Mockito.verify(this.s3Repository, Mockito.times(1)).getPresignedUrlForFileDeletion(filePath, expiresInMinutes);
+        Mockito.verify(this.s3Repository, Mockito.times(1)).getFilepathesFromFolder(uuid.toString());
     }
 
     @Test
@@ -214,5 +197,6 @@ class FileHandlingServiceTest {
         folder.setEndOfLife(LocalDate.of(2022, 1, 1));
         assertThat(FileHandlingService.shouldNewEndOfLifeBeSet(fileData, folder), is(false));
     }
+
 
 }
