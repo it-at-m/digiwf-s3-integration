@@ -14,9 +14,6 @@ import javax.validation.constraints.NotBlank;
 public class S3IntegrationProperties {
 
     @NotBlank
-    private String cleanupcronjob;
-
-    @NotBlank
     private String url;
 
     @NotBlank

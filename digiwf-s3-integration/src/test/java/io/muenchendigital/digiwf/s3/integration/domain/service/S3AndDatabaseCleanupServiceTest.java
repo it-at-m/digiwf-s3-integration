@@ -4,6 +4,7 @@ import io.muenchendigital.digiwf.s3.integration.infrastructure.entity.Folder;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AccessException;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AndDatabaseAsyncException;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FolderRepository;
+import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.S3Repository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +22,9 @@ import java.util.stream.Stream;
 class S3AndDatabaseCleanupServiceTest {
 
     @Mock
+    private S3Repository s3Repository;
+
+    @Mock
     private FolderRepository folderRepository;
 
     @Mock
@@ -30,7 +34,7 @@ class S3AndDatabaseCleanupServiceTest {
 
     @BeforeEach
     public void beforeEach() {
-        this.s3AndDatabaseCleanupService = new S3AndDatabaseCleanupService(this.folderRepository, this.folderHandlingService);
+        this.s3AndDatabaseCleanupService = new S3AndDatabaseCleanupService(this.s3Repository, this.folderRepository, this.folderHandlingService);
     }
 
     @Test
@@ -48,7 +52,7 @@ class S3AndDatabaseCleanupServiceTest {
 
         Mockito.when(this.folderRepository.findAllByEndOfLifeNotNullAndEndOfLifeBefore(Mockito.any(LocalDate.class)))
                 .thenReturn(folderStream);
-        this.s3AndDatabaseCleanupService.cleanUp();
+        this.s3AndDatabaseCleanupService.cleanUpExpiredFolders();
         Mockito.verify(this.folderHandlingService, Mockito.times(3)).deleteFolder(Mockito.anyString());
 
     }
