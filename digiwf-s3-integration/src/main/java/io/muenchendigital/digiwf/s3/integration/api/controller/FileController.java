@@ -9,6 +9,8 @@ import io.muenchendigital.digiwf.s3.integration.domain.model.FileResponse;
 import io.muenchendigital.digiwf.s3.integration.domain.service.FileHandlingService;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AccessException;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FolderRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -35,6 +37,7 @@ import javax.validation.constraints.Size;
 @Validated
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "FileAPI", description = "API to interact with files")
 @RequestMapping("/file")
 public class FileController {
 
@@ -45,6 +48,7 @@ public class FileController {
     private final FileResponseMapper fileResponseMapper;
 
     @GetMapping(value = "/{refId}")
+    @Operation(description = "Creates a presigned URL to fetch the file specified in the parameter from the S3 storage")
     public ResponseEntity<FileResponseDto> get(@PathVariable @NotEmpty @Size(max = FolderRepository.LENGTH_REF_ID) final String refId,
                                                @RequestParam @NotEmpty final String fileName,
                                                @RequestParam @NotNull @Min(FileHandlingService.MIN_EXPIRES_IN_MINUTES) final Integer expiresInMinutes) {
@@ -61,6 +65,7 @@ public class FileController {
     }
 
     @PostMapping
+    @Operation(description = "Creates a presigned URL to store the file specified in the parameter within the S3 storage")
     public ResponseEntity<FileResponseDto> save(@RequestBody @NotNull @Valid final FileDataDto fileData) {
         try {
             log.info("Received a request for S3 presigned url to upload a new file");
@@ -75,6 +80,7 @@ public class FileController {
     }
 
     @PutMapping
+    @Operation(description = "Creates a presigned URL to overwrite the file specified in the parameter within the S3 storage")
     public ResponseEntity<FileResponseDto> update(@RequestBody @NotNull @Valid final FileDataDto fileData) {
         try {
             log.info("Received a request for S3 presigned url to upload a existing file");
@@ -87,6 +93,7 @@ public class FileController {
     }
 
     @DeleteMapping(value = "/{refId}")
+    @Operation(description = "Creates a presigned URL to delete the file specified in the parameter from the S3 storage")
     public ResponseEntity<FileResponseDto> delete(@PathVariable @NotEmpty @Size(max = FolderRepository.LENGTH_REF_ID) final String refId,
                                                   @RequestParam @NotEmpty final String fileName,
                                                   @RequestParam @NotNull @Min(FileHandlingService.MIN_EXPIRES_IN_MINUTES) final Integer expiresInMinutes) {
