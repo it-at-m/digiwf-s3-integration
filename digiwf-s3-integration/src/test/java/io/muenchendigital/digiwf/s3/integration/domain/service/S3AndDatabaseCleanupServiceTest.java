@@ -15,7 +15,12 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
 import java.util.stream.Stream;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -56,4 +61,19 @@ class S3AndDatabaseCleanupServiceTest {
         Mockito.verify(this.folderHandlingService, Mockito.times(3)).deleteFolder(Mockito.anyString());
 
     }
+
+    @Test
+    void shouldDatabaseFolderBeDeleted() throws S3AccessException {
+        final Folder folder = new Folder();
+        folder.setRefId("folder");
+
+        Mockito.when(this.s3Repository.getFilepathesFromFolder(folder.getRefId()))
+                .thenReturn(new HashSet<>(List.of("folder/the-file.txt")));
+        assertThat(this.s3AndDatabaseCleanupService.shouldDatabaseFolderBeDeleted(folder), is(false));
+
+        Mockito.when(this.s3Repository.getFilepathesFromFolder(folder.getRefId()))
+                .thenReturn(new HashSet<>());
+        assertThat(this.s3AndDatabaseCleanupService.shouldDatabaseFolderBeDeleted(folder), is(true));
+    }
+
 }
