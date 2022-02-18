@@ -46,8 +46,9 @@ public class FileHandlingService {
             final String presignedUrl = this.s3Repository.getPresignedUrlForFileDownload(pathToFile, expiresInMinutes);
             return new FileResponse(presignedUrl);
         } else {
-            log.error("The file ${} does not exist.", pathToFile);
-            throw new FileExistanceException("Die Datei existiert nicht.");
+            final String message = String.format("The file %s does not exist.", pathToFile);
+            log.error(message);
+            throw new FileExistanceException(message);
         }
     }
 
@@ -67,8 +68,9 @@ public class FileHandlingService {
         );
         final Set<String> filepathesInFolder = this.s3Repository.getFilepathesFromFolder(pathToFolder);
         if (filepathesInFolder.contains(pathToFile)) {
-            log.error("The file ${} already exists.", pathToFile);
-            throw new FileExistanceException("Die Datei existiert bereits.");
+            final String message = String.format("The file %s already exists.", pathToFile);
+            log.error(message);
+            throw new FileExistanceException(message);
         } else {
             log.info("The new file ${} will be saved.", pathToFolder);
             return this.updateFile(fileData);
@@ -134,8 +136,9 @@ public class FileHandlingService {
             final String presignedUrl = this.s3Repository.getPresignedUrlForFileDeletion(pathToFile, expiresInMinutes);
             return new FileResponse(presignedUrl);
         } else {
-            log.error("The file ${} does not exist.", pathToFile);
-            throw new FileExistanceException("Die Datei existiert nicht.");
+            final String message = String.format("The file %s does not exist.", pathToFile);
+            log.error(message);
+            throw new FileExistanceException(message);
         }
     }
 
