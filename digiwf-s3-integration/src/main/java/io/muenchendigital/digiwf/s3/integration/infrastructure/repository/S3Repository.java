@@ -16,6 +16,7 @@ import io.minio.errors.XmlParserException;
 import io.minio.http.Method;
 import io.minio.messages.Item;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AccessException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.IteratorUtils;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public class S3Repository {
 
     private final String bucketName;
@@ -36,8 +38,10 @@ public class S3Repository {
         this.client = client;
         try {
             this.client.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
-        } catch (final MinioException | InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException e) {
-            throw new S3AccessException("S3 initialization failed.", e);
+        } catch (final MinioException | InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException exception) {
+            final String message = "S3 initialization failed.";
+            log.error(message, exception);
+            throw new S3AccessException(message, exception);
         }
     }
 
@@ -69,7 +73,9 @@ public class S3Repository {
             }
             return filepathesFromFolder;
         } catch (final MinioException | InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException exception) {
-            throw new S3AccessException(String.format("Failed to extract file pathes from folder %s.", folder), exception);
+            final String message = String.format("Failed to extract file pathes from folder %s.", folder);
+            log.error(message, exception);
+            throw new S3AccessException(message, exception);
         }
     }
 
@@ -93,7 +99,9 @@ public class S3Repository {
         } catch (final InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException
                 | InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException
                 | IllegalArgumentException | IOException exception) {
-            throw new S3AccessException(String.format("Failed to delete file %s.", pathToFile), exception);
+            final String message = String.format("Failed to delete file %s.", pathToFile);
+            log.error(message, exception);
+            throw new S3AccessException(message, exception);
         }
     }
 
@@ -121,7 +129,9 @@ public class S3Repository {
         } catch (final InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException
                 | InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException
                 | IllegalArgumentException | IOException exception) {
-            throw new S3AccessException(String.format("Failed to create a download presigned url for file %s.", pathToFile), exception);
+            final String message = String.format("Failed to create a download presigned url for file %s.", pathToFile);
+            log.error(message, exception);
+            throw new S3AccessException(message, exception);
         }
     }
 
@@ -149,7 +159,9 @@ public class S3Repository {
         } catch (final InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException
                 | InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException
                 | IllegalArgumentException | IOException exception) {
-            throw new S3AccessException(String.format("Failed to create a deletion presigned url for file %s.", pathToFile), exception);
+            final String message = String.format("Failed to create a deletion presigned url for file %s.", pathToFile);
+            log.error(message, exception);
+            throw new S3AccessException(message, exception);
         }
     }
 
@@ -177,7 +189,9 @@ public class S3Repository {
         } catch (final InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException
                 | InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException
                 | IllegalArgumentException | IOException exception) {
-            throw new S3AccessException(String.format("Failed to create a upload presigned url for file %s.", pathToFile), exception);
+            final String message = String.format("Failed to create a upload presigned url for file %s.", pathToFile);
+            log.error(message, exception);
+            throw new S3AccessException(message, exception);
         }
     }
 

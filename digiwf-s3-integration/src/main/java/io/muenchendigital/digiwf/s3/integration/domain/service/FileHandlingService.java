@@ -8,12 +8,14 @@ import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3Acces
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FolderRepository;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.S3Repository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.Set;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FileHandlingService {
@@ -44,6 +46,7 @@ public class FileHandlingService {
             final String presignedUrl = this.s3Repository.getPresignedUrlForFileDownload(pathToFile, expiresInMinutes);
             return new FileResponse(presignedUrl);
         } else {
+            log.error("The file ${} does not exist.", pathToFile);
             throw new FileExistanceException("Die Datei existiert nicht.");
         }
     }
@@ -64,8 +67,10 @@ public class FileHandlingService {
         );
         final Set<String> filepathesInFolder = this.s3Repository.getFilepathesFromFolder(pathToFolder);
         if (filepathesInFolder.contains(pathToFile)) {
+            log.error("The file ${} already exists.", pathToFile);
             throw new FileExistanceException("Die Datei existiert bereits.");
         } else {
+            log.info("The new file ${} will be saved.", pathToFolder);
             return this.updateFile(fileData);
         }
     }
@@ -85,12 +90,14 @@ public class FileHandlingService {
         final Optional<Folder> folderOptional = this.folderRepository.findByRefId(pathToFolder);
         if (folderOptional.isEmpty()) {
             // Falls noch kein Ordner existiert.
+            log.info("The database entry for folder ${} does not exist.", pathToFolder);
             final var folder = new Folder();
             folder.setRefId(fileData.getRefId());
             folder.setEndOfLife(fileData.getEndOfLife());
             this.folderRepository.save(folder);
         } else if (FileHandlingService.shouldNewEndOfLifeBeSet(fileData, folderOptional.get())) {
             // Beim Hochladen in bereits existierenden Ordner
+            log.info("The database entry for folder ${} already exists.", pathToFolder);
             final Folder folder = folderOptional.get();
             folder.setEndOfLife(fileData.getEndOfLife());
             this.folderRepository.save(folder);
@@ -123,9 +130,11 @@ public class FileHandlingService {
         );
         final Set<String> filepathesInFolder = this.s3Repository.getFilepathesFromFolder(pathToFolder);
         if (filepathesInFolder.contains(pathToFile)) {
+            log.info("The file ${} exists.", pathToFile);
             final String presignedUrl = this.s3Repository.getPresignedUrlForFileDeletion(pathToFile, expiresInMinutes);
             return new FileResponse(presignedUrl);
         } else {
+            log.error("The file ${} does not exist.", pathToFile);
             throw new FileExistanceException("Die Datei existiert nicht.");
         }
     }

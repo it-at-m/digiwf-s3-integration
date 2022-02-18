@@ -10,6 +10,7 @@ import io.muenchendigital.digiwf.s3.integration.domain.service.FileHandlingServi
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AccessException;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FolderRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,6 +30,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/file")
@@ -45,6 +47,7 @@ public class FileController {
                                                @RequestParam @NotEmpty final String fileName,
                                                @RequestParam @NotNull @Min(FileHandlingService.MIN_EXPIRES_IN_MINUTES) final Integer expiresInMinutes) {
         try {
+            log.info("Received a request for S3 presigned url to download a file");
             final FileResponse fileResponse = this.fileHandlingService.getFile(refId, fileName, expiresInMinutes);
             final FileResponseDto fileResponseDto = this.fileResponseMapper.model2Dto(fileResponse);
             return ResponseEntity.ok(fileResponseDto);
@@ -58,6 +61,7 @@ public class FileController {
     @PostMapping
     public ResponseEntity<FileResponseDto> save(@ModelAttribute @NotNull @Valid final FileDataDto file) {
         try {
+            log.info("Received a request for S3 presigned url to upload a new file");
             final FileResponse fileResponse = this.fileHandlingService.saveFile(this.fileMapper.dto2Model(file));
             final FileResponseDto fileResponseDto = this.fileResponseMapper.model2Dto(fileResponse);
             return ResponseEntity.ok(fileResponseDto);
@@ -71,6 +75,7 @@ public class FileController {
     @PutMapping
     public ResponseEntity<FileResponseDto> update(@ModelAttribute @NotNull @Valid final FileDataDto file) {
         try {
+            log.info("Received a request for S3 presigned url to upload a existing file");
             final FileResponse fileResponse = this.fileHandlingService.updateFile(this.fileMapper.dto2Model(file));
             final FileResponseDto fileResponseDto = this.fileResponseMapper.model2Dto(fileResponse);
             return ResponseEntity.ok(fileResponseDto);
@@ -84,6 +89,7 @@ public class FileController {
                                                   @RequestParam @NotEmpty final String fileName,
                                                   @RequestParam @NotNull @Min(FileHandlingService.MIN_EXPIRES_IN_MINUTES) final Integer expiresInMinutes) {
         try {
+            log.info("Received a request for S3 presigned url to delete a file");
             final FileResponse fileResponse = this.fileHandlingService.deleteFile(refId, fileName, expiresInMinutes);
             final FileResponseDto fileResponseDto = this.fileResponseMapper.model2Dto(fileResponse);
             return ResponseEntity.ok(fileResponseDto);
