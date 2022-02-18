@@ -2,7 +2,7 @@ package io.muenchendigital.digiwf.s3.integration.domain.service;
 
 import io.muenchendigital.digiwf.s3.integration.domain.exception.FileExistanceException;
 import io.muenchendigital.digiwf.s3.integration.domain.model.FileData;
-import io.muenchendigital.digiwf.s3.integration.domain.model.FileResponse;
+import io.muenchendigital.digiwf.s3.integration.domain.model.PresignedUrl;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.entity.Folder;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AccessException;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FolderRepository;
@@ -65,9 +65,9 @@ class FileHandlingServiceTest {
         Mockito.when(this.s3Repository.getFilepathesFromFolder(uuid.toString())).thenReturn(new HashSet<>(List.of(filePath)));
         Mockito.when(this.s3Repository.getPresignedUrlForFileDownload(filePath, expiresInMinutes)).thenReturn(presignedUrl);
 
-        final FileResponse result = this.fileHandlingService.getFile(uuid.toString(), filename, expiresInMinutes);
+        final PresignedUrl result = this.fileHandlingService.getFile(uuid.toString(), filename, expiresInMinutes);
 
-        final FileResponse expected = new FileResponse(presignedUrl);
+        final PresignedUrl expected = new PresignedUrl(presignedUrl);
 
         assertThat(result, is(expected));
     }

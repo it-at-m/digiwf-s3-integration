@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "Presigned file url")
-public class FileResponseDto {
+public class PresignedUrlDto {
 
-    private String presignedUrl;
+    private String url;
 
 }

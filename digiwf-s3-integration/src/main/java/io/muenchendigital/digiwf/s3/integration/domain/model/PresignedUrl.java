@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FileResponse {
+public class PresignedUrl {
 
-    private String presignedUrl;
+    private String url;
 
 }
