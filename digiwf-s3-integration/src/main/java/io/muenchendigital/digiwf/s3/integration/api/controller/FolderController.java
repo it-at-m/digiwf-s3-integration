@@ -3,6 +3,7 @@ package io.muenchendigital.digiwf.s3.integration.api.controller;
 import io.muenchendigital.digiwf.s3.integration.domain.service.FolderHandlingService;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FolderRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/folder")
@@ -24,6 +26,7 @@ public class FolderController {
     @DeleteMapping(value = "/{refId}")
     public ResponseEntity<Void> delete(@PathVariable @NotEmpty @Size(max = FolderRepository.LENGTH_REF_ID) final String refId) {
         try {
+            log.info("Received a request for deletion of a certain folder.");
             this.folderHandlingService.deleteFolder(refId);
             return ResponseEntity.noContent().build();
         } catch (final Exception exception) {

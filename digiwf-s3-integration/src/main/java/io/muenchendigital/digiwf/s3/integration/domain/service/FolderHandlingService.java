@@ -23,11 +23,11 @@ public class FolderHandlingService {
     private final FolderRepository folderRepository;
 
     /**
-     * Löscht den im Parameter angegebenen Ordner samt den dazugehörigen Datenbankeintrag.
+     * Deletes the folder specified in the parameter together with the corresponding database entry.
      *
-     * @param refId identifiziert den Namen des Ordners.
-     * @throws S3AndDatabaseAsyncException falls im S3-Storage der Ordner vorhanden ist und in der Datenbank nicht und umgekehrt.
-     * @throws S3AccessException           falls nicht auf den S3-Storage zugegriffen werden kann.
+     * @param refId identifies the name of the folder.
+     * @throws S3AndDatabaseAsyncException if the folder exists in the S3 storage and not in the database and vice versa.
+     * @throws S3AccessException           if the S3 storage cannot be accessed.
      */
     @Transactional
     public void deleteFolder(final String refId) throws S3AndDatabaseAsyncException, S3AccessException {
