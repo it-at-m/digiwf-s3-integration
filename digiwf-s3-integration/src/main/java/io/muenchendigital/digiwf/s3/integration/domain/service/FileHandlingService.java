@@ -27,13 +27,13 @@ public class FileHandlingService {
     private final FolderRepository folderRepository;
 
     /**
-     * Erstellt eine Presigned-URL zum Holen der im Parameter angegebenen Datei aus dem S3-Storage.
+     * Creates a presigned URL to fetch the file specified in the parameter from the S3 storage.
      *
-     * @param refId            identifiziert den Namen des Ordners in welchem die Datei gespeichert ist.
-     * @param fileName         identifiziert den Dateinamen.
-     * @param expiresInMinutes zur Definition des Gültigkeitszeitraums der Presigned-URL.
-     * @throws FileExistanceException falls die Datei nicht im Ordner existiert.
-     * @throws S3AccessException      falls nicht auf den S3-Storage zugegriffen werden kann.
+     * @param refId            identifies the name of the folder in which the file is stored.
+     * @param fileName         identifies the file name.
+     * @param expiresInMinutes to define the validity period of the presigned URL.
+     * @throws FileExistanceException if the file does not exist in the folder.
+     * @throws S3AccessException      if the S3 storage cannot be accessed.
      */
     public FileResponse getFile(final String refId, final String fileName, final int expiresInMinutes) throws FileExistanceException, S3AccessException {
         final String pathToFolder = refId;
@@ -53,12 +53,12 @@ public class FileHandlingService {
     }
 
     /**
-     * Erstellt eine Presigned-URL zum Speichern der im Parameter angegebenen Datei im S3-Storage.
-     * Die Datei darf noch nicht existieren.
+     * Creates a presigned URL to store the file specified in the parameter within the S3 storage.
+     * The file must not exist yet.
      *
-     * @param fileData mit den Dateimetadaten zum erneuten Speichern.
-     * @throws FileExistanceException falls die Datei bereits existiert.
-     * @throws S3AccessException      falls nicht auf den S3-Storage zugegriffen werden kann.
+     * @param fileData with the file metadata to save.
+     * @throws FileExistanceException if the file already exists.
+     * @throws S3AccessException      if the S3 storage cannot be accessed.
      */
     public FileResponse saveFile(final FileData fileData) throws FileExistanceException, S3AccessException {
         final String pathToFolder = fileData.getRefId();
@@ -78,27 +78,25 @@ public class FileHandlingService {
     }
 
     /**
-     * Erstellt eine Presigned-URL zum Überschreiben der im Parameter angegebenen Datei im S3-Storage.
-     * Des Weiteren wird in der Datenbank der Eintrag bezüglich {@link Folder#getEndOfLife()} angepasst.
+     * Creates a presigned URL to overwrite the file specified in the parameter within the S3 storage.
+     * Furthermore, the entry regarding {@link Folder#getEndOfLife()} is adjusted in the database.
      * <p>
-     * Gibt es die Datei noch nicht im S3-Storage, so wird diese neu angelegt und in der Datenbank
-     * ein entsprechender {@link Folder} persistiert.
+     * If the file does not yet exist in the S3 storage, it is newly created and a
+     * corresponding {@link Folder} is persisted in the database.
      *
-     * @param fileData mit den Dateimetadaten zum erneuten Speichern.
-     * @throws S3AccessException falls nicht auf den S3-Storage zugegriffen werden kann.
+     * @param fileData with the file metadata for resaving.
+     * @throws S3AccessException if the S3 storage cannot be accessed.
      */
     public FileResponse updateFile(final FileData fileData) throws S3AccessException {
         final String pathToFolder = fileData.getRefId();
         final Optional<Folder> folderOptional = this.folderRepository.findByRefId(pathToFolder);
         if (folderOptional.isEmpty()) {
-            // Falls noch kein Ordner existiert.
             log.info("The database entry for folder ${} does not exist.", pathToFolder);
             final var folder = new Folder();
             folder.setRefId(fileData.getRefId());
             folder.setEndOfLife(fileData.getEndOfLife());
             this.folderRepository.save(folder);
         } else if (FileHandlingService.shouldNewEndOfLifeBeSet(fileData, folderOptional.get())) {
-            // Beim Hochladen in bereits existierenden Ordner
             log.info("The database entry for folder ${} already exists.", pathToFolder);
             final Folder folder = folderOptional.get();
             folder.setEndOfLife(fileData.getEndOfLife());
@@ -116,13 +114,13 @@ public class FileHandlingService {
     }
 
     /**
-     * Erstellt eine Presigned-URL zum Löschen der im Parameter angegebenen Datei aus dem S3-Storage.
+     * Creates a presigned URL to delete the file specified in the parameter from the S3 storage.
      *
-     * @param refId            identifiziert den Namen des Ordners in welchem die Datei gespeichert ist.
-     * @param fileName         identifiziert den Dateinamen.
-     * @param expiresInMinutes zur Definition des Gültigkeitszeitraums der Presigned-URL.
-     * @throws FileExistanceException falls die Datei nicht im Ordner existiert.
-     * @throws S3AccessException      falls nicht auf den S3-Storage zugegriffen werden kann.
+     * @param refId            identifies the name of the folder in which the file is stored.
+     * @param fileName         identifies the file name.
+     * @param expiresInMinutes to define the validity period of the presigned URL.
+     * @throws FileExistanceException if the file does not exist in the folder.
+     * @throws S3AccessException      if the S3 storage cannot be accessed.
      */
     public FileResponse deleteFile(final String refId, final String fileName, final int expiresInMinutes) throws FileExistanceException, S3AccessException {
         final String pathToFolder = refId;
@@ -147,19 +145,19 @@ public class FileHandlingService {
     }
 
     /**
-     * Die Methode prüft, ob ein überschrieben des Parameter {@link Folder#getEndOfLife()} erforderlich ist.
+     * The method checks if an override of the {@link Folder#getEndOfLife()} parameter is required.
      *
-     * @param fileData mit neuem {@link FileData#getEndOfLife()}
-     * @param folder   mit aktuellen {@link Folder#getEndOfLife()}
-     * @return true falls bei beiden Datum gesetzt, bzw. true falls {@link FileData#getEndOfLife()} gesetzt
-     * und {@link Folder#getEndOfLife()} nicht gesetzt. Andernfalls false.
+     * @param fileData with new {@link FileData#getEndOfLife()}
+     * @param folder   with current {@link Folder#getEndOfLife()}
+     * @return true if both dates are set, or true if {@link FileData#getEndOfLife()} is set
+     * and {@link Folder#getEndOfLife()} is not set. Otherwise false.
      */
     public static boolean shouldNewEndOfLifeBeSet(final FileData fileData, final Folder folder) {
-        return  // End Of Life fileData gesetzt und folder gesetzt -> Erfordert Datumsprüfung
+        return  // End Of Life in fileData set and in folder set
                 (ObjectUtils.isNotEmpty(fileData.getEndOfLife())
                         && ObjectUtils.isNotEmpty(folder.getEndOfLife())
                         && fileData.getEndOfLife().isAfter(folder.getEndOfLife()))
-                        // End Of Life fileData gesetzt und folder nicht gesetzt
+                        // End Of Life in fileData set und in folder not set
                         || (ObjectUtils.isNotEmpty(fileData.getEndOfLife())
                         && ObjectUtils.isEmpty(folder.getEndOfLife()));
     }

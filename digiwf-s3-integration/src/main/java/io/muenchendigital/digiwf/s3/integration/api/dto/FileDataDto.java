@@ -25,7 +25,7 @@ public class FileDataDto {
     private String filename;
 
     /**
-     * Definition des Gültigkeitszeitraums der Presigned-URL.
+     * Definition of the validity period of the presigned URL.
      */
     @NotNull
     @Min(FileHandlingService.MIN_EXPIRES_IN_MINUTES)

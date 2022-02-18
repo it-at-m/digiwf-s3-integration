@@ -18,8 +18,8 @@ public class S3AndDatabaseCleanupService {
     private final FolderHandlingService folderHandlingService;
 
     /**
-     * Durch Cronjob terminierte Methode welche alle Ordner im S3-Storage und in der Datenbank löscht,
-     * für die das Attribut {@link Folder#getEndOfLife()} überschritten ist.
+     * Cronjob scheduled method which deletes all folders in the S3 storage and database
+     * for which the {@link Folder#getEndOfLife()} attribute is exceeded.
      */
     public void cleanUp() {
         log.info("S3 and database clean up started.");
