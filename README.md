@@ -1,22 +1,6 @@
 <div id="top"></div>
-<!--
-*** Thanks for checking out the Best-README-Template. If you have a suggestion
-*** that would make this better, please fork the repo and create a pull request
-*** or simply open an issue with the tag "enhancement".
-*** Don't forget to give the project a star!
-*** Thanks again! Now go create something AMAZING! :D
--->
-
-
 
 <!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
@@ -61,17 +45,11 @@
     </li>
     <li>
       <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
 
@@ -96,19 +74,13 @@ Use the `BLANK_README.md` to get started.
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
-
 ### Built With
 
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
+This project is built with:
 
-* [Next.js](https://nextjs.org/)
-* [React.js](https://reactjs.org/)
-* [Vue.js](https://vuejs.org/)
-* [Angular](https://angular.io/)
-* [Svelte](https://svelte.dev/)
-* [Laravel](https://laravel.com)
-* [Bootstrap](https://getbootstrap.com)
-* [JQuery](https://jquery.com)
+* [Spring Boot](https://spring.io/projects/spring-boot)
+* [minio](https://min.io)
+* [Hibernate](https://hibernate.org)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -117,63 +89,53 @@ This section should list any major frameworks/libraries used to bootstrap your p
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+_Below is an example of how you can installing and setup up your service_
 
-### Prerequisites
+1. Use the spring initalizer and areate a Spring Boot application with `Spring Web` dependencies [https://start.spring.io](https://start.spring.io)
+2. Add the digiwf-s3-integration dependency
 
-tbd.
-
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
-
-### Installation
-
-_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
-
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/your_username_/Project-Name.git
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
+With Maven:
+```
+   <dependency>
+        <groupId>io.muenchendigital.digiwf</groupId>
+        <artifactId>digiwf-s3-integration-starter</artifactId>
+        <version>${digiwf.version}</version>
+   </dependency>
+```
+With Gradle:
+```
+implementation group: 'io.muenchendigital.digiwf', name: 'digiwf-s3-integration-starter', version: '${digiwf.version}'
+```
+3. Configure your S3 bucket with the following properties:
+    - `io.muenchendigital.digiwf.s3.bucketName`
+   - `io.muenchendigital.digiwf.s3.secretKey`
+   - `io.muenchendigital.digiwf.s3.accessKey`
+   - `io.muenchendigital.digiwf.s3.url`
+  
+5. Enjoy the [OpenAPI definition](http://localhost:8089/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config) 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
 
 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+The library has several functionalities that can be configured.
+We have provided examples that show how you can use them.
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+_For more examples, please refer to the [Examples](https://github.com/it-at-m/digiwf-s3-integration/tree/dev/example) folder_
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+### Cron Job Cleanup
+Files need to be deleted after some time.
+We have developed a folder structure to which an end of life time can be saved. 
+The cron job setting determines how often and when the folders are checked and deleted.
+To use this functionality configure the property:
+``io.muenchendigital.digiwf.s3.cleanupcronjob=0 15 10 15 * ?``
 
 
-<!-- ROADMAP -->
-## Roadmap
-
-- [ ] Add Maven Central deployment
-- [ ] Add comprehensiv documentation
-- [ ] Add presigned urls
-- [ ] Add async spring cloud stream api
-
-See the [open issues](https://github.com/it-at-m/digiwf-s3-integration/issues) for a full list of proposed features (and known issues).
+### more coming soon...
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
 
 
 <!-- CONTRIBUTING -->
@@ -208,25 +170,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 it@m - opensource@muenchendigital.io
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
-
-Use this space to list resources you find helpful and would like to give credit to. I've included a few of my favorites to kick things off!
-
-* [Choose an Open Source License](https://choosealicense.com)
-* [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
-* [Malven's Flexbox Cheatsheet](https://flexbox.malven.co/)
-* [Malven's Grid Cheatsheet](https://grid.malven.co/)
-* [Img Shields](https://shields.io)
-* [GitHub Pages](https://pages.github.com)
-* [Font Awesome](https://fontawesome.com)
-* [React Icons](https://react-icons.github.io/react-icons/search)
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
