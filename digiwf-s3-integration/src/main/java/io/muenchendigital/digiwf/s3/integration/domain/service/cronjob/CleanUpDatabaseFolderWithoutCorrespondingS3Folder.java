@@ -1,6 +1,7 @@
-package io.muenchendigital.digiwf.s3.integration.domain.service;
+package io.muenchendigital.digiwf.s3.integration.domain.service.cronjob;
 
 import io.muenchendigital.digiwf.s3.integration.infrastructure.entity.Folder;
+import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AccessException;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FolderRepository;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.S3Repository;
 import lombok.RequiredArgsConstructor;
@@ -10,41 +11,22 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
-public class S3AndDatabaseCleanupService {
+public class CleanUpDatabaseFolderWithoutCorrespondingS3Folder {
 
     private final S3Repository s3Repository;
 
     private final FolderRepository folderRepository;
 
-    private final FolderHandlingService folderHandlingService;
-
-    /**
-     * Cronjob scheduled method which deletes all folders in the S3 storage and database
-     * for which the {@link Folder#getEndOfLife()} attribute is exceeded.
-     */
-    public void cleanUpExpiredFolders() {
-        log.info("S3 and database clean up for expired folders started.");
-        this.folderRepository.findAllByEndOfLifeNotNullAndEndOfLifeBefore(LocalDate.now())
-                .forEach(this::deleteFolder);
-        log.info("S3 and database clean up for expired folders  finished.");
-    }
-
-    private void deleteFolder(final Folder folder) {
-        try {
-            this.folderHandlingService.deleteFolder(folder.getRefId());
-        } catch (final Exception exception) {
-            log.error("Error during cleanup happened.", exception);
-        }
-    }
-
     /**
      * Cronjob scheduled method that deletes all {@link Folder} entities in the database
      * for which no corresponding folder exists in the S3 storage.
+     * <p>
+     * The deletion is performed only if the folder entity was created more than a month ago.
      */
-    public void cleanUpDatabaseFolderWithoutCorrespondingS3Folder() {
+    public void cleanUp() {
         log.info("Database clean up for folder without corresponding S3 folders started.");
         this.folderRepository.findAllByEndOfLifeIsNull()
                 .filter(this::shouldDatabaseFolderBeDeleted)
@@ -56,12 +38,19 @@ public class S3AndDatabaseCleanupService {
      * Checks whether the folder should be deleted from the database.
      *
      * @param folder to check
-     * @return true if the folder is to be deleted from the database. Otherwise false.
+     * @return true if the folder has to be deleted from the database. Otherwise false.
      */
     public boolean shouldDatabaseFolderBeDeleted(final Folder folder) {
-        final boolean deleteDatabaseFolder = false;
+        boolean deleteDatabaseFolder = false;
         try {
-            return this.s3Repository.getFilepathesFromFolder(folder.getRefId()).isEmpty();
+            final boolean noFilesInS3Folder = this.s3Repository.getFilepathesFromFolder(folder.getRefId()).isEmpty();
+            final LocalDate creationDate = folder.getCreatedTime().toLocalDate();
+            final boolean folderCreatedMoreThanAMonthAgo = creationDate.isBefore(LocalDate.now().minusMonths(1));
+            deleteDatabaseFolder = noFilesInS3Folder && folderCreatedMoreThanAMonthAgo;
+        } catch (final NullPointerException exception) {
+            log.error("Created time in folder entity not set.", exception);
+        } catch (final S3AccessException exception) {
+            log.error("S3 storage could not be accessed.", exception);
         } catch (final Exception exception) {
             log.error("Error during cleanup happened.", exception);
         }
@@ -72,5 +61,4 @@ public class S3AndDatabaseCleanupService {
     public void deleteDatabaseFolder(final Folder folder) {
         this.folderRepository.deleteById(folder.getId());
     }
-
 }

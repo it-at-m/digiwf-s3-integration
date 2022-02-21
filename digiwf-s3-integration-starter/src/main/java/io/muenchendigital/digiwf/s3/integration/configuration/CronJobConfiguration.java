@@ -1,6 +1,7 @@
 package io.muenchendigital.digiwf.s3.integration.configuration;
 
-import io.muenchendigital.digiwf.s3.integration.domain.service.S3AndDatabaseCleanupService;
+import io.muenchendigital.digiwf.s3.integration.domain.service.cronjob.CleanUpDatabaseFolderWithoutCorrespondingS3Folder;
+import io.muenchendigital.digiwf.s3.integration.domain.service.cronjob.CleanUpExpiredFolders;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
@@ -17,16 +18,18 @@ import org.springframework.scheduling.annotation.Scheduled;
 )
 public class CronJobConfiguration {
 
-    private final S3AndDatabaseCleanupService s3AndDatabaseCleanupService;
+    private final CleanUpExpiredFolders cleanUpExpiredFolders;
 
-    @Scheduled(cron = "${de.muenchen.documentstorage.cronjob.cleanup.expiredfolders}")
+    private final CleanUpDatabaseFolderWithoutCorrespondingS3Folder cleanUpDatabaseFolderWithoutCorrespondingS3Folder;
+
+    @Scheduled(cron = "${de.muenchen.documentstorage.cronjob.cleanup.expired-folders}")
     public void cronJobDefinitionCleanUpExpiredFolders() {
-        this.s3AndDatabaseCleanupService.cleanUpExpiredFolders();
+        this.cleanUpExpiredFolders.cleanUp();
     }
 
-    @Scheduled(cron = "${de.muenchen.documentstorage.cronjob.cleanup.databasefolderwithoutcorrespondings3folder}")
+    @Scheduled(cron = "${de.muenchen.documentstorage.cronjob.cleanup.database-folder-without-corresponding-s3-folder}")
     public void cronJobDefinitionCleanUpDatabaseFolderWithoutCorrespondingS3Folder() {
-        this.s3AndDatabaseCleanupService.cleanUpDatabaseFolderWithoutCorrespondingS3Folder();
+        this.cleanUpDatabaseFolderWithoutCorrespondingS3Folder.cleanUp();
     }
 
 }

@@ -1,10 +1,10 @@
-package io.muenchendigital.digiwf.s3.integration.domain.service;
+package io.muenchendigital.digiwf.s3.integration.domain.service.cronjob;
 
+import io.muenchendigital.digiwf.s3.integration.domain.service.FolderHandlingService;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.entity.Folder;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AccessException;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AndDatabaseAsyncException;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FolderRepository;
-import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.S3Repository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,19 +15,11 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
 import java.util.stream.Stream;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class S3AndDatabaseCleanupServiceTest {
-
-    @Mock
-    private S3Repository s3Repository;
+class CleanUpExpiredFoldersTest {
 
     @Mock
     private FolderRepository folderRepository;
@@ -35,11 +27,11 @@ class S3AndDatabaseCleanupServiceTest {
     @Mock
     private FolderHandlingService folderHandlingService;
 
-    private S3AndDatabaseCleanupService s3AndDatabaseCleanupService;
+    private CleanUpExpiredFolders cleanUpExpiredFolders;
 
     @BeforeEach
     public void beforeEach() {
-        this.s3AndDatabaseCleanupService = new S3AndDatabaseCleanupService(this.s3Repository, this.folderRepository, this.folderHandlingService);
+        this.cleanUpExpiredFolders = new CleanUpExpiredFolders(this.folderRepository, this.folderHandlingService);
     }
 
     @Test
@@ -57,23 +49,8 @@ class S3AndDatabaseCleanupServiceTest {
 
         Mockito.when(this.folderRepository.findAllByEndOfLifeNotNullAndEndOfLifeBefore(Mockito.any(LocalDate.class)))
                 .thenReturn(folderStream);
-        this.s3AndDatabaseCleanupService.cleanUpExpiredFolders();
+        this.cleanUpExpiredFolders.cleanUp();
         Mockito.verify(this.folderHandlingService, Mockito.times(3)).deleteFolder(Mockito.anyString());
-
-    }
-
-    @Test
-    void shouldDatabaseFolderBeDeleted() throws S3AccessException {
-        final Folder folder = new Folder();
-        folder.setRefId("folder");
-
-        Mockito.when(this.s3Repository.getFilepathesFromFolder(folder.getRefId()))
-                .thenReturn(new HashSet<>(List.of("folder/the-file.txt")));
-        assertThat(this.s3AndDatabaseCleanupService.shouldDatabaseFolderBeDeleted(folder), is(false));
-
-        Mockito.when(this.s3Repository.getFilepathesFromFolder(folder.getRefId()))
-                .thenReturn(new HashSet<>());
-        assertThat(this.s3AndDatabaseCleanupService.shouldDatabaseFolderBeDeleted(folder), is(true));
     }
 
 }
