@@ -11,8 +11,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 @ConditionalOnProperty(
         prefix = "io.muenchendigital.digiwf.s3.cronjob.cleanup",
         name = {
-                "expiredfolders",
-                "databasefolderwithoutcorrespondings3folder"
+                "expired-folders",
+                "database-folder-without-corresponding-s3-folder"
         }
 )
 public class CronJobConfiguration {
