@@ -134,6 +134,13 @@ them.
 _For more examples, please refer to the [Examples](https://github.com/it-at-m/digiwf-s3-integration/tree/dev/example)
 folder_
 
+## Minimum necessary spring boot annotations
+
+Listed below are the required Spring boot annotations, which are minimal.
+
+* ```@EnableJpaAuditing```
+* ```@EnableScheduling```
+
 ### Cron Job Cleanup
 
 Files need to be deleted after some time. We have developed a folder structure to which an end of life time can be
@@ -142,7 +149,7 @@ configure the property:
 
 ``io.muenchendigital.digiwf.s3.cronjob.cleanup.expired-folders=0 15 10 15 * ?``
 
-This job cleans the metadata of the S3 folders in the database if no corresponding folder exists.
+This job cleans the metadata of the S3 folders in the database if no corresponding S3 folder exists.
 
 ``io.muenchendigital.digiwf.s3.cronjob.cleanup.database-folder-without-corresponding-s3-folder=0 15 10 16 * ?``
 
