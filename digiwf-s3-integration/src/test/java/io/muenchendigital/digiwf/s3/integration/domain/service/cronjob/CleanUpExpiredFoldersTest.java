@@ -1,5 +1,6 @@
-package io.muenchendigital.digiwf.s3.integration.domain.service;
+package io.muenchendigital.digiwf.s3.integration.domain.service.cronjob;
 
+import io.muenchendigital.digiwf.s3.integration.domain.service.FolderHandlingService;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.entity.Folder;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AccessException;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AndDatabaseAsyncException;
@@ -18,7 +19,7 @@ import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class S3AndDatabaseCleanupServiceTest {
+class CleanUpExpiredFoldersTest {
 
     @Mock
     private FolderRepository folderRepository;
@@ -26,11 +27,11 @@ class S3AndDatabaseCleanupServiceTest {
     @Mock
     private FolderHandlingService folderHandlingService;
 
-    private S3AndDatabaseCleanupService s3AndDatabaseCleanupService;
+    private CleanUpExpiredFolders cleanUpExpiredFolders;
 
     @BeforeEach
     public void beforeEach() {
-        this.s3AndDatabaseCleanupService = new S3AndDatabaseCleanupService(this.folderRepository, this.folderHandlingService);
+        this.cleanUpExpiredFolders = new CleanUpExpiredFolders(this.folderRepository, this.folderHandlingService);
     }
 
     @Test
@@ -48,8 +49,8 @@ class S3AndDatabaseCleanupServiceTest {
 
         Mockito.when(this.folderRepository.findAllByEndOfLifeNotNullAndEndOfLifeBefore(Mockito.any(LocalDate.class)))
                 .thenReturn(folderStream);
-        this.s3AndDatabaseCleanupService.cleanUp();
+        this.cleanUpExpiredFolders.cleanUp();
         Mockito.verify(this.folderHandlingService, Mockito.times(3)).deleteFolder(Mockito.anyString());
-
     }
+
 }

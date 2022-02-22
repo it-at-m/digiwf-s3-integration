@@ -18,4 +18,6 @@ public interface FolderRepository extends PagingAndSortingRepository<Folder, UUI
 
     Stream<Folder> findAllByEndOfLifeNotNullAndEndOfLifeBefore(final LocalDate date);
 
+    Stream<Folder> findAllByEndOfLifeIsNull();
+
 }

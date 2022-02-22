@@ -1,5 +1,6 @@
-package io.muenchendigital.digiwf.s3.integration.domain.service;
+package io.muenchendigital.digiwf.s3.integration.domain.service.cronjob;
 
+import io.muenchendigital.digiwf.s3.integration.domain.service.FolderHandlingService;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.entity.Folder;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FolderRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,10 +9,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
-public class S3AndDatabaseCleanupService {
+public class CleanUpExpiredFolders {
 
     private final FolderRepository folderRepository;
 
@@ -22,10 +23,10 @@ public class S3AndDatabaseCleanupService {
      * for which the {@link Folder#getEndOfLife()} attribute is exceeded.
      */
     public void cleanUp() {
-        log.info("S3 and database clean up started.");
+        log.info("S3 and database clean up for expired folders started.");
         this.folderRepository.findAllByEndOfLifeNotNullAndEndOfLifeBefore(LocalDate.now())
                 .forEach(this::deleteFolder);
-        log.info("S3 and database clean up finished.");
+        log.info("S3 and database clean up for expired folders  finished.");
     }
 
     private void deleteFolder(final Folder folder) {
