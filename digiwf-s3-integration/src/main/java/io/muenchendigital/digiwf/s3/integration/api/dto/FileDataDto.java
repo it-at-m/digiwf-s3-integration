@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import io.muenchendigital.digiwf.s3.integration.domain.service.FileHandlingService;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FolderRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.Min;
@@ -15,6 +16,7 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @Data
+@Schema(description = "File data with presigned url")
 public class FileDataDto {
 
     @NotEmpty
