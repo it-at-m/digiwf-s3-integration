@@ -15,7 +15,7 @@ import org.springframework.scheduling.annotation.Scheduled;
         prefix = "io.muenchendigital.digiwf.s3.cronjob.cleanup",
         name = {
                 "expired-folders",
-                "database-folder-without-corresponding-s3-folder"
+                "unused-folders"
         }
 )
 public class CronJobConfiguration {
@@ -29,8 +29,8 @@ public class CronJobConfiguration {
         this.cleanUpExpiredFolders.cleanUp();
     }
 
-    @Scheduled(cron = "${io.muenchendigital.digiwf.s3.cronjob.cleanup.database-folder-without-corresponding-s3-folder}")
-    public void cronJobDefinitionCleanUpDatabaseFolderWithoutCorrespondingS3Folder() {
+    @Scheduled(cron = "${io.muenchendigital.digiwf.s3.cronjob.cleanup.unused-folders}")
+    public void cronJobCleanUpUnusedFolders() {
         this.cleanUpDatabaseFolderWithoutCorrespondingS3Folder.cleanUp();
     }
 

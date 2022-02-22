@@ -151,7 +151,7 @@ configure the property:
 
 This job cleans the metadata of the S3 folders in the database if no corresponding S3 folder exists.
 
-``io.muenchendigital.digiwf.s3.cronjob.cleanup.database-folder-without-corresponding-s3-folder=0 15 10 16 * ?``
+``io.muenchendigital.digiwf.s3.cronjob.cleanup.unused-folders=0 15 10 16 * ?``
 
 ### more coming soon...
 
