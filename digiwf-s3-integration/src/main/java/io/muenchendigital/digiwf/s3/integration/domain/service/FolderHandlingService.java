@@ -74,7 +74,7 @@ public class FolderHandlingService {
             this.folderRepository.save(folder);
             log.info("End of life updated for folder ${} to ${}", refId, endOfLife);
         } else {
-            final String message = "No database entry for folder " + refId + " is found.";
+            final String message = String.format("No database entry for folder %s is found.", refId);
             log.error(message);
             throw new FolderExistanceException(message);
         }
