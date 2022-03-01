@@ -1,5 +1,6 @@
 package io.muenchendigital.digiwf.s3.integration.domain.service;
 
+import io.muenchendigital.digiwf.s3.integration.domain.exception.FolderExistanceException;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.entity.Folder;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AccessException;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AndDatabaseAsyncException;
@@ -8,8 +9,9 @@ import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.S3Repo
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
 
@@ -53,6 +55,28 @@ public class FolderHandlingService {
             throw new S3AndDatabaseAsyncException(message);
         } else {
             log.info("Folder in S3 and folder entity in database does not exist -> everything ok.");
+        }
+    }
+
+    /**
+     * Updates the end of life for the given folder.
+     *
+     * @param refId     identifies the name of the folder.
+     * @param endOfLife the new end of life or null.
+     * @throws FolderExistanceException if no database entry exists.
+     */
+    @Transactional
+    public void updateEndOfLife(final String refId, final LocalDate endOfLife) throws FolderExistanceException {
+        final Optional<Folder> folderOptional = this.folderRepository.findByRefId(refId);
+        if (folderOptional.isPresent()) {
+            final Folder folder = folderOptional.get();
+            folder.setEndOfLife(endOfLife);
+            this.folderRepository.save(folder);
+            log.info("End of life updated for folder ${} to ${}", refId, endOfLife);
+        } else {
+            final String message = String.format("No database entry for folder %s is found.", refId);
+            log.error(message);
+            throw new FolderExistanceException(message);
         }
     }
 
