@@ -132,7 +132,7 @@
                             <inputSpec>${project.basedir}/apidoc/api-docs.json</inputSpec>
                             <language>java</language>
                             <library>resttemplate</library>
-                            <output>${project.basedir}/target/generated-sources/</output>
+                            <output>${project.basedir}</output>
 
                             <apiPackage>io.muenchendigital.digiwf.s3.integration.client.gen.api</apiPackage>
                             <modelPackage>io.muenchendigital.digiwf.s3.integration.client.gen.model</modelPackage>
@@ -163,7 +163,7 @@
                             <configOptions>
                                 <dateLibrary>Java8</dateLibrary>
                                 <java8>true</java8>
-                                <sourceFolder>restclient</sourceFolder>
+                                <sourceFolder>src/main/java/</sourceFolder>
                             </configOptions>
                         </configuration>
                     </execution>
