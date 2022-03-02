@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class DocumentStorageRepository {
+public class DocumentStorageFileRepository {
 
     private final PresignedUrlRepository presignedUrlRepository;
 
