@@ -53,4 +53,21 @@ public class DocumentStorageRepository {
         this.s3FileTransferRepository.saveFile(presignedUrl, file);
     }
 
+    /**
+     * Updates the file specified in the parameter to the document storage.
+     *
+     * @param refId    which defines the folder in the document storage where the file will be updated.
+     * @param fileName in the document storage.
+     * @param file         which overwrites the file in the document storage.
+     * @param expireInMinutes the expiration time of the presignedURL in minutes.
+     * @param endOfLifeFolder the end of life of the folder defined in refId.
+     * @throws DocumentStorageClientErrorException if the problem is with the client.
+     * @throws DocumentStorageServerErrorException if the problem is with the S3 storage or document storage.
+     * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
+     */
+    public void updateFile(final String refId, final String fileName, final byte[] file, final int expireInMinutes, final LocalDate endOfLifeFolder) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+        final String presignedUrl = this.presignedUrlRepository.getPresignedUrlUpdateFile(refId, fileName, expireInMinutes, endOfLifeFolder);
+        this.s3FileTransferRepository.updateFile(presignedUrl, file);
+    }
+
 }
