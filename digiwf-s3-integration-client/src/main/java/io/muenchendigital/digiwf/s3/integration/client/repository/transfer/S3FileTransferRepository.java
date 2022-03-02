@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -20,6 +21,44 @@ import java.net.URI;
 @Repository
 @RequiredArgsConstructor
 public class S3FileTransferRepository {
+
+    /**
+     *
+     * @param presignedUrl
+     * @return
+     * @throws DocumentStorageClientErrorException
+     * @throws DocumentStorageServerErrorException
+     * @throws DocumentStorageException
+     */
+    public byte[] getFile(final String presignedUrl) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
+        try {
+            final var headers = new HttpHeaders();
+            final HttpEntity<Void> httpEntity = new HttpEntity<>(headers);
+            /**
+             * Using the RestTemplate without any authorization.
+             * The presigned URL contains any authorization against the S3 storage.
+             */
+            final ResponseEntity<byte[]> responseEntity = new RestTemplate().exchange(
+                    URI.create(presignedUrl),
+                    HttpMethod.GET,
+                    httpEntity,
+                    byte[].class
+            );
+            return responseEntity.getBody();
+        } catch (final HttpClientErrorException exception) {
+            final String message = String.format("The presigned url request failed with http status %s.", exception.getStatusCode());
+            log.error(message);
+            throw new DocumentStorageClientErrorException(message, exception);
+        } catch (final HttpServerErrorException exception) {
+            final String message = String.format("The presigned url request failed with http status %s.", exception.getStatusCode());
+            log.error(message);
+            throw new DocumentStorageServerErrorException(message, exception);
+        } catch (final RestClientException exception) {
+            final String message = String.format("The presigned url request failed.");
+            log.error(message);
+            throw new DocumentStorageException(message, exception);
+        }
+    }
 
     /**
      * Saves the file to document storage using the presignedURL.

@@ -22,11 +22,31 @@ public class PresignedUrlRepository {
 
     private final FileApiApi fileApi;
 
+    public String getPresignedUrlGetFile(final String refId, final String fileName, final Integer expireInMinutes) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
+        try {
+            final PresignedUrlDto presignedUrlDto = this.fileApi.get(refId, fileName, expireInMinutes);
+            return presignedUrlDto.getUrl();
+        } catch (final HttpClientErrorException exception) {
+            final String message = String.format("The request to create a presigned url to get a file failed %s.", exception.getStatusCode());
+            log.error(message);
+            throw new DocumentStorageClientErrorException(message, exception);
+        } catch (final HttpServerErrorException exception) {
+            final String message = String.format("The request to create a presigned url to get a file failed %s.", exception.getStatusCode());
+            log.error(message);
+            throw new DocumentStorageServerErrorException(message, exception);
+        } catch (final RestClientException exception) {
+            final String message = String.format("The request to create a presigned url to get a file failed.");
+            log.error(message);
+            throw new DocumentStorageException(message, exception);
+        }
+
+    }
+
     /**
      * Fetches a presignedURL for the file named in the parameter to store a file in the document storage.
      *
      * @param refId    which defines the folder in the document storage where the file will be stored.
-     * @param filename in the document storage.
+     * @param fileName in the document storage.
      * @param expireInMinutes the expiration time of the presignedURL in minutes.
      * @param endOfLifeFolder the end of life of the folder defined in refId.
      * @return the presignedURL.
@@ -34,10 +54,10 @@ public class PresignedUrlRepository {
      * @throws DocumentStorageServerErrorException if the problem is with the document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the document storage.
      */
-    public String getPresignedUrlSaveFile(final String refId, final String filename, final int expireInMinutes, final LocalDate endOfLifeFolder) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
+    public String getPresignedUrlSaveFile(final String refId, final String fileName, final int expireInMinutes, final LocalDate endOfLifeFolder) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
         try {
             final var fileDataDto = new FileDataDto();
-            fileDataDto.setFilename(filename);
+            fileDataDto.setFilename(fileName);
             fileDataDto.setRefId(refId);
             fileDataDto.setExpiresInMinutes(expireInMinutes);
             fileDataDto.setEndOfLife(endOfLifeFolder);
