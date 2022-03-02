@@ -23,7 +23,7 @@ import java.net.URI;
 public class S3FileTransferRepository {
 
     /**
-     * Gets the file from document storage using the presignedURL.
+     * Gets a file from document storage using the presignedURL.
      *
      * @param presignedUrl to get the file.
      * @return the file.
@@ -119,6 +119,43 @@ public class S3FileTransferRepository {
             new RestTemplate().exchange(
                     URI.create(presignedUrl),
                     HttpMethod.PUT,
+                    fileHttpEntity,
+                    Void.class
+            );
+        } catch (final HttpClientErrorException exception) {
+            final String message = String.format("The presigned url request failed with http status %s.", exception.getStatusCode());
+            log.error(message);
+            throw new DocumentStorageClientErrorException(message, exception);
+        } catch (final HttpServerErrorException exception) {
+            final String message = String.format("The presigned url request failed with http status %s.", exception.getStatusCode());
+            log.error(message);
+            throw new DocumentStorageServerErrorException(message, exception);
+        } catch (final RestClientException exception) {
+            final String message = String.format("The presigned url request failed.");
+            log.error(message);
+            throw new DocumentStorageException(message, exception);
+        }
+    }
+
+    /**
+     * Deletes a file from document storage using the presignedURL.
+     *
+     * @param presignedUrl to delete the file.
+     * @throws DocumentStorageClientErrorException if the problem is with the client.
+     * @throws DocumentStorageServerErrorException if the problem is with the S3 storage.
+     * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage.
+     */
+    public void deleteFile(final String presignedUrl) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
+        try {
+            final var headers = new HttpHeaders();
+            final HttpEntity<Void> fileHttpEntity = new HttpEntity<>(headers);
+            /**
+             * Using the RestTemplate without any authorization.
+             * The presigned URL contains any authorization against the S3 storage.
+             */
+            new RestTemplate().exchange(
+                    URI.create(presignedUrl),
+                    HttpMethod.DELETE,
                     fileHttpEntity,
                     Void.class
             );

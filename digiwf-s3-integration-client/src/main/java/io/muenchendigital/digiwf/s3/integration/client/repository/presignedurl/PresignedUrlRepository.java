@@ -125,4 +125,34 @@ public class PresignedUrlRepository {
         }
     }
 
+    /**
+     * Fetches a presignedURL for the file named in the parameter to delete a file from the document storage.
+     *
+     * @param refId    which defines the folder in the document storage where the file is stored.
+     * @param fileName in the document storage.
+     * @param expireInMinutes the expiration time of the presignedURL in minutes.
+     * @return the presignedURL.
+     * @throws DocumentStorageClientErrorException if the problem is with the client.
+     * @throws DocumentStorageServerErrorException if the problem is with the document storage.
+     * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the document storage.
+     */
+    public String getPresignedUrlDeleteFile(final String refId, final String fileName, final Integer expireInMinutes) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
+        try {
+            final PresignedUrlDto presignedUrlDto = this.fileApi.delete1(refId, fileName, expireInMinutes);
+            return presignedUrlDto.getUrl();
+        } catch (final HttpClientErrorException exception) {
+            final String message = String.format("The request to create a presigned url to delete a file failed %s.", exception.getStatusCode());
+            log.error(message);
+            throw new DocumentStorageClientErrorException(message, exception);
+        } catch (final HttpServerErrorException exception) {
+            final String message = String.format("The request to create a presigned url to delete a file failed %s.", exception.getStatusCode());
+            log.error(message);
+            throw new DocumentStorageServerErrorException(message, exception);
+        } catch (final RestClientException exception) {
+            final String message = String.format("The request to create a presigned url to delete a file failed.");
+            log.error(message);
+            throw new DocumentStorageException(message, exception);
+        }
+    }
+
 }

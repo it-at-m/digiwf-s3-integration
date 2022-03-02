@@ -70,4 +70,19 @@ public class DocumentStorageRepository {
         this.s3FileTransferRepository.updateFile(presignedUrl, file);
     }
 
+    /**
+     * Deletes the file specified in the parameter from the document storage.
+     *
+     * @param refId    which defines the folder in the document storage where the file will be deleted.
+     * @param fileName in the document storage.
+     * @param expireInMinutes the expiration time of the presignedURL in minutes.
+     * @throws DocumentStorageClientErrorException if the problem is with the client.
+     * @throws DocumentStorageServerErrorException if the problem is with the S3 storage or document storage.
+     * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
+     */
+    public void deleteFile(final String refId, final String fileName, final Integer expireInMinutes) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+        final String presignedUrl = this.presignedUrlRepository.getPresignedUrlDeleteFile(refId, fileName, expireInMinutes);
+        this.s3FileTransferRepository.deleteFile(presignedUrl);
+    }
+
 }
