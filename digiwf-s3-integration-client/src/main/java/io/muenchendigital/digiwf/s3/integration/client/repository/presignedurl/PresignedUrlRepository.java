@@ -22,6 +22,17 @@ public class PresignedUrlRepository {
 
     private final FileApiApi fileApi;
 
+    /**
+     * Fetches a presignedURL for the file named in the parameter to get a file from the document storage.
+     *
+     * @param refId    which defines the folder in the document storage where the file is stored.
+     * @param fileName in the document storage.
+     * @param expireInMinutes the expiration time of the presignedURL in minutes.
+     * @return the presignedURL.
+     * @throws DocumentStorageClientErrorException if the problem is with the client.
+     * @throws DocumentStorageServerErrorException if the problem is with the document storage.
+     * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the document storage.
+     */
     public String getPresignedUrlGetFile(final String refId, final String fileName, final Integer expireInMinutes) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
         try {
             final PresignedUrlDto presignedUrlDto = this.fileApi.get(refId, fileName, expireInMinutes);

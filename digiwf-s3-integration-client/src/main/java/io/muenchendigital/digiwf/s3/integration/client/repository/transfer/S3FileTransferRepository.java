@@ -23,12 +23,13 @@ import java.net.URI;
 public class S3FileTransferRepository {
 
     /**
+     * Gets the file from document storage using the presignedURL.
      *
-     * @param presignedUrl
-     * @return
-     * @throws DocumentStorageClientErrorException
-     * @throws DocumentStorageServerErrorException
-     * @throws DocumentStorageException
+     * @param presignedUrl to get the file.
+     * @return the file.
+     * @throws DocumentStorageClientErrorException if the problem is with the client.
+     * @throws DocumentStorageServerErrorException if the problem is with the S3 storage.
+     * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage.
      */
     public byte[] getFile(final String presignedUrl) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
         try {
