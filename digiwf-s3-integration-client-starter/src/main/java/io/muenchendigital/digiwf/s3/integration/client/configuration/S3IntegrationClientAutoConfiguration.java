@@ -16,6 +16,9 @@ import org.springframework.web.client.RestTemplate;
                 @ComponentScan.Filter(
                         type = FilterType.ASSIGNABLE_TYPE,
                         classes = {
+                                /**
+                                 * Exclude to avoid multiple instantiation of multiple beans with same name.
+                                 */
                                 ApiClient.class
                         }
                 )
