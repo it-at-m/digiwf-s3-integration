@@ -140,8 +140,8 @@
 
                             <generateApiTests>false</generateApiTests>
                             <generateModelTests>false</generateModelTests>
-                            <generateApiDocumentation>true</generateApiDocumentation>
-                            <generateModelDocumentation>true</generateModelDocumentation>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateModelDocumentation>false</generateModelDocumentation>
                             <generateSupportingFiles>false</generateSupportingFiles>
 
                             <environmentVariables>

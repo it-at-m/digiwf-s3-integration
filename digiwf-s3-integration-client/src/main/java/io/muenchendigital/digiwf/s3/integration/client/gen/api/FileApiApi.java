@@ -25,7 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-03-02T16:43:30.196855800+01:00[Europe/Berlin]")@Component("io.muenchendigital.digiwf.s3.integration.client.gen.api.FileApiApi")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-03-03T08:28:37.505248700+01:00[Europe/Berlin]")@Component("io.muenchendigital.digiwf.s3.integration.client.gen.api.FileApiApi")
 public class FileApiApi {
     private ApiClient apiClient;
 
