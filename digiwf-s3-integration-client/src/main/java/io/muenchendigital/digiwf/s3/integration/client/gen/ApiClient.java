@@ -50,7 +50,7 @@ import io.muenchendigital.digiwf.s3.integration.client.gen.auth.HttpBasicAuth;
 import io.muenchendigital.digiwf.s3.integration.client.gen.auth.ApiKeyAuth;
 import io.muenchendigital.digiwf.s3.integration.client.gen.auth.OAuth;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-03-03T13:31:00.157264900+01:00[Europe/Berlin]")@Component("io.muenchendigital.digiwf.s3.integration.client.gen.ApiClient")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-03-03T14:15:26.875221600+01:00[Europe/Berlin]")@Component("io.muenchendigital.digiwf.s3.integration.client.gen.ApiClient")
 public class ApiClient {
     public enum CollectionFormat {
         CSV(","), TSV("\t"), SSV(" "), PIPES("|"), MULTI(null);

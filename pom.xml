@@ -31,7 +31,7 @@
         <module>digiwf-s3-integration-starter</module>
         <module>digiwf-s3-integration-client</module>
         <module>digiwf-s3-integration-client-starter</module>
-        <module>example</module>
+        <module>example-s3-integration</module>
     </modules>
 
     <dependencyManagement>
