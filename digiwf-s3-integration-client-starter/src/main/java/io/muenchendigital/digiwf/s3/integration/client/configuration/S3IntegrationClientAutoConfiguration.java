@@ -5,24 +5,10 @@ import io.muenchendigital.digiwf.s3.integration.client.properties.S3IntegrationC
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.web.client.RestTemplate;
 
 
 @RequiredArgsConstructor
-@ComponentScan(basePackages = "io.muenchendigital.digiwf.s3.integration.client",
-        excludeFilters = {
-                @ComponentScan.Filter(
-                        type = FilterType.ASSIGNABLE_TYPE,
-                        classes = {
-                                /**
-                                 * Exclude to avoid multiple instantiation of multiple beans with same name.
-                                 */
-                                ApiClient.class
-                        }
-                )
-})
 @EnableConfigurationProperties(S3IntegrationClientProperties.class)
 public class S3IntegrationClientAutoConfiguration {
 
