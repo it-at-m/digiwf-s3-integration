@@ -50,7 +50,7 @@ public class DocumentStorageFolderRepository {
      * Updates the end of life for a folder.
      *
      * @param refId     which defines the folder in the document storage.
-     * @param endOfLife the end of life of the folder defined in refId.
+     * @param endOfLife the end of life of the folder defined in refId. May be null.
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned directly to the document storage.

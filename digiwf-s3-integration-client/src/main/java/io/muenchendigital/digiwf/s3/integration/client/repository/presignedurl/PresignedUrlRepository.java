@@ -59,7 +59,7 @@ public class PresignedUrlRepository {
      * @param refId    which defines the folder in the document storage where the file will be stored.
      * @param fileName in the document storage.
      * @param expireInMinutes the expiration time of the presignedURL in minutes.
-     * @param endOfLifeFolder the end of life of the folder defined in refId.
+     * @param endOfLifeFolder the end of life of the folder defined in refId. May be null.
      * @return the presignedURL.
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the document storage.
@@ -95,7 +95,7 @@ public class PresignedUrlRepository {
      * @param refId    which defines the folder in the document storage where the file will be updated.
      * @param fileName in the document storage.
      * @param expireInMinutes the expiration time of the presignedURL in minutes.
-     * @param endOfLifeFolder the end of life of the folder defined in refId.
+     * @param endOfLifeFolder the end of life of the folder defined in refId. May be null.
      * @return the presignedURL.
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the document storage.
