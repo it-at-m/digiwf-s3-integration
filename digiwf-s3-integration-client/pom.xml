@@ -17,6 +17,7 @@
         <springdoc.openapi.version>1.6.2</springdoc.openapi.version>
         <lombok.version>1.18.22</lombok.version>
         <swagger.codegen.version>3.0.33</swagger.codegen.version>
+        <wiremock.version>2.32.0</wiremock.version>
     </properties>
 
     <dependencies>
@@ -103,6 +104,12 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.tomakehurst</groupId>
+            <artifactId>wiremock-jre8</artifactId>
+            <version>${wiremock.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

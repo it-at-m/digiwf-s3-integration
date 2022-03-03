@@ -25,7 +25,7 @@ import javax.validation.Valid;
  * File data with presigned url
  */
 @Schema(description = "File data with presigned url")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-03-03T08:37:01.264874600+01:00[Europe/Berlin]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-03-03T11:29:47.059922+01:00[Europe/Berlin]")
 public class FileDataDto {
   @JsonProperty("refId")
   private String refId = null;
