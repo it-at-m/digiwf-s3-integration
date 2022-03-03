@@ -31,7 +31,7 @@ public class DocumentStorageFileRepository {
      * @throws DocumentStorageServerErrorException if the problem is with the S3 storage or document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
      */
-    public byte[] getFile(final String refId, final String fileName, final Integer expireInMinutes) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+    public byte[] getFile(final String refId, final String fileName, final int expireInMinutes) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
         final String presignedUrl = this.presignedUrlRepository.getPresignedUrlGetFile(refId, fileName, expireInMinutes);
         return this.s3FileTransferRepository.getFile(presignedUrl);
     }
@@ -80,7 +80,7 @@ public class DocumentStorageFileRepository {
      * @throws DocumentStorageServerErrorException if the problem is with the S3 storage or document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
      */
-    public void deleteFile(final String refId, final String fileName, final Integer expireInMinutes) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+    public void deleteFile(final String refId, final String fileName, final int expireInMinutes) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
         final String presignedUrl = this.presignedUrlRepository.getPresignedUrlDeleteFile(refId, fileName, expireInMinutes);
         this.s3FileTransferRepository.deleteFile(presignedUrl);
     }

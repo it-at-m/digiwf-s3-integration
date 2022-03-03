@@ -33,7 +33,7 @@ public class PresignedUrlRepository {
      * @throws DocumentStorageServerErrorException if the problem is with the document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the document storage.
      */
-    public String getPresignedUrlGetFile(final String refId, final String fileName, final Integer expireInMinutes) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
+    public String getPresignedUrlGetFile(final String refId, final String fileName, final int expireInMinutes) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
         try {
             final PresignedUrlDto presignedUrlDto = this.fileApi.get(refId, fileName, expireInMinutes);
             return presignedUrlDto.getUrl();
@@ -136,7 +136,7 @@ public class PresignedUrlRepository {
      * @throws DocumentStorageServerErrorException if the problem is with the document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the document storage.
      */
-    public String getPresignedUrlDeleteFile(final String refId, final String fileName, final Integer expireInMinutes) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
+    public String getPresignedUrlDeleteFile(final String refId, final String fileName, final int expireInMinutes) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
         try {
             final PresignedUrlDto presignedUrlDto = this.fileApi.delete1(refId, fileName, expireInMinutes);
             return presignedUrlDto.getUrl();
