@@ -1,9 +1,9 @@
-package io.muenchendigital.digiwf.s3.integration.client.gen.api;
+package io.muenchendigital.digiwf.s3.integration.gen.api;
 
-import io.muenchendigital.digiwf.s3.integration.client.gen.ApiClient;
+import io.muenchendigital.digiwf.s3.integration.gen.ApiClient;
 
-import io.muenchendigital.digiwf.s3.integration.client.gen.model.FileDataDto;
-import io.muenchendigital.digiwf.s3.integration.client.gen.model.PresignedUrlDto;
+import io.muenchendigital.digiwf.s3.integration.gen.model.FileDataDto;
+import io.muenchendigital.digiwf.s3.integration.gen.model.PresignedUrlDto;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-03-03T15:19:32.698926+01:00[Europe/Berlin]")@Component("io.muenchendigital.digiwf.s3.integration.client.gen.api.FileApiApi")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-03-03T15:48:28.024611400+01:00[Europe/Berlin]")@Component("io.muenchendigital.digiwf.s3.integration.gen.api.FileApiApi")
 public class FileApiApi {
     private ApiClient apiClient;
 

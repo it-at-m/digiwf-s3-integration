@@ -3,7 +3,7 @@ package io.muenchendigital.digiwf.s3.integration.client.repository;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageClientErrorException;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageException;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageServerErrorException;
-import io.muenchendigital.digiwf.s3.integration.client.gen.api.FolderApiApi;
+import io.muenchendigital.digiwf.s3.integration.gen.api.FolderApiApi;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

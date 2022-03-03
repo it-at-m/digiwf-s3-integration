@@ -1,4 +1,4 @@
-package io.muenchendigital.digiwf.s3.integration.configuration;
+package io.muenchendigital.digiwf.s3.integration.client.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

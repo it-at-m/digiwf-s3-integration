@@ -1,4 +1,4 @@
-package io.muenchendigital.digiwf.s3.integration.client.gen;
+package io.muenchendigital.digiwf.s3.integration.gen;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,12 +45,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
-import io.muenchendigital.digiwf.s3.integration.client.gen.auth.Authentication;
-import io.muenchendigital.digiwf.s3.integration.client.gen.auth.HttpBasicAuth;
-import io.muenchendigital.digiwf.s3.integration.client.gen.auth.ApiKeyAuth;
-import io.muenchendigital.digiwf.s3.integration.client.gen.auth.OAuth;
+import io.muenchendigital.digiwf.s3.integration.gen.auth.Authentication;
+import io.muenchendigital.digiwf.s3.integration.gen.auth.HttpBasicAuth;
+import io.muenchendigital.digiwf.s3.integration.gen.auth.ApiKeyAuth;
+import io.muenchendigital.digiwf.s3.integration.gen.auth.OAuth;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-03-03T15:19:32.698926+01:00[Europe/Berlin]")@Component("io.muenchendigital.digiwf.s3.integration.client.gen.ApiClient")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-03-03T15:48:28.024611400+01:00[Europe/Berlin]")@Component("io.muenchendigital.digiwf.s3.integration.gen.ApiClient")
 public class ApiClient {
     public enum CollectionFormat {
         CSV(","), TSV("\t"), SSV(" "), PIPES("|"), MULTI(null);

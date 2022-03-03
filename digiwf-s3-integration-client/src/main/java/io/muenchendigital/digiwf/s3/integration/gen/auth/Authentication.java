@@ -1,4 +1,4 @@
-package io.muenchendigital.digiwf.s3.integration.client.gen.auth;
+package io.muenchendigital.digiwf.s3.integration.gen.auth;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.MultiValueMap;

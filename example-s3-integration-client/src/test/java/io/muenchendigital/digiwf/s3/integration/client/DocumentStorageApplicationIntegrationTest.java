@@ -1,4 +1,4 @@
-package io.muenchendigital.digiwf.s3.integration;
+package io.muenchendigital.digiwf.s3.integration.client;
 
 import org.springframework.boot.test.context.SpringBootTest;
 

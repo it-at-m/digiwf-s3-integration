@@ -1,4 +1,4 @@
-package io.muenchendigital.digiwf.s3.integration.client.gen.auth;
+package io.muenchendigital.digiwf.s3.integration.gen.auth;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -7,7 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.MultiValueMap;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-03-03T15:19:32.698926+01:00[Europe/Berlin]")public class HttpBasicAuth implements Authentication {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-03-03T15:48:28.024611400+01:00[Europe/Berlin]")public class HttpBasicAuth implements Authentication {
     private String username;
     private String password;
 

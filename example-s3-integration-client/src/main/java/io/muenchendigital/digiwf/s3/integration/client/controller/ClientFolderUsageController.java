@@ -1,4 +1,4 @@
-package io.muenchendigital.digiwf.s3.integration.controller;
+package io.muenchendigital.digiwf.s3.integration.client.controller;
 
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageClientErrorException;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageException;
