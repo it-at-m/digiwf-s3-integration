@@ -33,13 +33,15 @@ public class ClientFileUsageController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public void getFile() throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
-        final byte[] file = this.documentStorageFileRepository.getFile(
+    public void getFile() throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException, IOException {
+        final byte[] binaryFile = this.documentStorageFileRepository.getFile(
                 ClientFolderUsageController.FOLDER,
                 filename,
                 3
         );
-        log.info("File downloaded.");
+        final File tmpFile = File.createTempFile("test", ".jpg");
+        Files.write(tmpFile.toPath(), binaryFile);
+        log.info("File downloaded to {}.", tmpFile.toPath());
     }
 
     @PostMapping
