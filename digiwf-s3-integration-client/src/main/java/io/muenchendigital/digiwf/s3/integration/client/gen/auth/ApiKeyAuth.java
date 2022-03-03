@@ -3,7 +3,7 @@ package io.muenchendigital.digiwf.s3.integration.client.gen.auth;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.MultiValueMap;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-03-03T11:29:47.059922+01:00[Europe/Berlin]")public class ApiKeyAuth implements Authentication {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-03-03T12:43:32.186209500+01:00[Europe/Berlin]")public class ApiKeyAuth implements Authentication {
     private final String location;
     private final String paramName;
 
