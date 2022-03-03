@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>digiwf-s3-integration-client-starter</artifactId>
-    <name>starter</name>
+    <name>digiwf-s3-integration-client-starter</name>
     <packaging>jar</packaging>
 
     <parent>
