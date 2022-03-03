@@ -171,6 +171,7 @@
                             <configOptions>
                                 <dateLibrary>Java8</dateLibrary>
                                 <java8>true</java8>
+                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                 <sourceFolder>src/main/java/</sourceFolder>
                             </configOptions>
                         </configuration>
