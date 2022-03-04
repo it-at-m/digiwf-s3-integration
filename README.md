@@ -123,8 +123,8 @@ If you want to use the cron job cleanup, take a look at the <a href="#cron-job-c
 
 5. OpenAPI specification:
 
-   - `Enjoy the [OpenAPI definition](http://localhost:8080/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config)
-   - `Get the [Api-Docs](http://localhost:8080/v3/api-docs)
+   - Enjoy the [OpenAPI definition](http://localhost:8080/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config)
+   - Get the [Api-Docs](http://localhost:8080/v3/api-docs)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
