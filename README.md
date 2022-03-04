@@ -136,7 +136,7 @@ If you want to use the cron job cleanup, take a look at the <a href="#cron-job-c
 The library has several functionalities that can be configured. We have provided examples that show how you can use
 them.
 
-_For more examples, please refer to the [Examples](https://github.com/it-at-m/digiwf-s3-integration/tree/dev/example-s3-integration)
+_For more examples, please refer to the [example-s3-integration](https://github.com/it-at-m/digiwf-s3-integration/tree/dev/example-s3-integration)
 folder_
 
 ### Minimum necessary spring boot annotations
@@ -191,7 +191,7 @@ implementation group: 'io.muenchendigital.digiwf', name: 'digiwf-s3-integration-
 The client library provides several beans that can be used to interact with the `digiwf-s3-integration-starter`. We have provided examples that show how you can use
 them.
 
-_For more examples, please refer to the [Examples](https://github.com/it-at-m/digiwf-s3-integration/tree/dev/example-s3-integration-client)
+_For more examples, please refer to the [example-s3-integration-client](https://github.com/it-at-m/digiwf-s3-integration/tree/dev/example-s3-integration-client)
 folder_
 
 The images used in this example are not subject to any license.
