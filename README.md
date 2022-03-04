@@ -89,7 +89,7 @@ This project is built with:
 
 <!-- GETTING STARTED -->
 
-## Getting integration library
+## Getting the integration library
 
 _Below is an example of how you can installing and setup up your service_
 
@@ -128,7 +128,7 @@ If you want to use the cron job cleanup, take a look at the <a href="#cron-job-c
 
 <!-- USAGE EXAMPLES -->
 
-#### Usage
+### Usage
 
 The library has several functionalities that can be configured. We have provided examples that show how you can use
 them.
@@ -156,7 +156,7 @@ This job cleans the metadata of the S3 folders in the database if no correspondi
 
 ``io.muenchendigital.digiwf.s3.cronjob.cleanup.unused-folders=0 15 10 16 * ?``
 
-## Getting integration client library
+## Getting the integration client library
 
 _Below is an example of how you can installing and setup up your service_
 
@@ -183,7 +183,7 @@ implementation group: 'io.muenchendigital.digiwf', name: 'digiwf-s3-integration-
 3. Configure your service which uses this starter with the following properties:
    - `io.muenchendigital.digiwf.s3.client.document-storage-url`
 
-#### Usage
+### Usage
 
 The client library provides several beans that can be used to interact with the `digiwf-s3-integration-starter`. We have provided examples that show how you can use
 them.
