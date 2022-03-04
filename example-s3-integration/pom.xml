@@ -42,12 +42,11 @@
             <version>${logstash.encoder}</version>
         </dependency>
 
-        <!-- Datenbank -->
+        <!-- database -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
         </dependency>
-
 
         <!-- test -->
         <dependency>

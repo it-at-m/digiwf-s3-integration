@@ -42,7 +42,6 @@
             <version>${logstash.encoder}</version>
         </dependency>
 
-
         <!-- test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
