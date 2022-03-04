@@ -70,7 +70,7 @@ specific references / folders in a structured and simple way. Here's why:
 
 Of course, one service is not suitable for all projects, as your needs may be different. That's why we decided to
 provide a Spring Boot Starter library for an integration service that can be easily customized. 
-Additionally a secund starter library is included, which serves as a client library to handle files and folders
+Additionally a second starter library is included, which serves as a client library to handle files and folders
 with the above-mentioned starter.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
