@@ -69,7 +69,9 @@ specific references / folders in a structured and simple way. Here's why:
 * Synchronous and asynchronous interfaces are often required
 
 Of course, one service is not suitable for all projects, as your needs may be different. That's why we decided to
-provide a Spring Boot Starter library that can be easily customized
+provide a Spring Boot Starter library for an integration service that can be easily customized. 
+Additionally a second starter library is included, which serves as a client library to handle files and folders
+with the above-mentioned starter.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -87,7 +89,7 @@ This project is built with:
 
 <!-- GETTING STARTED -->
 
-## Getting Started
+## Getting the integration library
 
 _Below is an example of how you can installing and setup up your service_
 
@@ -119,25 +121,29 @@ implementation group: 'io.muenchendigital.digiwf', name: 'digiwf-s3-integration-
 
 If you want to use the cron job cleanup, take a look at the <a href="#cron-job-cleanup">usage exmaple</a> .
 
-5. Enjoy the [OpenAPI definition](http://localhost:8089/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config)
+5. OpenAPI specification:
+
+   - Enjoy the [OpenAPI definition](http://localhost:8080/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config)
+   - Get the [Api-Docs](http://localhost:8080/v3/api-docs)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
 <!-- USAGE EXAMPLES -->
 
-## Usage
+### Usage
 
 The library has several functionalities that can be configured. We have provided examples that show how you can use
 them.
 
-_For more examples, please refer to the [Examples](https://github.com/it-at-m/digiwf-s3-integration/tree/dev/example)
+_For more examples, please refer to the [example-s3-integration](https://github.com/it-at-m/digiwf-s3-integration/tree/dev/example-s3-integration)
 folder_
 
-## Minimum necessary spring boot annotations
+### Minimum necessary spring boot annotations
 
 Listed below are the required Spring boot annotations, which are minimal.
 
+* ```@SpringBootApplication```
 * ```@EnableJpaAuditing```
 * ```@EnableScheduling```
 
@@ -153,10 +159,52 @@ This job cleans the metadata of the S3 folders in the database if no correspondi
 
 ``io.muenchendigital.digiwf.s3.cronjob.cleanup.unused-folders=0 15 10 16 * ?``
 
-### more coming soon...
+## Getting the integration client library
+
+_Below is an example of how you can installing and setup up your service_
+
+1. Use the spring initalizer and create a Spring Boot application with `Spring Web`
+   dependencies [https://start.spring.io](https://start.spring.io)
+2. Add the digiwf-s3-integration dependency
+
+With Maven:
+
+```
+   <dependency>
+        <groupId>io.muenchendigital.digiwf</groupId>
+        <artifactId>digiwf-s3-integration-client-starter</artifactId>
+        <version>${digiwf.version}</version>
+   </dependency>
+```
+
+With Gradle:
+
+```
+implementation group: 'io.muenchendigital.digiwf', name: 'digiwf-s3-integration-client-starter', version: '${digiwf.version}'
+```
+
+3. Configure your service which uses this starter with the following properties:
+   - `io.muenchendigital.digiwf.s3.client.document-storage-url`
+
+### Usage
+
+The client library provides several beans that can be used to interact with the `digiwf-s3-integration-starter`. We have provided examples that show how you can use
+them.
+
+_For more examples, please refer to the [example-s3-integration-client](https://github.com/it-at-m/digiwf-s3-integration/tree/dev/example-s3-integration-client)
+folder_
+
+The images used in this example are not subject to any license.
+
+### Minimum necessary spring boot annotations
+
+Listed below are the required Spring boot annotations, which are minimal.
+
+* ```@SpringBootApplication```
+
+## more coming soon...
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
 
 <!-- CONTRIBUTING -->
 

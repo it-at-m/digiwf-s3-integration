@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>example</artifactId>
-    <name>example</name>
+    <artifactId>example-s3-integration-client</artifactId>
+    <name>example-s3-integration-client</name>
 
     <properties>
         <logstash.encoder>7.0.1</logstash.encoder>
@@ -31,7 +31,7 @@
 
         <dependency>
             <groupId>io.muenchendigital.digiwf</groupId>
-            <artifactId>digiwf-s3-integration-starter</artifactId>
+            <artifactId>digiwf-s3-integration-client-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -41,13 +41,6 @@
             <artifactId>logstash-logback-encoder</artifactId>
             <version>${logstash.encoder}</version>
         </dependency>
-
-        <!-- Datenbank -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-        </dependency>
-
 
         <!-- test -->
         <dependency>

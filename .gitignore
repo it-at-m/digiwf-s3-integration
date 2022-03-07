@@ -34,3 +34,8 @@ nbdist/
 
 # Gradle
 .gradle
+gradle
+
+#Swagger
+.swagger-codegen
+.swagger-codegen-ignore

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,7 +46,7 @@ public class FolderController {
     @PutMapping(value = "/{refId}")
     @Operation(description = "Updates the end of life attribute in the corresponding database entry for the folder specified in the parameter")
     public ResponseEntity<Void> updateEndOfLife(@PathVariable @NotEmpty @Size(max = FolderRepository.LENGTH_REF_ID) final String refId,
-                                                @RequestParam final LocalDate endOfLife) {
+                                                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate endOfLife) {
         try {
             log.info("Received a request for updating the end of life of a certain folder.");
             this.folderHandlingService.updateEndOfLife(refId, endOfLife);
