@@ -7,9 +7,7 @@ import java.time.LocalDate;
 @Data
 public class FileData {
 
-    private String refId;
-
-    private String filename;
+    private String pathToFile;
 
     private Integer expiresInMinutes;
 

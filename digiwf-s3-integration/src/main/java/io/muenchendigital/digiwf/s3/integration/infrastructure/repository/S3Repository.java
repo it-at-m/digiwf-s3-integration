@@ -6,6 +6,7 @@ import io.minio.ListObjectsArgs;
 import io.minio.MinioClient;
 import io.minio.RemoveObjectArgs;
 import io.minio.Result;
+import io.minio.StatObjectArgs;
 import io.minio.errors.ErrorResponseException;
 import io.minio.errors.InsufficientDataException;
 import io.minio.errors.InternalException;
@@ -30,7 +31,10 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class S3Repository {
 
+    private static final String NO_SUCH_KEY = "NoSuchKey";
+
     private final String bucketName;
+
     private final MinioClient client;
 
     public S3Repository(final String bucketName, final MinioClient client) throws S3AccessException {
@@ -74,6 +78,37 @@ public class S3Repository {
             return filepathesFromFolder;
         } catch (final MinioException | InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException exception) {
             final String message = String.format("Failed to extract file pathes from folder %s.", folder);
+            log.error(message, exception);
+            throw new S3AccessException(message, exception);
+        }
+    }
+
+    /**
+     * Checks if the file is existing.
+     *
+     * @param pathToFile The path to the file.
+     *                   The path must be absolute and without specifying the bucket.
+     *                   Example:
+     *                   File in bucket: "BUCKET/outerFolder/innerFolder/thefile.csv"
+     *                   Specification in parameter: "outerFolder/innerFolder/thefile.csv"
+     * @return true if the file exists. Otherwise false.
+     * @throws S3AccessException if no status check can be done.
+     */
+    public boolean isFileExisting(final String pathToFile) throws S3AccessException {
+        try {
+            final StatObjectArgs statObjectArgs = StatObjectArgs.builder()
+                    .bucket(this.bucketName)
+                    .object(pathToFile)
+                    .build();
+            return !this.client.statObject(statObjectArgs).deleteMarker();
+        } catch (final InvalidKeyException | ErrorResponseException | InsufficientDataException | InternalException
+                | InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException
+                | IllegalArgumentException | IOException exception) {
+            if (exception instanceof ErrorResponseException &&
+                    ((ErrorResponseException) exception).errorResponse().code().equals(NO_SUCH_KEY)) {
+                return false;
+            }
+            final String message = String.format("Failed to extract object status for file %s.", pathToFile);
             log.error(message, exception);
             throw new S3AccessException(message, exception);
         }

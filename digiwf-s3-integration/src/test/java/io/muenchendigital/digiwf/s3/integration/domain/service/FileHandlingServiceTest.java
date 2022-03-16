@@ -3,9 +3,9 @@ package io.muenchendigital.digiwf.s3.integration.domain.service;
 import io.muenchendigital.digiwf.s3.integration.domain.exception.FileExistanceException;
 import io.muenchendigital.digiwf.s3.integration.domain.model.FileData;
 import io.muenchendigital.digiwf.s3.integration.domain.model.PresignedUrl;
-import io.muenchendigital.digiwf.s3.integration.infrastructure.entity.Folder;
+import io.muenchendigital.digiwf.s3.integration.infrastructure.entity.File;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AccessException;
-import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FolderRepository;
+import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FileRepository;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.S3Repository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,13 +36,13 @@ class FileHandlingServiceTest {
     private S3Repository s3Repository;
 
     @Mock
-    private FolderRepository folderRepository;
+    private FileRepository fileRepository;
 
     private FileHandlingService fileHandlingService;
 
     @BeforeEach
     public void beforeEach() {
-        this.fileHandlingService = new FileHandlingService(this.s3Repository, this.folderRepository);
+        this.fileHandlingService = new FileHandlingService(this.s3Repository, this.fileRepository);
     }
 
     @Test
@@ -102,40 +102,40 @@ class FileHandlingServiceTest {
         fileData.setFilename(filename);
         fileData.setExpiresInMinutes(5);
 
-        Mockito.when(this.folderRepository.findByRefId(uuid.toString())).thenReturn(Optional.empty());
+        Mockito.when(this.fileRepository.findByPathToFile(uuid.toString())).thenReturn(Optional.empty());
         this.fileHandlingService.updateFile(fileData);
-        final var folderToSave1 = new Folder();
+        final var folderToSave1 = new File();
         folderToSave1.setRefId(fileData.getRefId());
         folderToSave1.setEndOfLife(fileData.getEndOfLife());
-        Mockito.verify(this.folderRepository, Mockito.times(1)).save(folderToSave1);
+        Mockito.verify(this.fileRepository, Mockito.times(1)).save(folderToSave1);
         Mockito.verify(this.s3Repository, Mockito.times(1)).getPresignedUrlForFileUpload(filePath, fileData.getExpiresInMinutes());
 
 
-        Mockito.reset(this.folderRepository);
+        Mockito.reset(this.fileRepository);
         Mockito.reset(this.s3Repository);
-        final var folderToFind1 = new Folder();
+        final var folderToFind1 = new File();
         folderToFind1.setRefId(fileData.getRefId());
         folderToFind1.setEndOfLife(fileData.getEndOfLife().minusYears(1));
-        Mockito.when(this.folderRepository.findByRefId(uuid.toString())).thenReturn(Optional.of(folderToFind1));
+        Mockito.when(this.fileRepository.findByPathToFile(uuid.toString())).thenReturn(Optional.of(folderToFind1));
         this.fileHandlingService.updateFile(fileData);
-        final var folderToSave2 = new Folder();
+        final var folderToSave2 = new File();
         folderToSave2.setRefId(folderToFind1.getRefId());
         folderToSave2.setEndOfLife(fileData.getEndOfLife());
-        Mockito.verify(this.folderRepository, Mockito.times(1)).save(folderToSave2);
+        Mockito.verify(this.fileRepository, Mockito.times(1)).save(folderToSave2);
         Mockito.verify(this.s3Repository, Mockito.times(1)).getPresignedUrlForFileUpload(filePath, fileData.getExpiresInMinutes());
 
 
-        Mockito.reset(this.folderRepository);
+        Mockito.reset(this.fileRepository);
         Mockito.reset(this.s3Repository);
-        final var folderToFind2 = new Folder();
+        final var folderToFind2 = new File();
         folderToFind2.setRefId(fileData.getRefId());
         folderToFind2.setEndOfLife(fileData.getEndOfLife().plusYears(1));
-        Mockito.when(this.folderRepository.findByRefId(uuid.toString())).thenReturn(Optional.of(folderToFind2));
+        Mockito.when(this.fileRepository.findByPathToFile(uuid.toString())).thenReturn(Optional.of(folderToFind2));
         this.fileHandlingService.updateFile(fileData);
-        final var folderToSave3 = new Folder();
+        final var folderToSave3 = new File();
         folderToSave3.setRefId(folderToFind2.getRefId());
         folderToSave3.setEndOfLife(fileData.getEndOfLife());
-        Mockito.verify(this.folderRepository, Mockito.times(0)).save(folderToSave3);
+        Mockito.verify(this.fileRepository, Mockito.times(0)).save(folderToSave3);
         Mockito.verify(this.s3Repository, Mockito.times(1)).getPresignedUrlForFileUpload(filePath, fileData.getExpiresInMinutes());
     }
 
@@ -175,7 +175,7 @@ class FileHandlingServiceTest {
     @Test
     void shouldNewEndOfLifeBeSet() {
         final var fileData = new FileData();
-        final var folder = new Folder();
+        final var folder = new File();
 
         fileData.setEndOfLife(null);
         folder.setEndOfLife(null);

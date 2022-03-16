@@ -1,17 +1,20 @@
 package io.muenchendigital.digiwf.s3.integration.domain.service;
 
 import io.muenchendigital.digiwf.s3.integration.domain.exception.FileExistanceException;
+import io.muenchendigital.digiwf.s3.integration.domain.exception.FolderExistanceException;
 import io.muenchendigital.digiwf.s3.integration.domain.model.FileData;
 import io.muenchendigital.digiwf.s3.integration.domain.model.PresignedUrl;
-import io.muenchendigital.digiwf.s3.integration.infrastructure.entity.Folder;
+import io.muenchendigital.digiwf.s3.integration.infrastructure.entity.File;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AccessException;
-import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FolderRepository;
+import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FileRepository;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.S3Repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
 
@@ -22,25 +25,22 @@ public class FileHandlingService {
 
     public static final int MIN_EXPIRES_IN_MINUTES = 1;
 
+    public static final String FILE_PATH_SEPARATOR = "/";
+
     private final S3Repository s3Repository;
 
-    private final FolderRepository folderRepository;
+    private final FileRepository fileRepository;
 
     /**
      * Creates a presigned URL to fetch the file specified in the parameter from the S3 storage.
      *
-     * @param refId            identifies the name of the folder in which the file is stored.
-     * @param fileName         identifies the file name.
+     * @param pathToFile       identifies the path to file.
      * @param expiresInMinutes to define the validity period of the presigned URL.
      * @throws FileExistanceException if the file does not exist in the folder.
      * @throws S3AccessException      if the S3 storage cannot be accessed.
      */
-    public PresignedUrl getFile(final String refId, final String fileName, final int expiresInMinutes) throws FileExistanceException, S3AccessException {
-        final String pathToFolder = refId;
-        final String pathToFile = FileHandlingService.createFilePath(
-                pathToFolder,
-                fileName
-        );
+    public PresignedUrl getFile(final String pathToFile, final int expiresInMinutes) throws FileExistanceException, S3AccessException {
+        final String pathToFolder = this.getPathToFolder(pathToFile);
         final Set<String> filepathesInFolder = this.s3Repository.getFilepathesFromFolder(pathToFolder);
         if (filepathesInFolder.contains(pathToFile)) {
             final String presignedUrl = this.s3Repository.getPresignedUrlForFileDownload(pathToFile, expiresInMinutes);
@@ -61,77 +61,86 @@ public class FileHandlingService {
      * @throws S3AccessException      if the S3 storage cannot be accessed.
      */
     public PresignedUrl saveFile(final FileData fileData) throws FileExistanceException, S3AccessException {
-        final String pathToFolder = fileData.getRefId();
-        final String pathToFile = FileHandlingService.createFilePath(
-                pathToFolder,
-                fileData.getFilename()
-        );
+        final String pathToFolder = this.getPathToFolder(fileData.getPathToFile());
         final Set<String> filepathesInFolder = this.s3Repository.getFilepathesFromFolder(pathToFolder);
-        if (filepathesInFolder.contains(pathToFile)) {
-            final String message = String.format("The file %s already exists.", pathToFile);
+        if (filepathesInFolder.contains(fileData.getPathToFile())) {
+            final String message = String.format("The file %s already exists.", fileData.getPathToFile());
             log.error(message);
             throw new FileExistanceException(message);
         } else {
-            log.info("The new file ${} will be saved.", pathToFolder);
+            log.info("The new file ${} will be saved.", fileData.getPathToFile());
             return this.updateFile(fileData);
         }
     }
 
     /**
      * Creates a presigned URL to overwrite the file specified in the parameter within the S3 storage.
-     * Furthermore, the entry regarding {@link Folder#getEndOfLife()} is adjusted in the database.
+     * Furthermore, the entry regarding {@link File#getEndOfLife()} is adjusted in the database.
      * <p>
      * If the file does not yet exist in the S3 storage, it is newly created and a
-     * corresponding {@link Folder} is persisted in the database.
+     * corresponding {@link File} is persisted in the database.
      *
      * @param fileData with the file metadata for resaving.
      * @throws S3AccessException if the S3 storage cannot be accessed.
      */
     public PresignedUrl updateFile(final FileData fileData) throws S3AccessException {
-        final String pathToFolder = fileData.getRefId();
-        final Optional<Folder> folderOptional = this.folderRepository.findByRefId(pathToFolder);
-        if (folderOptional.isEmpty()) {
-            log.info("The database entry for folder ${} does not exist.", pathToFolder);
-            final var folder = new Folder();
-            folder.setRefId(fileData.getRefId());
+        final Optional<File> fileOptional = this.fileRepository.findByPathToFile(fileData.getPathToFile());
+        if (fileOptional.isEmpty()) {
+            log.info("The database entry for folder ${} does not exist.", fileData.getPathToFile());
+            final var folder = new File();
+            folder.setPathToFile(fileData.getPathToFile());
             folder.setEndOfLife(fileData.getEndOfLife());
-            this.folderRepository.save(folder);
-        } else if (FileHandlingService.shouldNewEndOfLifeBeSet(fileData, folderOptional.get())) {
-            log.info("The database entry for folder ${} already exists.", pathToFolder);
-            final Folder folder = folderOptional.get();
+            this.fileRepository.save(folder);
+        } else {
+            log.info("The database entry for folder ${} already exists.", fileData.getPathToFile());
+            final File folder = fileOptional.get();
             folder.setEndOfLife(fileData.getEndOfLife());
-            this.folderRepository.save(folder);
+            this.fileRepository.save(folder);
         }
-        final String pathToFile = FileHandlingService.createFilePath(
-                pathToFolder,
-                fileData.getFilename()
-        );
         final String presignedUrl = this.s3Repository.getPresignedUrlForFileUpload(
-                pathToFile,
+                fileData.getPathToFile(),
                 fileData.getExpiresInMinutes()
         );
         return new PresignedUrl(presignedUrl);
     }
 
     /**
+     * Updates the end of life for the given file.
+     *
+     * @param pathToFile identifies the path to file.
+     * @param endOfLife  the new end of life or null.
+     * @throws FolderExistanceException if no database entry exists.
+     */
+    @Transactional
+    public void updateEndOfLife(final String pathToFile, final LocalDate endOfLife) throws FolderExistanceException {
+        final Optional<File> fileOptional = this.fileRepository.findByPathToFile(pathToFile);
+        if (fileOptional.isPresent()) {
+            final File file = fileOptional.get();
+            file.setEndOfLife(endOfLife);
+            this.fileRepository.save(file);
+            log.info("End of life updated for file ${} to ${}", file, endOfLife);
+        } else {
+            final String message = String.format("No database entry for file %s is found.", pathToFile);
+            log.error(message);
+            throw new FolderExistanceException(message);
+        }
+    }
+
+    /**
      * Creates a presigned URL to delete the file specified in the parameter from the S3 storage.
      *
-     * @param refId            identifies the name of the folder in which the file is stored.
-     * @param fileName         identifies the file name.
+     * @param pathToFile       identifies the path to file.
      * @param expiresInMinutes to define the validity period of the presigned URL.
      * @throws FileExistanceException if the file does not exist in the folder.
      * @throws S3AccessException      if the S3 storage cannot be accessed.
      */
-    public PresignedUrl deleteFile(final String refId, final String fileName, final int expiresInMinutes) throws FileExistanceException, S3AccessException {
-        final String pathToFolder = refId;
-        final String pathToFile = FileHandlingService.createFilePath(
-                pathToFolder,
-                fileName
-        );
+    public PresignedUrl deleteFile(final String pathToFile, final int expiresInMinutes) throws FileExistanceException, S3AccessException {
+        final String pathToFolder = this.getPathToFolder(pathToFile);
         final Set<String> filepathesInFolder = this.s3Repository.getFilepathesFromFolder(pathToFolder);
         if (filepathesInFolder.contains(pathToFile)) {
             log.info("The file ${} exists.", pathToFile);
             final String presignedUrl = this.s3Repository.getPresignedUrlForFileDeletion(pathToFile, expiresInMinutes);
+            this.fileRepository.deleteByPathToFile(pathToFile);
             return new PresignedUrl(presignedUrl);
         } else {
             final String message = String.format("The file %s does not exist.", pathToFile);
@@ -140,26 +149,30 @@ public class FileHandlingService {
         }
     }
 
-    public static String createFilePath(final String pathToFolder, final String fileName) {
-        return pathToFolder + "/" + fileName;
+    /**
+     * Deletes the file given in the parameter on S3 storage and within the database.
+     *
+     * @param pathToFile identifies the path to file.
+     * @throws S3AccessException if the S3 storage cannot be accessed.
+     */
+    public void deleteFile(final String pathToFile) throws S3AccessException {
+        // Delete file on S3
+        this.s3Repository.deleteFile(pathToFile);
+        // Delete database entry
+        this.fileRepository.deleteByPathToFile(pathToFile);
     }
 
     /**
-     * The method checks if an override of the {@link Folder#getEndOfLife()} parameter is required.
+     * Return the path to the folder for the given file path in the paramter.
+     * <p>
+     * pathToFile: FOLDER/SUBFOLDER/file.txt
+     * pathToFolder: FOLDER/SUBFOLDER
      *
-     * @param fileData with new {@link FileData#getEndOfLife()}
-     * @param folder   with current {@link Folder#getEndOfLife()}
-     * @return true if both dates are set, or true if {@link FileData#getEndOfLife()} is set
-     * and {@link Folder#getEndOfLife()} is not set. Otherwise false.
+     * @param pathToFile for which the path to folder should be returned.
+     * @return the path to the folder for the given path to file.
      */
-    public static boolean shouldNewEndOfLifeBeSet(final FileData fileData, final Folder folder) {
-        return  // End Of Life in fileData set and in folder set
-                (ObjectUtils.isNotEmpty(fileData.getEndOfLife())
-                        && ObjectUtils.isNotEmpty(folder.getEndOfLife())
-                        && fileData.getEndOfLife().isAfter(folder.getEndOfLife()))
-                        // End Of Life in fileData set und in folder not set
-                        || (ObjectUtils.isNotEmpty(fileData.getEndOfLife())
-                        && ObjectUtils.isEmpty(folder.getEndOfLife()));
+    public String getPathToFolder(final String pathToFile) {
+        return StringUtils.substringBeforeLast(pathToFile, FILE_PATH_SEPARATOR);
     }
 
 }

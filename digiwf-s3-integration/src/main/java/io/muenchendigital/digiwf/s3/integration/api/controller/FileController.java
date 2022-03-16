@@ -5,20 +5,21 @@ import io.muenchendigital.digiwf.s3.integration.api.dto.PresignedUrlDto;
 import io.muenchendigital.digiwf.s3.integration.api.mapper.FileDataMapper;
 import io.muenchendigital.digiwf.s3.integration.api.mapper.PresignedUrlMapper;
 import io.muenchendigital.digiwf.s3.integration.domain.exception.FileExistanceException;
+import io.muenchendigital.digiwf.s3.integration.domain.exception.FolderExistanceException;
 import io.muenchendigital.digiwf.s3.integration.domain.model.PresignedUrl;
 import io.muenchendigital.digiwf.s3.integration.domain.service.FileHandlingService;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AccessException;
-import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FolderRepository;
+import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FileRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +33,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.LocalDate;
 
 @Slf4j
 @Validated
@@ -47,14 +49,13 @@ public class FileController {
 
     private final PresignedUrlMapper presignedUrlMapper;
 
-    @GetMapping(value = "/{refId}")
+    @GetMapping
     @Operation(description = "Creates a presigned URL to fetch the file specified in the parameter from the S3 storage")
-    public ResponseEntity<PresignedUrlDto> get(@PathVariable @NotEmpty @Size(max = FolderRepository.LENGTH_REF_ID) final String refId,
-                                               @RequestParam @NotEmpty final String fileName,
+    public ResponseEntity<PresignedUrlDto> get(@RequestParam @NotEmpty @Size(max = FileRepository.LENGTH_PATH_TO_FILE) final String pathToFile,
                                                @RequestParam @NotNull @Min(FileHandlingService.MIN_EXPIRES_IN_MINUTES) final Integer expiresInMinutes) {
         try {
             log.info("Received a request for S3 presigned url to download a file");
-            final PresignedUrl fileResponse = this.fileHandlingService.getFile(refId, fileName, expiresInMinutes);
+            final PresignedUrl fileResponse = this.fileHandlingService.getFile(pathToFile, expiresInMinutes);
             final PresignedUrlDto presignedUrlDto = this.presignedUrlMapper.model2Dto(fileResponse);
             return ResponseEntity.ok(presignedUrlDto);
         } catch (final S3AccessException exception) {
@@ -92,14 +93,28 @@ public class FileController {
         }
     }
 
-    @DeleteMapping(value = "/{refId}")
+    @PutMapping
+    @Operation(description = "Updates the end of life attribute in the corresponding database entry for the file specified in the parameter")
+    public ResponseEntity<Void> updateEndOfLife(@RequestParam @NotEmpty @Size(max = FileRepository.LENGTH_PATH_TO_FILE) final String pathToFile,
+                                                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate endOfLife) {
+        try {
+            log.info("Received a request for updating the end of life of a certain folder.");
+            this.fileHandlingService.updateEndOfLife(pathToFile, endOfLife);
+            return ResponseEntity.ok().build();
+        } catch (final FolderExistanceException exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
+        } catch (final Exception exception) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping
     @Operation(description = "Creates a presigned URL to delete the file specified in the parameter from the S3 storage")
-    public ResponseEntity<PresignedUrlDto> delete(@PathVariable @NotEmpty @Size(max = FolderRepository.LENGTH_REF_ID) final String refId,
-                                                  @RequestParam @NotEmpty final String fileName,
+    public ResponseEntity<PresignedUrlDto> delete(@RequestParam @NotEmpty @Size(max = FileRepository.LENGTH_PATH_TO_FILE) final String pathToFile,
                                                   @RequestParam @NotNull @Min(FileHandlingService.MIN_EXPIRES_IN_MINUTES) final Integer expiresInMinutes) {
         try {
             log.info("Received a request for S3 presigned url to delete a file");
-            final PresignedUrl presignedUrl = this.fileHandlingService.deleteFile(refId, fileName, expiresInMinutes);
+            final PresignedUrl presignedUrl = this.fileHandlingService.deleteFile(pathToFile, expiresInMinutes);
             final PresignedUrlDto presignedUrlDto = this.presignedUrlMapper.model2Dto(presignedUrl);
             return ResponseEntity.ok(presignedUrlDto);
         } catch (final S3AccessException exception) {

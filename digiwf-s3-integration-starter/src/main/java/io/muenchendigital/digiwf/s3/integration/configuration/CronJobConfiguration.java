@@ -1,7 +1,7 @@
 package io.muenchendigital.digiwf.s3.integration.configuration;
 
-import io.muenchendigital.digiwf.s3.integration.domain.service.cronjob.CleanUpDatabaseFolderWithoutCorrespondingS3Folder;
-import io.muenchendigital.digiwf.s3.integration.domain.service.cronjob.CleanUpExpiredFolders;
+import io.muenchendigital.digiwf.s3.integration.domain.service.cronjob.CleanUpDatabaseFilesWithoutCorrespondingS3Folder;
+import io.muenchendigital.digiwf.s3.integration.domain.service.cronjob.CleanUpExpiredFiles;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -20,13 +20,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 )
 public class CronJobConfiguration {
 
-    private final CleanUpExpiredFolders cleanUpExpiredFolders;
+    private final CleanUpExpiredFiles cleanUpExpiredFiles;
 
-    private final CleanUpDatabaseFolderWithoutCorrespondingS3Folder cleanUpDatabaseFolderWithoutCorrespondingS3Folder;
+    private final CleanUpDatabaseFilesWithoutCorrespondingS3Folder cleanUpDatabaseFolderWithoutCorrespondingS3Folder;
 
     @Scheduled(cron = "${io.muenchendigital.digiwf.s3.cronjob.cleanup.expired-folders}")
     public void cronJobDefinitionCleanUpExpiredFolders() {
-        this.cleanUpExpiredFolders.cleanUp();
+        this.cleanUpExpiredFiles.cleanUp();
     }
 
     @Scheduled(cron = "${io.muenchendigital.digiwf.s3.cronjob.cleanup.unused-folders}")

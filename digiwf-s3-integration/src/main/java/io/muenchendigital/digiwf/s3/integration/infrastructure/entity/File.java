@@ -1,6 +1,6 @@
 package io.muenchendigital.digiwf.s3.integration.infrastructure.entity;
 
-import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FolderRepository;
+import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FileRepository;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,18 +21,18 @@ import java.time.LocalDate;
 @Entity
 @Table(indexes = {
         @Index(
-                name = "index_ref_id",
-                columnList = "ref_id"
+                name = "index_path_to_file",
+                columnList = "path_to_file"
         ),
         @Index(
                 name = "index_end_of_life",
                 columnList = "end_of_life"
         )
 })
-public class Folder extends BaseEntity {
+public class File extends BaseEntity {
 
-    @Column(name = "ref_id", nullable = false, unique = true, length = FolderRepository.LENGTH_REF_ID)
-    private String refId;
+    @Column(name = "path_to_file", nullable = false, unique = true, length = FileRepository.LENGTH_PATH_TO_FILE)
+    private String pathToFile;
 
     @Column(name = "end_of_life")
     private LocalDate endOfLife;

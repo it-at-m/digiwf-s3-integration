@@ -1,19 +1,19 @@
 package io.muenchendigital.digiwf.s3.integration.domain.service;
 
-import io.muenchendigital.digiwf.s3.integration.domain.exception.FolderExistanceException;
-import io.muenchendigital.digiwf.s3.integration.infrastructure.entity.Folder;
+import io.muenchendigital.digiwf.s3.integration.domain.model.FilesInFolder;
+import io.muenchendigital.digiwf.s3.integration.infrastructure.entity.File;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AccessException;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AndDatabaseAsyncException;
-import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FolderRepository;
+import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FileRepository;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.S3Repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.SetUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -22,62 +22,56 @@ public class FolderHandlingService {
 
     private final S3Repository s3Repository;
 
-    private final FolderRepository folderRepository;
+    private final FileRepository fileRepository;
+
+    private final FileHandlingService fileHandlingService;
 
     /**
-     * Deletes the folder specified in the parameter together with the corresponding database entry.
+     * Deletes the folder with all containing files specified in the parameter together with the corresponding database entries.
      *
-     * @param refId identifies the name of the folder.
-     * @throws S3AndDatabaseAsyncException if the folder exists in the S3 storage and not in the database and vice versa.
+     * @param pathToFolder identifies the path to the folder.
+     * @throws S3AndDatabaseAsyncException if files exists in the S3 storage and not in the database and vice versa.
      * @throws S3AccessException           if the S3 storage cannot be accessed.
      */
     @Transactional
-    public void deleteFolder(final String refId) throws S3AndDatabaseAsyncException, S3AccessException {
-        final String pathToFolder = refId;
-        final Optional<Folder> folderOptional = this.folderRepository.findByRefId(refId);
+    public void deleteFolder(final String pathToFolder) throws S3AndDatabaseAsyncException, S3AccessException {
+        final Set<String> filepathesInDatabase = this.fileRepository.findByPathToFileStartingWith(pathToFolder)
+                .map(File::getPathToFile)
+                .collect(Collectors.toSet());
         final Set<String> filepathesInFolder = this.s3Repository.getFilepathesFromFolder(pathToFolder);
-        if (folderOptional.isPresent() && !filepathesInFolder.isEmpty()) {
+        if (filepathesInDatabase.isEmpty() && filepathesInFolder.isEmpty()) {
+            log.info("Folder in S3 and file entities in database for this folder does not exist -> everything ok.");
+        } else if (SetUtils.isEqualSet(filepathesInDatabase, filepathesInFolder)) {
             // Delete all files on S3
             log.info("All ${} files in folder ${} will be deleted.", filepathesInFolder.size(), pathToFolder);
             for (final String pathToFile : filepathesInFolder) {
-                this.s3Repository.deleteFile(pathToFile);
+                this.fileHandlingService.deleteFile(pathToFile);
             }
-            // Delete database entry
-            log.info("The database entry for folder ${} will be deleted.", pathToFolder);
-            this.folderRepository.deleteByRefId(refId);
-        } else if (folderOptional.isEmpty() && !filepathesInFolder.isEmpty()) {
-            final String message = "No folder entity in database but files in folder on S3 storage exist for reference ID " + refId;
-            log.error(message);
-            throw new S3AndDatabaseAsyncException(message);
-        } else if (folderOptional.isPresent() && filepathesInFolder.isEmpty()) {
-            final String message = "No folder on S3 storage but folder entity exists in database for reference ID " + refId;
-            log.error(message);
-            throw new S3AndDatabaseAsyncException(message);
+            log.info("All ${} files in folder ${} will be deleted..", filepathesInFolder.size(), pathToFolder);
         } else {
-            log.info("Folder in S3 and folder entity in database does not exist -> everything ok.");
+            // Out of sync
+            final Set<String> filePathDisjunction = SetUtils.disjunction(filepathesInDatabase, filepathesInFolder).toSet();
+            final StringBuilder message =  new StringBuilder(String.format("The following files on S3 and the file entities in database for folder %s are out of sync.\n", pathToFolder));
+            filePathDisjunction.stream()
+                    .map(pathToFile -> pathToFile.concat("\n"))
+                    .forEach(message::append);
+            log.error(message.toString());
+            throw new S3AndDatabaseAsyncException(message.toString());
         }
     }
 
     /**
-     * Updates the end of life for the given folder.
+     * Returns all files identified by file paths for all files contained within the folder and subfolder recursively.
      *
-     * @param refId     identifies the name of the folder.
-     * @param endOfLife the new end of life or null.
-     * @throws FolderExistanceException if no database entry exists.
+     * @param pathToFolder identifies the path to the folder.
+     * @return the paths to the files within the folder and subfolder.
+     * @throws S3AccessException if the S3 storage cannot be accessed.
      */
-    @Transactional
-    public void updateEndOfLife(final String refId, final LocalDate endOfLife) throws FolderExistanceException {
-        final Optional<Folder> folderOptional = this.folderRepository.findByRefId(refId);
-        if (folderOptional.isPresent()) {
-            final Folder folder = folderOptional.get();
-            folder.setEndOfLife(endOfLife);
-            this.folderRepository.save(folder);
-            log.info("End of life updated for folder ${} to ${}", refId, endOfLife);
-        } else {
-            final String message = String.format("No database entry for folder %s is found.", refId);
-            log.error(message);
-            throw new FolderExistanceException(message);
-        }
+    public FilesInFolder getAllFilesInFolderRecursively(final String pathToFolder) throws S3AccessException {
+        final FilesInFolder filesInFolder = new FilesInFolder();
+        final Set<String> filepathesInFolder = this.s3Repository.getFilepathesFromFolder(pathToFolder);
+        filesInFolder.setPathToFiles(filepathesInFolder);
+        return filesInFolder;
     }
 
 }
