@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.Set;
 
 @Data
-@Schema(description = "File pathes")
+@Schema(description = "File paths")
 public class FilesInFolderDto {
 
     private Set<String> pathToFiles;
