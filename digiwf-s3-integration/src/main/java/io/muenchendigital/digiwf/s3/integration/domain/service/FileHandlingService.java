@@ -25,8 +25,6 @@ public class FileHandlingService {
 
     public static final int MIN_EXPIRES_IN_MINUTES = 1;
 
-    public static final String FILE_PATH_SEPARATOR = "/";
-
     private final S3Repository s3Repository;
 
     private final FileRepository fileRepository;
@@ -173,7 +171,7 @@ public class FileHandlingService {
      */
     public String getPathToFolder(final String pathToFile) {
         return StringUtils.contains(pathToFile, FolderInFilePathValidator.SEPARATOR)
-                ? StringUtils.substringBeforeLast(pathToFile, FILE_PATH_SEPARATOR)
+                ? StringUtils.substringBeforeLast(pathToFile, FolderInFilePathValidator.SEPARATOR)
                 : StringUtils.EMPTY;
     }
 
