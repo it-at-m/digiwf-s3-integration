@@ -41,12 +41,12 @@ public class CleanUpDatabaseFilesWithoutCorrespondingS3Folder {
      * @return true if the file has to be deleted from the database. Otherwise false.
      */
     public boolean shouldDatabaseFileBeDeleted(final File file) {
-        boolean deleteDatabaseFolder = false;
+        boolean deleteDatabaseFile = false;
         try {
             final boolean noFileExistsInS3 = !this.s3Repository.isFileExisting(file.getPathToFile());
             final LocalDate creationDate = file.getCreatedTime().toLocalDate();
             final boolean folderCreatedMoreThanAMonthAgo = creationDate.isBefore(LocalDate.now().minusMonths(1));
-            deleteDatabaseFolder = noFileExistsInS3 && folderCreatedMoreThanAMonthAgo;
+            deleteDatabaseFile = noFileExistsInS3 && folderCreatedMoreThanAMonthAgo;
         } catch (final NullPointerException exception) {
             log.error("Created time in file entity not set.", exception);
         } catch (final S3AccessException exception) {
@@ -54,11 +54,12 @@ public class CleanUpDatabaseFilesWithoutCorrespondingS3Folder {
         } catch (final Exception exception) {
             log.error("Error during cleanup happened.", exception);
         }
-        return deleteDatabaseFolder;
+        return deleteDatabaseFile;
     }
 
     @Transactional
     public void deleteFileInDatabase(final File file) {
         this.fileRepository.deleteById(file.getId());
     }
+
 }

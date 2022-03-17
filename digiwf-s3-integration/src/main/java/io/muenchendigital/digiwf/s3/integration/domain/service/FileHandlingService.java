@@ -172,7 +172,9 @@ public class FileHandlingService {
      * @return the path to the folder for the given path to file.
      */
     public String getPathToFolder(final String pathToFile) {
-        return StringUtils.substringBeforeLast(pathToFile, FILE_PATH_SEPARATOR);
+        return StringUtils.contains(pathToFile, "/")
+                ? StringUtils.substringBeforeLast(pathToFile, FILE_PATH_SEPARATOR)
+                : StringUtils.EMPTY;
     }
 
 }

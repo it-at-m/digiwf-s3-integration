@@ -14,8 +14,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -39,28 +37,28 @@ class CleanUpDatabaseFilesWithoutCorrespondingS3FolderTest {
 
     @Test
     void shouldDatabaseFolderBeDeleted() throws S3AccessException {
-        final File folder = new File();
-        folder.setRefId("folder");
+        final File file = new File();
+        file.setPathToFile("folder/file.txt");
 
         // Creation date is more than one month ago.
-        folder.setCreatedTime(LocalDateTime.now().minusMonths(1).minusDays(1));
-        Mockito.when(this.s3Repository.getFilepathesFromFolder(folder.getRefId()))
-                .thenReturn(new HashSet<>(List.of("folder/the-file.txt")));
-        assertThat(this.cleanUpDatabaseFolderWithoutCorrespondingS3Folder.shouldDatabaseFileBeDeleted(folder), is(false));
+        file.setCreatedTime(LocalDateTime.now().minusMonths(1).minusDays(1));
+        Mockito.when(this.s3Repository.isFileExisting(file.getPathToFile()))
+                .thenReturn(Boolean.TRUE);
+        assertThat(this.cleanUpDatabaseFolderWithoutCorrespondingS3Folder.shouldDatabaseFileBeDeleted(file), is(false));
 
-        Mockito.when(this.s3Repository.getFilepathesFromFolder(folder.getRefId()))
-                .thenReturn(new HashSet<>());
-        assertThat(this.cleanUpDatabaseFolderWithoutCorrespondingS3Folder.shouldDatabaseFileBeDeleted(folder), is(true));
+        Mockito.when(this.s3Repository.isFileExisting(file.getPathToFile()))
+                .thenReturn(Boolean.FALSE);
+        assertThat(this.cleanUpDatabaseFolderWithoutCorrespondingS3Folder.shouldDatabaseFileBeDeleted(file), is(true));
 
         // Creation date is exactly one month or less ago.
-        folder.setCreatedTime(LocalDateTime.now().minusMonths(1));
-        Mockito.when(this.s3Repository.getFilepathesFromFolder(folder.getRefId()))
-                .thenReturn(new HashSet<>(List.of("folder/the-file.txt")));
-        assertThat(this.cleanUpDatabaseFolderWithoutCorrespondingS3Folder.shouldDatabaseFileBeDeleted(folder), is(false));
+        file.setCreatedTime(LocalDateTime.now().minusMonths(1));
+        Mockito.when(this.s3Repository.isFileExisting(file.getPathToFile()))
+                .thenReturn(Boolean.TRUE);
+        assertThat(this.cleanUpDatabaseFolderWithoutCorrespondingS3Folder.shouldDatabaseFileBeDeleted(file), is(false));
 
-        Mockito.when(this.s3Repository.getFilepathesFromFolder(folder.getRefId()))
-                .thenReturn(new HashSet<>());
-        assertThat(this.cleanUpDatabaseFolderWithoutCorrespondingS3Folder.shouldDatabaseFileBeDeleted(folder), is(false));
+        Mockito.when(this.s3Repository.isFileExisting(file.getPathToFile()))
+                .thenReturn(Boolean.FALSE);
+        assertThat(this.cleanUpDatabaseFolderWithoutCorrespondingS3Folder.shouldDatabaseFileBeDeleted(file), is(false));
     }
 
 
