@@ -155,6 +155,7 @@ public class FileHandlingService {
      * @param pathToFile identifies the path to file.
      * @throws S3AccessException if the S3 storage cannot be accessed.
      */
+    @Transactional
     public void deleteFile(final String pathToFile) throws S3AccessException {
         // Delete file on S3
         this.s3Repository.deleteFile(pathToFile);

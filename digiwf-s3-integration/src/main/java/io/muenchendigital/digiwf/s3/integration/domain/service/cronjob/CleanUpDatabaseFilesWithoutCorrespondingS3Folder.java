@@ -1,5 +1,6 @@
 package io.muenchendigital.digiwf.s3.integration.domain.service.cronjob;
 
+import io.muenchendigital.digiwf.s3.integration.domain.service.FileHandlingService;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.entity.File;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AccessException;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FileRepository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -19,6 +21,8 @@ public class CleanUpDatabaseFilesWithoutCorrespondingS3Folder {
     private final S3Repository s3Repository;
 
     private final FileRepository fileRepository;
+
+    private final FileHandlingService fileHandlingService;
 
     /**
      * Cronjob scheduled method that deletes all {@link File} entities in the database
@@ -43,10 +47,12 @@ public class CleanUpDatabaseFilesWithoutCorrespondingS3Folder {
     public boolean shouldDatabaseFileBeDeleted(final File file) {
         boolean deleteDatabaseFile = false;
         try {
-            final boolean noFileExistsInS3 = !this.s3Repository.isFileExisting(file.getPathToFile());
+            final String pathToFolder = this.fileHandlingService.getPathToFolder(file.getPathToFile());
+            final Set<String> pathToFiles = this.s3Repository.getFilepathesFromFolder(pathToFolder);
+            final boolean noSuchFileExistsInS3 = !pathToFiles.contains(file.getPathToFile());
             final LocalDate creationDate = file.getCreatedTime().toLocalDate();
             final boolean folderCreatedMoreThanAMonthAgo = creationDate.isBefore(LocalDate.now().minusMonths(1));
-            deleteDatabaseFile = noFileExistsInS3 && folderCreatedMoreThanAMonthAgo;
+            deleteDatabaseFile = noSuchFileExistsInS3 && folderCreatedMoreThanAMonthAgo;
         } catch (final NullPointerException exception) {
             log.error("Created time in file entity not set.", exception);
         } catch (final S3AccessException exception) {

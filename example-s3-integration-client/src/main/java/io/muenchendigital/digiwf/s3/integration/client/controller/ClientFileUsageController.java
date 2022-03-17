@@ -70,7 +70,7 @@ public class ClientFileUsageController {
                 PATH_TO_FILE,
                 binaryFile,
                 3,
-                LocalDate.now().plusMonths(1)
+                LocalDate.now().plusMonths(2)
         );
         log.info("File updated.");
     }
