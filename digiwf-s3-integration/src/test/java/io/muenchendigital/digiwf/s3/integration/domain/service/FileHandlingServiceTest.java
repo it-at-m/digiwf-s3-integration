@@ -135,6 +135,34 @@ class FileHandlingServiceTest {
     }
 
     @Test
+    void updateEndOfLifeException() {
+        final String pathToFile = "folder/test.txt";
+        final LocalDate endOfLife = LocalDate.of(2022, 1, 1);
+
+        Mockito.when(this.fileRepository.findByPathToFile(pathToFile)).thenReturn(Optional.empty());
+        Assertions.assertThrows(FileExistanceException.class, () -> this.fileHandlingService.updateEndOfLife(pathToFile, endOfLife));
+    }
+
+    @Test
+    void updateEndOfLife() throws FileExistanceException {
+        final String pathToFile = "folder/test.txt";
+        final LocalDate endOfLife = LocalDate.of(2022, 1, 1);
+
+        final File fileToFind = new File();
+        fileToFind.setPathToFile(pathToFile);
+        fileToFind.setEndOfLife(null);
+        final Optional<File> fileOptional = Optional.of(fileToFind);
+
+        Mockito.when(this.fileRepository.findByPathToFile(pathToFile)).thenReturn(fileOptional);
+
+        final File fileToSave = new File();
+        fileToSave.setPathToFile(pathToFile);
+        fileToSave.setEndOfLife(endOfLife);
+        this.fileHandlingService.updateEndOfLife(pathToFile, endOfLife);
+        Mockito.verify(this.fileRepository, Mockito.times(1)).save(fileToSave);
+    }
+
+    @Test
     void deleteFileException() throws S3AccessException {
         final String pathToFile = "folder/test.txt";
         final String pathToFolder = "folder";

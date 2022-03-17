@@ -1,7 +1,6 @@
 package io.muenchendigital.digiwf.s3.integration.domain.service;
 
 import io.muenchendigital.digiwf.s3.integration.domain.exception.FileExistanceException;
-import io.muenchendigital.digiwf.s3.integration.domain.exception.FolderExistanceException;
 import io.muenchendigital.digiwf.s3.integration.domain.model.FileData;
 import io.muenchendigital.digiwf.s3.integration.domain.model.PresignedUrl;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.entity.File;
@@ -109,10 +108,10 @@ public class FileHandlingService {
      *
      * @param pathToFile identifies the path to file.
      * @param endOfLife  the new end of life or null.
-     * @throws FolderExistanceException if no database entry exists.
+     * @throws FileExistanceException if no database entry exists.
      */
     @Transactional
-    public void updateEndOfLife(final String pathToFile, final LocalDate endOfLife) throws FolderExistanceException {
+    public void updateEndOfLife(final String pathToFile, final LocalDate endOfLife) throws FileExistanceException {
         final Optional<File> fileOptional = this.fileRepository.findByPathToFile(pathToFile);
         if (fileOptional.isPresent()) {
             final File file = fileOptional.get();
@@ -122,7 +121,7 @@ public class FileHandlingService {
         } else {
             final String message = String.format("No database entry for file %s is found.", pathToFile);
             log.error(message);
-            throw new FolderExistanceException(message);
+            throw new FileExistanceException(message);
         }
     }
 

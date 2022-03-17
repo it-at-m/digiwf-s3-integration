@@ -5,7 +5,6 @@ import io.muenchendigital.digiwf.s3.integration.api.dto.PresignedUrlDto;
 import io.muenchendigital.digiwf.s3.integration.api.mapper.FileDataMapper;
 import io.muenchendigital.digiwf.s3.integration.api.mapper.PresignedUrlMapper;
 import io.muenchendigital.digiwf.s3.integration.domain.exception.FileExistanceException;
-import io.muenchendigital.digiwf.s3.integration.domain.exception.FolderExistanceException;
 import io.muenchendigital.digiwf.s3.integration.domain.model.PresignedUrl;
 import io.muenchendigital.digiwf.s3.integration.domain.service.FileHandlingService;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AccessException;
@@ -60,6 +59,8 @@ public class FileController {
             return ResponseEntity.ok(presignedUrlDto);
         } catch (final S3AccessException exception) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
+        } catch (final FileExistanceException exception) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, exception.getMessage());
         } catch (final Exception exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
         }
@@ -101,8 +102,8 @@ public class FileController {
             log.info("Received a request for updating the end of life of a certain folder.");
             this.fileHandlingService.updateEndOfLife(pathToFile, endOfLife);
             return ResponseEntity.ok().build();
-        } catch (final FolderExistanceException exception) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
+        } catch (final FileExistanceException exception) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, exception.getMessage());
         } catch (final Exception exception) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -119,6 +120,8 @@ public class FileController {
             return ResponseEntity.ok(presignedUrlDto);
         } catch (final S3AccessException exception) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
+        } catch (final FileExistanceException exception) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, exception.getMessage());
         } catch (final Exception exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
         }
