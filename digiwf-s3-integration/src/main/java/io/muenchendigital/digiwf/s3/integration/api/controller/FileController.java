@@ -4,6 +4,7 @@ import io.muenchendigital.digiwf.s3.integration.api.dto.FileDataDto;
 import io.muenchendigital.digiwf.s3.integration.api.dto.PresignedUrlDto;
 import io.muenchendigital.digiwf.s3.integration.api.mapper.FileDataMapper;
 import io.muenchendigital.digiwf.s3.integration.api.mapper.PresignedUrlMapper;
+import io.muenchendigital.digiwf.s3.integration.api.validator.FolderInFilePath;
 import io.muenchendigital.digiwf.s3.integration.domain.exception.FileExistanceException;
 import io.muenchendigital.digiwf.s3.integration.domain.model.PresignedUrl;
 import io.muenchendigital.digiwf.s3.integration.domain.service.FileHandlingService;
@@ -50,7 +51,7 @@ public class FileController {
 
     @GetMapping
     @Operation(description = "Creates a presigned URL to fetch the file specified in the parameter from the S3 storage")
-    public ResponseEntity<PresignedUrlDto> get(@RequestParam @NotEmpty @Size(max = FileRepository.LENGTH_PATH_TO_FILE) final String pathToFile,
+    public ResponseEntity<PresignedUrlDto> get(@RequestParam @NotEmpty @Size(max = FileRepository.LENGTH_PATH_TO_FILE) @FolderInFilePath final String pathToFile,
                                                @RequestParam @NotNull @Min(FileHandlingService.MIN_EXPIRES_IN_MINUTES) final Integer expiresInMinutes) {
         try {
             log.info("Received a request for S3 presigned url to download a file");
@@ -96,7 +97,7 @@ public class FileController {
 
     @PutMapping
     @Operation(description = "Updates the end of life attribute in the corresponding database entry for the file specified in the parameter")
-    public ResponseEntity<Void> updateEndOfLife(@RequestParam @NotEmpty @Size(max = FileRepository.LENGTH_PATH_TO_FILE) final String pathToFile,
+    public ResponseEntity<Void> updateEndOfLife(@RequestParam @NotEmpty @Size(max = FileRepository.LENGTH_PATH_TO_FILE) @FolderInFilePath final String pathToFile,
                                                 @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate endOfLife) {
         try {
             log.info("Received a request for updating the end of life of a certain folder.");
@@ -111,7 +112,7 @@ public class FileController {
 
     @DeleteMapping
     @Operation(description = "Creates a presigned URL to delete the file specified in the parameter from the S3 storage")
-    public ResponseEntity<PresignedUrlDto> delete(@RequestParam @NotEmpty @Size(max = FileRepository.LENGTH_PATH_TO_FILE) final String pathToFile,
+    public ResponseEntity<PresignedUrlDto> delete(@RequestParam @NotEmpty @Size(max = FileRepository.LENGTH_PATH_TO_FILE) @FolderInFilePath final String pathToFile,
                                                   @RequestParam @NotNull @Min(FileHandlingService.MIN_EXPIRES_IN_MINUTES) final Integer expiresInMinutes) {
         try {
             log.info("Received a request for S3 presigned url to delete a file");

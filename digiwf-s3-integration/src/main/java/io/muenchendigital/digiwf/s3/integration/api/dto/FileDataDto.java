@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import io.muenchendigital.digiwf.s3.integration.api.validator.FolderInFilePath;
 import io.muenchendigital.digiwf.s3.integration.domain.service.FileHandlingService;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.FileRepository;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,6 +22,7 @@ public class FileDataDto {
 
     @NotEmpty
     @Size(max = FileRepository.LENGTH_PATH_TO_FILE)
+    @FolderInFilePath
     private String pathToFile;
 
     /**

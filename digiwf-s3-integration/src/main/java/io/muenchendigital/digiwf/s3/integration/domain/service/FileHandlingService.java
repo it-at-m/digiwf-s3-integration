@@ -1,5 +1,6 @@
 package io.muenchendigital.digiwf.s3.integration.domain.service;
 
+import io.muenchendigital.digiwf.s3.integration.api.validator.FolderInFilePathValidator;
 import io.muenchendigital.digiwf.s3.integration.domain.exception.FileExistanceException;
 import io.muenchendigital.digiwf.s3.integration.domain.model.FileData;
 import io.muenchendigital.digiwf.s3.integration.domain.model.PresignedUrl;
@@ -171,7 +172,7 @@ public class FileHandlingService {
      * @return the path to the folder for the given path to file.
      */
     public String getPathToFolder(final String pathToFile) {
-        return StringUtils.contains(pathToFile, "/")
+        return StringUtils.contains(pathToFile, FolderInFilePathValidator.SEPARATOR)
                 ? StringUtils.substringBeforeLast(pathToFile, FILE_PATH_SEPARATOR)
                 : StringUtils.EMPTY;
     }
