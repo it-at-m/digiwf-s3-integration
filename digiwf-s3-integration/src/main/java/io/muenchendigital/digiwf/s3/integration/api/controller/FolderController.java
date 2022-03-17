@@ -30,7 +30,7 @@ public class FolderController {
 
     private final FolderHandlingService folderHandlingService;
 
-    private FilesInFolderMapper filesInFolderMapper;
+    private final FilesInFolderMapper filesInFolderMapper;
 
     @DeleteMapping
     @Operation(description = "Deletes the folder specified in the parameter together with the corresponding database entry")

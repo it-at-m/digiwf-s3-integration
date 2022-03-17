@@ -81,6 +81,7 @@ public class FileHandlingService {
      * @param fileData with the file metadata for resaving.
      * @throws S3AccessException if the S3 storage cannot be accessed.
      */
+    @Transactional
     public PresignedUrl updateFile(final FileData fileData) throws S3AccessException {
         final Optional<File> fileOptional = this.fileRepository.findByPathToFile(fileData.getPathToFile());
         if (fileOptional.isEmpty()) {
@@ -132,6 +133,7 @@ public class FileHandlingService {
      * @throws FileExistanceException if the file does not exist in the folder.
      * @throws S3AccessException      if the S3 storage cannot be accessed.
      */
+    @Transactional
     public PresignedUrl deleteFile(final String pathToFile, final int expiresInMinutes) throws FileExistanceException, S3AccessException {
         final String pathToFolder = this.getPathToFolder(pathToFile);
         final Set<String> filepathesInFolder = this.s3Repository.getFilepathesFromFolder(pathToFolder);
