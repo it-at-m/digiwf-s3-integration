@@ -2,7 +2,7 @@ package io.muenchendigital.digiwf.s3.integration.gen.api;
 
 import io.muenchendigital.digiwf.s3.integration.gen.ApiClient;
 
-import java.util.Date;
+import io.muenchendigital.digiwf.s3.integration.gen.model.FilesInFolderDto;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,35 +49,33 @@ public class FolderApiApi {
      * 
      * Deletes the folder specified in the parameter together with the corresponding database entry
      * <p><b>200</b> - OK
-     * @param refId  (required)
+     * @param pathToFolder  (required)
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public void delete(String refId) throws RestClientException {
-        deleteWithHttpInfo(refId);
+    public void delete(String pathToFolder) throws RestClientException {
+        deleteWithHttpInfo(pathToFolder);
     }
 
     /**
      * 
      * Deletes the folder specified in the parameter together with the corresponding database entry
      * <p><b>200</b> - OK
-     * @param refId  (required)
+     * @param pathToFolder  (required)
      * @return ResponseEntity&lt;Void&gt;
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public ResponseEntity<Void> deleteWithHttpInfo(String refId) throws RestClientException {
+    public ResponseEntity<Void> deleteWithHttpInfo(String pathToFolder) throws RestClientException {
         Object postBody = null;
-        // verify the required parameter 'refId' is set
-        if (refId == null) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'refId' when calling delete");
+        // verify the required parameter 'pathToFolder' is set
+        if (pathToFolder == null) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'pathToFolder' when calling delete");
         }
-        // create path and map variables
-        final Map<String, Object> uriVariables = new HashMap<String, Object>();
-        uriVariables.put("refId", refId);
-        String path = UriComponentsBuilder.fromPath("/folder/{refId}").buildAndExpand(uriVariables).toUriString();
+        String path = UriComponentsBuilder.fromPath("/folder").build().toUriString();
         
         final MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<String, String>();
         final HttpHeaders headerParams = new HttpHeaders();
         final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
+        queryParams.putAll(apiClient.parameterToMultiValueMap(null, "pathToFolder", pathToFolder));
 
         final String[] accepts = {  };
         final List<MediaType> accept = apiClient.selectHeaderAccept(accepts);
@@ -91,53 +89,47 @@ public class FolderApiApi {
     }
     /**
      * 
-     * Updates the end of life attribute in the corresponding database entry for the folder specified in the parameter
+     * Returns all file paths for the folder specified in the parameter
      * <p><b>200</b> - OK
-     * @param refId  (required)
-     * @param endOfLife  (required)
+     * @param pathToFolder  (required)
+     * @return FilesInFolderDto
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public void updateEndOfLife(String refId, java.time.LocalDate endOfLife) throws RestClientException {
-        updateEndOfLifeWithHttpInfo(refId, endOfLife);
+    public FilesInFolderDto getAllFilesInFolderRecursively(String pathToFolder) throws RestClientException {
+        return getAllFilesInFolderRecursivelyWithHttpInfo(pathToFolder).getBody();
     }
 
     /**
      * 
-     * Updates the end of life attribute in the corresponding database entry for the folder specified in the parameter
+     * Returns all file paths for the folder specified in the parameter
      * <p><b>200</b> - OK
-     * @param refId  (required)
-     * @param endOfLife  (required)
-     * @return ResponseEntity&lt;Void&gt;
+     * @param pathToFolder  (required)
+     * @return ResponseEntity&lt;FilesInFolderDto&gt;
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public ResponseEntity<Void> updateEndOfLifeWithHttpInfo(String refId, java.time.LocalDate endOfLife) throws RestClientException {
+    public ResponseEntity<FilesInFolderDto> getAllFilesInFolderRecursivelyWithHttpInfo(String pathToFolder) throws RestClientException {
         Object postBody = null;
-        // verify the required parameter 'refId' is set
-        if (refId == null) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'refId' when calling updateEndOfLife");
+        // verify the required parameter 'pathToFolder' is set
+        if (pathToFolder == null) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'pathToFolder' when calling getAllFilesInFolderRecursively");
         }
-        // verify the required parameter 'endOfLife' is set
-        if (endOfLife == null) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'endOfLife' when calling updateEndOfLife");
-        }
-        // create path and map variables
-        final Map<String, Object> uriVariables = new HashMap<String, Object>();
-        uriVariables.put("refId", refId);
-        String path = UriComponentsBuilder.fromPath("/folder/{refId}").buildAndExpand(uriVariables).toUriString();
+        String path = UriComponentsBuilder.fromPath("/folder").build().toUriString();
         
         final MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<String, String>();
         final HttpHeaders headerParams = new HttpHeaders();
         final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
-        queryParams.putAll(apiClient.parameterToMultiValueMap(null, "endOfLife", endOfLife));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(null, "pathToFolder", pathToFolder));
 
-        final String[] accepts = {  };
+        final String[] accepts = { 
+            "*/*"
+         };
         final List<MediaType> accept = apiClient.selectHeaderAccept(accepts);
         final String[] contentTypes = {  };
         final MediaType contentType = apiClient.selectHeaderContentType(contentTypes);
 
         String[] authNames = new String[] {  };
 
-        ParameterizedTypeReference<Void> returnType = new ParameterizedTypeReference<Void>() {};
-        return apiClient.invokeAPI(path, HttpMethod.PUT, queryParams, postBody, headerParams, formParams, accept, contentType, authNames, returnType);
+        ParameterizedTypeReference<FilesInFolderDto> returnType = new ParameterizedTypeReference<FilesInFolderDto>() {};
+        return apiClient.invokeAPI(path, HttpMethod.GET, queryParams, postBody, headerParams, formParams, accept, contentType, authNames, returnType);
     }
 }

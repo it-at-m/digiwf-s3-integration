@@ -22,16 +22,13 @@ import java.util.Date;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 /**
- * File data with presigned url
+ * File data for requesting a presigned url
  */
-@Schema(description = "File data with presigned url")
+@Schema(description = "File data for requesting a presigned url")
 
 public class FileDataDto {
-  @JsonProperty("refId")
-  private String refId = null;
-
-  @JsonProperty("filename")
-  private String filename = null;
+  @JsonProperty("pathToFile")
+  private String pathToFile = null;
 
   @JsonProperty("expiresInMinutes")
   private Integer expiresInMinutes = null;
@@ -39,42 +36,23 @@ public class FileDataDto {
   @JsonProperty("endOfLife")
   private java.time.LocalDate endOfLife = null;
 
-  public FileDataDto refId(String refId) {
-    this.refId = refId;
+  public FileDataDto pathToFile(String pathToFile) {
+    this.pathToFile = pathToFile;
     return this;
   }
 
    /**
-   * Get refId
-   * @return refId
+   * Get pathToFile
+   * @return pathToFile
   **/
   @NotNull
- @Size(max=512)  @Schema(required = true, description = "")
-  public String getRefId() {
-    return refId;
+ @Size(max=1024)  @Schema(required = true, description = "")
+  public String getPathToFile() {
+    return pathToFile;
   }
 
-  public void setRefId(String refId) {
-    this.refId = refId;
-  }
-
-  public FileDataDto filename(String filename) {
-    this.filename = filename;
-    return this;
-  }
-
-   /**
-   * Get filename
-   * @return filename
-  **/
-  @NotNull
-  @Schema(required = true, description = "")
-  public String getFilename() {
-    return filename;
-  }
-
-  public void setFilename(String filename) {
-    this.filename = filename;
+  public void setPathToFile(String pathToFile) {
+    this.pathToFile = pathToFile;
   }
 
   public FileDataDto expiresInMinutes(Integer expiresInMinutes) {
@@ -126,15 +104,14 @@ public class FileDataDto {
       return false;
     }
     FileDataDto fileDataDto = (FileDataDto) o;
-    return Objects.equals(this.refId, fileDataDto.refId) &&
-        Objects.equals(this.filename, fileDataDto.filename) &&
+    return Objects.equals(this.pathToFile, fileDataDto.pathToFile) &&
         Objects.equals(this.expiresInMinutes, fileDataDto.expiresInMinutes) &&
         Objects.equals(this.endOfLife, fileDataDto.endOfLife);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(refId, filename, expiresInMinutes, endOfLife);
+    return Objects.hash(pathToFile, expiresInMinutes, endOfLife);
   }
 
 
@@ -143,8 +120,7 @@ public class FileDataDto {
     StringBuilder sb = new StringBuilder();
     sb.append("class FileDataDto {\n");
     
-    sb.append("    refId: ").append(toIndentedString(refId)).append("\n");
-    sb.append("    filename: ").append(toIndentedString(filename)).append("\n");
+    sb.append("    pathToFile: ").append(toIndentedString(pathToFile)).append("\n");
     sb.append("    expiresInMinutes: ").append(toIndentedString(expiresInMinutes)).append("\n");
     sb.append("    endOfLife: ").append(toIndentedString(endOfLife)).append("\n");
     sb.append("}");

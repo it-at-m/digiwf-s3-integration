@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -95,7 +96,7 @@ public class FileController {
         }
     }
 
-    @PutMapping
+    @PatchMapping
     @Operation(description = "Updates the end of life attribute in the corresponding database entry for the file specified in the parameter")
     public ResponseEntity<Void> updateEndOfLife(@RequestParam @NotEmpty @Size(max = FileRepository.LENGTH_PATH_TO_FILE) @FolderInFilePath final String pathToFile,
                                                 @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate endOfLife) {

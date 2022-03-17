@@ -18,8 +18,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
 
-import java.time.LocalDate;
-
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class DocumentStorageFolderRepositoryTest {
@@ -57,32 +55,6 @@ class DocumentStorageFolderRepositoryTest {
         Mockito.doThrow(new RestClientException("Something happened")).when(this.folderApi).delete(refId);
         Assertions.assertThrows(DocumentStorageException.class, () -> this.documentStorageFolderRepository.deleteFolder(refId));
         Mockito.verify(this.folderApi, Mockito.times(1)).delete(refId);
-    }
-
-    @Test
-    void updateEndOfLife() throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
-        final String refId = "the_refId";
-        final LocalDate endOfLife = LocalDate.now();
-
-        Mockito.doNothing().when(this.folderApi).updateEndOfLife(refId, endOfLife);
-        this.documentStorageFolderRepository.updateEndOfLife(refId, endOfLife);
-        Mockito.verify(this.folderApi, Mockito.times(1)).updateEndOfLife(refId, endOfLife);
-
-
-        Mockito.reset(this.folderApi);
-        Mockito.doThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST)).when(this.folderApi).updateEndOfLife(refId, endOfLife);
-        Assertions.assertThrows(DocumentStorageClientErrorException.class, () -> this.documentStorageFolderRepository.updateEndOfLife(refId, endOfLife));
-        Mockito.verify(this.folderApi, Mockito.times(1)).updateEndOfLife(refId, endOfLife);
-
-        Mockito.reset(this.folderApi);
-        Mockito.doThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR)).when(this.folderApi).updateEndOfLife(refId, endOfLife);
-        Assertions.assertThrows(DocumentStorageServerErrorException.class, () -> this.documentStorageFolderRepository.updateEndOfLife(refId, endOfLife));
-        Mockito.verify(this.folderApi, Mockito.times(1)).updateEndOfLife(refId, endOfLife);
-
-        Mockito.reset(this.folderApi);
-        Mockito.doThrow(new RestClientException("Something happened")).when(this.folderApi).updateEndOfLife(refId, endOfLife);
-        Assertions.assertThrows(DocumentStorageException.class, () -> this.documentStorageFolderRepository.updateEndOfLife(refId, endOfLife));
-        Mockito.verify(this.folderApi, Mockito.times(1)).updateEndOfLife(refId, endOfLife);
     }
 
 }
