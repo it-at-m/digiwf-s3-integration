@@ -60,11 +60,11 @@
 ## About The Project
 
 There are several ways to store files in S3 compatible storage. Each project often has to implement the same
-functionalities and solve the same problems. With this library, we create the possibility to store and clean up files to
-specific references / folders in a structured and simple way. Here's why:
+functionalities and solve the same problems. With this library, we create the possibility to store and clean up files to 
+in a structured and simple way. Here's why:
 
 * Files often need to be stored in folder structures
-* Folders often must be stored in a structured way and enriched with metadata
+* Files often must be stored in a structured way and enriched with metadata
 * Cleaning up the data must be done in a structured way
 * Synchronous and asynchronous interfaces are often required
 
@@ -149,15 +149,15 @@ Listed below are the required Spring boot annotations, which are minimal.
 
 ### Cron Job Cleanup
 
-Files need to be deleted after some time. We have developed a folder structure to which an end of life time can be
-saved. The cron job setting determines how often and when the folders are checked and deleted. To use this functionality
+Files need to be deleted after some time. We have developed a file structure to which an end of life timestamp can be saved. 
+The cron job setting determines how often and when the files are checked and deleted. To use this functionality
 configure the property:
 
-``io.muenchendigital.digiwf.s3.cronjob.cleanup.expired-folders=0 15 10 15 * ?``
+``io.muenchendigital.digiwf.s3.cronjob.cleanup.expired-files=0 15 10 15 * ?``
 
-This job cleans the metadata of the S3 folders in the database if no corresponding S3 folder exists.
+This job cleans the metadata of the S3 files in the database if no corresponding file within the S3 storage exists.
 
-``io.muenchendigital.digiwf.s3.cronjob.cleanup.unused-folders=0 15 10 16 * ?``
+``io.muenchendigital.digiwf.s3.cronjob.cleanup.unused-files=0 15 10 16 * ?``
 
 ## Getting the integration client library
 
