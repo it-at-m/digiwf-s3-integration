@@ -4,6 +4,7 @@ import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorage
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageException;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageServerErrorException;
 import io.muenchendigital.digiwf.s3.integration.gen.api.FolderApiApi;
+import io.muenchendigital.digiwf.s3.integration.gen.model.FilesInFolderDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
+
+import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
@@ -35,26 +38,53 @@ class DocumentStorageFolderRepositoryTest {
 
     @Test
     void deleteFolder() throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
-        final String refId = "the_refId";
+        final String pathToFolder = "folder";
 
-        Mockito.doNothing().when(this.folderApi).delete(refId);
-        this.documentStorageFolderRepository.deleteFolder(refId);
-        Mockito.verify(this.folderApi, Mockito.times(1)).delete(refId);
-
-        Mockito.reset(this.folderApi);
-        Mockito.doThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST)).when(this.folderApi).delete(refId);
-        Assertions.assertThrows(DocumentStorageClientErrorException.class, () -> this.documentStorageFolderRepository.deleteFolder(refId));
-        Mockito.verify(this.folderApi, Mockito.times(1)).delete(refId);
+        Mockito.doNothing().when(this.folderApi).delete(pathToFolder);
+        this.documentStorageFolderRepository.deleteFolder(pathToFolder);
+        Mockito.verify(this.folderApi, Mockito.times(1)).delete(pathToFolder);
 
         Mockito.reset(this.folderApi);
-        Mockito.doThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR)).when(this.folderApi).delete(refId);
-        Assertions.assertThrows(DocumentStorageServerErrorException.class, () -> this.documentStorageFolderRepository.deleteFolder(refId));
-        Mockito.verify(this.folderApi, Mockito.times(1)).delete(refId);
+        Mockito.doThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST)).when(this.folderApi).delete(pathToFolder);
+        Assertions.assertThrows(DocumentStorageClientErrorException.class, () -> this.documentStorageFolderRepository.deleteFolder(pathToFolder));
+        Mockito.verify(this.folderApi, Mockito.times(1)).delete(pathToFolder);
 
         Mockito.reset(this.folderApi);
-        Mockito.doThrow(new RestClientException("Something happened")).when(this.folderApi).delete(refId);
-        Assertions.assertThrows(DocumentStorageException.class, () -> this.documentStorageFolderRepository.deleteFolder(refId));
-        Mockito.verify(this.folderApi, Mockito.times(1)).delete(refId);
+        Mockito.doThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR)).when(this.folderApi).delete(pathToFolder);
+        Assertions.assertThrows(DocumentStorageServerErrorException.class, () -> this.documentStorageFolderRepository.deleteFolder(pathToFolder));
+        Mockito.verify(this.folderApi, Mockito.times(1)).delete(pathToFolder);
+
+        Mockito.reset(this.folderApi);
+        Mockito.doThrow(new RestClientException("Something happened")).when(this.folderApi).delete(pathToFolder);
+        Assertions.assertThrows(DocumentStorageException.class, () -> this.documentStorageFolderRepository.deleteFolder(pathToFolder));
+        Mockito.verify(this.folderApi, Mockito.times(1)).delete(pathToFolder);
+    }
+
+    @Test
+    void getAllFilesInFolderRecursively() throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+        final String pathToFolder = "folder";
+
+        final FilesInFolderDto filesInFolderDto = new FilesInFolderDto();
+        filesInFolderDto.setPathToFiles(List.of("folder/file.txt"));
+
+        Mockito.when(this.folderApi.getAllFilesInFolderRecursively(pathToFolder)).thenReturn(filesInFolderDto);
+        this.documentStorageFolderRepository.getAllFilesInFolderRecursively(pathToFolder);
+        Mockito.verify(this.folderApi, Mockito.times(1)).getAllFilesInFolderRecursively(pathToFolder);
+
+        Mockito.reset(this.folderApi);
+        Mockito.doThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST)).when(this.folderApi).getAllFilesInFolderRecursively(pathToFolder);
+        Assertions.assertThrows(DocumentStorageClientErrorException.class, () -> this.documentStorageFolderRepository.getAllFilesInFolderRecursively(pathToFolder));
+        Mockito.verify(this.folderApi, Mockito.times(1)).getAllFilesInFolderRecursively(pathToFolder);
+
+        Mockito.reset(this.folderApi);
+        Mockito.doThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR)).when(this.folderApi).getAllFilesInFolderRecursively(pathToFolder);
+        Assertions.assertThrows(DocumentStorageServerErrorException.class, () -> this.documentStorageFolderRepository.getAllFilesInFolderRecursively(pathToFolder));
+        Mockito.verify(this.folderApi, Mockito.times(1)).getAllFilesInFolderRecursively(pathToFolder);
+
+        Mockito.reset(this.folderApi);
+        Mockito.doThrow(new RestClientException("Something happened")).when(this.folderApi).getAllFilesInFolderRecursively(pathToFolder);
+        Assertions.assertThrows(DocumentStorageException.class, () -> this.documentStorageFolderRepository.getAllFilesInFolderRecursively(pathToFolder));
+        Mockito.verify(this.folderApi, Mockito.times(1)).getAllFilesInFolderRecursively(pathToFolder);
     }
 
 }
