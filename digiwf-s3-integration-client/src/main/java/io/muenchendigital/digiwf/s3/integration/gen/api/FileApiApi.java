@@ -2,6 +2,7 @@ package io.muenchendigital.digiwf.s3.integration.gen.api;
 
 import io.muenchendigital.digiwf.s3.integration.gen.ApiClient;
 
+import java.util.Date;
 import io.muenchendigital.digiwf.s3.integration.gen.model.FileDataDto;
 import io.muenchendigital.digiwf.s3.integration.gen.model.PresignedUrlDto;
 
@@ -50,49 +51,40 @@ public class FileApiApi {
      * 
      * Creates a presigned URL to delete the file specified in the parameter from the S3 storage
      * <p><b>200</b> - OK
-     * @param refId  (required)
-     * @param fileName  (required)
+     * @param pathToFile  (required)
      * @param expiresInMinutes  (required)
      * @return PresignedUrlDto
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public PresignedUrlDto delete1(String refId, String fileName, Integer expiresInMinutes) throws RestClientException {
-        return delete1WithHttpInfo(refId, fileName, expiresInMinutes).getBody();
+    public PresignedUrlDto delete1(String pathToFile, Integer expiresInMinutes) throws RestClientException {
+        return delete1WithHttpInfo(pathToFile, expiresInMinutes).getBody();
     }
 
     /**
      * 
      * Creates a presigned URL to delete the file specified in the parameter from the S3 storage
      * <p><b>200</b> - OK
-     * @param refId  (required)
-     * @param fileName  (required)
+     * @param pathToFile  (required)
      * @param expiresInMinutes  (required)
      * @return ResponseEntity&lt;PresignedUrlDto&gt;
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public ResponseEntity<PresignedUrlDto> delete1WithHttpInfo(String refId, String fileName, Integer expiresInMinutes) throws RestClientException {
+    public ResponseEntity<PresignedUrlDto> delete1WithHttpInfo(String pathToFile, Integer expiresInMinutes) throws RestClientException {
         Object postBody = null;
-        // verify the required parameter 'refId' is set
-        if (refId == null) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'refId' when calling delete1");
-        }
-        // verify the required parameter 'fileName' is set
-        if (fileName == null) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'fileName' when calling delete1");
+        // verify the required parameter 'pathToFile' is set
+        if (pathToFile == null) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'pathToFile' when calling delete1");
         }
         // verify the required parameter 'expiresInMinutes' is set
         if (expiresInMinutes == null) {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'expiresInMinutes' when calling delete1");
         }
-        // create path and map variables
-        final Map<String, Object> uriVariables = new HashMap<String, Object>();
-        uriVariables.put("refId", refId);
-        String path = UriComponentsBuilder.fromPath("/file/{refId}").buildAndExpand(uriVariables).toUriString();
+        String path = UriComponentsBuilder.fromPath("/file").build().toUriString();
         
         final MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<String, String>();
         final HttpHeaders headerParams = new HttpHeaders();
         final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
-        queryParams.putAll(apiClient.parameterToMultiValueMap(null, "fileName", fileName));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(null, "pathToFile", pathToFile));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "expiresInMinutes", expiresInMinutes));
 
         final String[] accepts = { 
@@ -111,49 +103,40 @@ public class FileApiApi {
      * 
      * Creates a presigned URL to fetch the file specified in the parameter from the S3 storage
      * <p><b>200</b> - OK
-     * @param refId  (required)
-     * @param fileName  (required)
+     * @param pathToFile  (required)
      * @param expiresInMinutes  (required)
      * @return PresignedUrlDto
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public PresignedUrlDto get(String refId, String fileName, Integer expiresInMinutes) throws RestClientException {
-        return getWithHttpInfo(refId, fileName, expiresInMinutes).getBody();
+    public PresignedUrlDto get(String pathToFile, Integer expiresInMinutes) throws RestClientException {
+        return getWithHttpInfo(pathToFile, expiresInMinutes).getBody();
     }
 
     /**
      * 
      * Creates a presigned URL to fetch the file specified in the parameter from the S3 storage
      * <p><b>200</b> - OK
-     * @param refId  (required)
-     * @param fileName  (required)
+     * @param pathToFile  (required)
      * @param expiresInMinutes  (required)
      * @return ResponseEntity&lt;PresignedUrlDto&gt;
      * @throws RestClientException if an error occurs while attempting to invoke the API
      */
-    public ResponseEntity<PresignedUrlDto> getWithHttpInfo(String refId, String fileName, Integer expiresInMinutes) throws RestClientException {
+    public ResponseEntity<PresignedUrlDto> getWithHttpInfo(String pathToFile, Integer expiresInMinutes) throws RestClientException {
         Object postBody = null;
-        // verify the required parameter 'refId' is set
-        if (refId == null) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'refId' when calling get");
-        }
-        // verify the required parameter 'fileName' is set
-        if (fileName == null) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'fileName' when calling get");
+        // verify the required parameter 'pathToFile' is set
+        if (pathToFile == null) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'pathToFile' when calling get");
         }
         // verify the required parameter 'expiresInMinutes' is set
         if (expiresInMinutes == null) {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'expiresInMinutes' when calling get");
         }
-        // create path and map variables
-        final Map<String, Object> uriVariables = new HashMap<String, Object>();
-        uriVariables.put("refId", refId);
-        String path = UriComponentsBuilder.fromPath("/file/{refId}").buildAndExpand(uriVariables).toUriString();
+        String path = UriComponentsBuilder.fromPath("/file").build().toUriString();
         
         final MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<String, String>();
         final HttpHeaders headerParams = new HttpHeaders();
         final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
-        queryParams.putAll(apiClient.parameterToMultiValueMap(null, "fileName", fileName));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(null, "pathToFile", pathToFile));
         queryParams.putAll(apiClient.parameterToMultiValueMap(null, "expiresInMinutes", expiresInMinutes));
 
         final String[] accepts = { 
@@ -259,5 +242,54 @@ public class FileApiApi {
 
         ParameterizedTypeReference<PresignedUrlDto> returnType = new ParameterizedTypeReference<PresignedUrlDto>() {};
         return apiClient.invokeAPI(path, HttpMethod.PUT, queryParams, postBody, headerParams, formParams, accept, contentType, authNames, returnType);
+    }
+    /**
+     * 
+     * Updates the end of life attribute in the corresponding database entry for the file specified in the parameter
+     * <p><b>200</b> - OK
+     * @param pathToFile  (required)
+     * @param endOfLife  (required)
+     * @throws RestClientException if an error occurs while attempting to invoke the API
+     */
+    public void updateEndOfLife(String pathToFile, java.time.LocalDate endOfLife) throws RestClientException {
+        updateEndOfLifeWithHttpInfo(pathToFile, endOfLife);
+    }
+
+    /**
+     * 
+     * Updates the end of life attribute in the corresponding database entry for the file specified in the parameter
+     * <p><b>200</b> - OK
+     * @param pathToFile  (required)
+     * @param endOfLife  (required)
+     * @return ResponseEntity&lt;Void&gt;
+     * @throws RestClientException if an error occurs while attempting to invoke the API
+     */
+    public ResponseEntity<Void> updateEndOfLifeWithHttpInfo(String pathToFile, java.time.LocalDate endOfLife) throws RestClientException {
+        Object postBody = null;
+        // verify the required parameter 'pathToFile' is set
+        if (pathToFile == null) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'pathToFile' when calling updateEndOfLife");
+        }
+        // verify the required parameter 'endOfLife' is set
+        if (endOfLife == null) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Missing the required parameter 'endOfLife' when calling updateEndOfLife");
+        }
+        String path = UriComponentsBuilder.fromPath("/file").build().toUriString();
+        
+        final MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<String, String>();
+        final HttpHeaders headerParams = new HttpHeaders();
+        final MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<String, Object>();
+        queryParams.putAll(apiClient.parameterToMultiValueMap(null, "pathToFile", pathToFile));
+        queryParams.putAll(apiClient.parameterToMultiValueMap(null, "endOfLife", endOfLife));
+
+        final String[] accepts = {  };
+        final List<MediaType> accept = apiClient.selectHeaderAccept(accepts);
+        final String[] contentTypes = {  };
+        final MediaType contentType = apiClient.selectHeaderContentType(contentTypes);
+
+        String[] authNames = new String[] {  };
+
+        ParameterizedTypeReference<Void> returnType = new ParameterizedTypeReference<Void>() {};
+        return apiClient.invokeAPI(path, HttpMethod.PATCH, queryParams, postBody, headerParams, formParams, accept, contentType, authNames, returnType);
     }
 }

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 @Slf4j
@@ -34,8 +33,8 @@ public class ClientFolderUsageController {
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public void updateEndOfLife() throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
-        this.documentStorageFolderRepository.updateEndOfLife(FOLDER, LocalDate.now().plusYears(1));
+    public void getAllFilesInFolderRecursively() throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+        this.documentStorageFolderRepository.getAllFilesInFolderRecursively(FOLDER).forEach(log::info);
     }
 
 }

@@ -4,6 +4,7 @@ import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorage
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageException;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageServerErrorException;
 import io.muenchendigital.digiwf.s3.integration.gen.api.FolderApiApi;
+import io.muenchendigital.digiwf.s3.integration.gen.model.FilesInFolderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -11,7 +12,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
 
-import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @Repository
@@ -23,14 +24,14 @@ public class DocumentStorageFolderRepository {
     /**
      * Deletes the folder with all containing files on document storage.
      *
-     * @param refId    which defines the folder in the document storage.
+     * @param pathToFolder    which defines the folder in the document storage.
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned directly to the document storage.
      */
-    public void deleteFolder(final String refId) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
+    public void deleteFolder(final String pathToFolder) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
         try {
-            this.folderApi.delete(refId);
+            this.folderApi.delete(pathToFolder);
         } catch (final HttpClientErrorException exception) {
             final String message = String.format("The request to delete a folder failed %s.", exception.getStatusCode());
             log.error(message);
@@ -47,27 +48,27 @@ public class DocumentStorageFolderRepository {
     }
 
     /**
-     * Updates the end of life for a folder.
+     * Returns all files within a folder given in the parameter from document storage.
      *
-     * @param refId     which defines the folder in the document storage.
-     * @param endOfLife the end of life of the folder defined in refId. May be null.
+     * @param pathToFolder    which defines the folder in the document storage.
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned directly to the document storage.
      */
-    public void updateEndOfLife(final String refId, final LocalDate endOfLife) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
+    public List<String> getAllFilesInFolderRecursively(final String pathToFolder) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
         try {
-            this.folderApi.updateEndOfLife(refId, endOfLife);
+            final FilesInFolderDto filesInFolderDto = this.folderApi.getAllFilesInFolderRecursively(pathToFolder);
+            return filesInFolderDto.getPathToFiles();
         } catch (final HttpClientErrorException exception) {
-            final String message = String.format("The request to update the end of life a folder failed %s.", exception.getStatusCode());
+            final String message = String.format("The request to get all files within a folder failed %s.", exception.getStatusCode());
             log.error(message);
             throw new DocumentStorageClientErrorException(message, exception);
         } catch (final HttpServerErrorException exception) {
-            final String message = String.format("The request to update the end of life a folder failed %s.", exception.getStatusCode());
+            final String message = String.format("The request to get all files within a folder failed %s.", exception.getStatusCode());
             log.error(message);
             throw new DocumentStorageServerErrorException(message, exception);
         } catch (final RestClientException exception) {
-            final String message = String.format("The request to update the end of life a folder failed.");
+            final String message = String.format("The request to get all files within a folder failed.");
             log.error(message);
             throw new DocumentStorageException(message, exception);
         }

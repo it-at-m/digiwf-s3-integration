@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +28,9 @@ import java.time.LocalDate;
 @RequestMapping("/file")
 public class ClientFileUsageController {
 
-    private static final String filename = "cat.jpg";
+    private static final String FILENAME = "cat.jpg";
+
+    private static final String PATH_TO_FILE = ClientFolderUsageController.FOLDER + "/" + FILENAME;
 
     private final DocumentStorageFileRepository documentStorageFileRepository;
 
@@ -35,8 +38,7 @@ public class ClientFileUsageController {
     @ResponseStatus(HttpStatus.OK)
     public void getFile() throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException, IOException {
         final byte[] binaryFile = this.documentStorageFileRepository.getFile(
-                ClientFolderUsageController.FOLDER,
-                filename,
+                PATH_TO_FILE,
                 3
         );
         final File tmpFile = File.createTempFile("test", ".jpg");
@@ -50,8 +52,7 @@ public class ClientFileUsageController {
         final File file = ResourceUtils.getFile("classpath:files/cat.jpg");
         final byte[] binaryFile = Files.readAllBytes(file.toPath());
         this.documentStorageFileRepository.saveFile(
-                ClientFolderUsageController.FOLDER,
-                filename,
+                PATH_TO_FILE,
                 binaryFile,
                 3,
                 LocalDate.now().plusMonths(1)
@@ -66,21 +67,29 @@ public class ClientFileUsageController {
         final byte[] binaryFile = Files.readAllBytes(file.toPath());
         // Overwrite file on S3 with sunflower.jpg
         this.documentStorageFileRepository.updateFile(
-                ClientFolderUsageController.FOLDER,
-                filename,
+                PATH_TO_FILE,
                 binaryFile,
                 3,
-                LocalDate.now().plusMonths(1)
+                LocalDate.now().plusMonths(2)
         );
         log.info("File updated.");
+    }
+
+    @PatchMapping
+    @ResponseStatus(HttpStatus.OK)
+    public void updateEndOfLife() throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+        this.documentStorageFileRepository.updateEndOfLife(
+                PATH_TO_FILE,
+                LocalDate.now().plusMonths(999)
+        );
+        log.info("End of life for file updated.");
     }
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteFile() throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
         this.documentStorageFileRepository.deleteFile(
-                ClientFolderUsageController.FOLDER,
-                filename,
+                PATH_TO_FILE,
                 3
         );
         log.info("File deleted.");
