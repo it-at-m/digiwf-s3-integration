@@ -91,7 +91,7 @@ This project is built with:
 
 ## Getting the integration library
 
-_Below is an example of how you can installing and setup up your service_
+_Below is an example of how you can install and setup your service_
 
 1. Use the spring initalizer and create a Spring Boot application with `Spring Web`
    dependencies [https://start.spring.io](https://start.spring.io)
