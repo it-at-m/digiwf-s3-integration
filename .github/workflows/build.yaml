@@ -13,5 +13,7 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
+      - name: Advance Security Compliance Action
+        uses: GeekMasher/advanced-security-compliance@v1.6
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots verify
