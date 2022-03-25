@@ -18,7 +18,24 @@ licensing:
   conditions:
     ids:
       - GPL-2.0
+      - GPL-3.0
+
+    names:
+      - maven://org.apache.struts
 
   # The simplest and ultimate rule which checks the severity of the alert and
   #  reports an issue if the level matches or higher (see PaC Levels for more info)
   level: error
+
+codescanning:
+  level: error
+  conditions:
+    ids:
+      # Code Scanning Rule identifier
+      - js/sql-injection
+  ignores:
+    ids:
+      - js/log-injection
+    names:
+      # Code Scanning Rule name
+      - "Missing rate limiting"  
