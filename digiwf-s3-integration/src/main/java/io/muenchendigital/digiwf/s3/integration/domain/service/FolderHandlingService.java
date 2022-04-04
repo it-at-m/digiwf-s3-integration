@@ -86,15 +86,11 @@ public class FolderHandlingService {
      */
     public String addPathSeparatorToTheEnd(final String pathToFolder) {
         String correctedPathToFolder = pathToFolder;
-        if (StringUtils.isNotEmpty(pathToFolder)) {
-            final int indexLastChar = pathToFolder.length() - 1;
-            final String lastCharInString = StringUtils.substring(pathToFolder, indexLastChar, pathToFolder.length());
-            correctedPathToFolder = FolderInFilePathValidator.SEPARATOR.equals(lastCharInString) ?
-                    pathToFolder :
-                    pathToFolder + FolderInFilePathValidator.SEPARATOR;
+        if (StringUtils.isNotEmpty(pathToFolder) &&
+                !StringUtils.endsWith(pathToFolder, FolderInFilePathValidator.SEPARATOR)) {
+            correctedPathToFolder = correctedPathToFolder + FolderInFilePathValidator.SEPARATOR;
         }
         return correctedPathToFolder;
-
     }
 
 }
