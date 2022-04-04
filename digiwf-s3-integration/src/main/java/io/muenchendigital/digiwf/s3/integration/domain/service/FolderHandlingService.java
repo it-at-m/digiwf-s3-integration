@@ -37,24 +37,24 @@ public class FolderHandlingService {
      */
     @Transactional
     public void deleteFolder(final String pathToFolder) throws S3AndDatabaseAsyncException, S3AccessException {
-        final String correctedPathToFolder = this.addPathSeparatorToTheEnd(pathToFolder);
-        final Set<String> filepathesInDatabase = this.fileRepository.findByPathToFileStartingWith(correctedPathToFolder)
+        final String pathToFolderWithSeparatorAtTheEnd = this.addPathSeparatorToTheEnd(pathToFolder);
+        final Set<String> filepathesInDatabase = this.fileRepository.findByPathToFileStartingWith(pathToFolderWithSeparatorAtTheEnd)
                 .map(File::getPathToFile)
                 .collect(Collectors.toSet());
-        final Set<String> filepathesInFolder = this.s3Repository.getFilepathesFromFolder(correctedPathToFolder);
+        final Set<String> filepathesInFolder = this.s3Repository.getFilepathesFromFolder(pathToFolderWithSeparatorAtTheEnd);
         if (filepathesInDatabase.isEmpty() && filepathesInFolder.isEmpty()) {
             log.info("Folder in S3 and file entities in database for this folder does not exist -> everything ok.");
         } else if (SetUtils.isEqualSet(filepathesInDatabase, filepathesInFolder)) {
             // Delete all files on S3
-            log.info("All ${} files in folder ${} will be deleted.", filepathesInFolder.size(), correctedPathToFolder);
+            log.info("All ${} files in folder ${} will be deleted.", filepathesInFolder.size(), pathToFolderWithSeparatorAtTheEnd);
             for (final String pathToFile : filepathesInFolder) {
                 this.fileHandlingService.deleteFile(pathToFile);
             }
-            log.info("All ${} files in folder ${} will be deleted..", filepathesInFolder.size(), correctedPathToFolder);
+            log.info("All ${} files in folder ${} will be deleted..", filepathesInFolder.size(), pathToFolderWithSeparatorAtTheEnd);
         } else {
             // Out of sync
             final Set<String> filePathDisjunction = SetUtils.disjunction(filepathesInDatabase, filepathesInFolder).toSet();
-            final StringBuilder message =  new StringBuilder(String.format("The following files on S3 and the file entities in database for folder %s are out of sync.\n", correctedPathToFolder));
+            final StringBuilder message =  new StringBuilder(String.format("The following files on S3 and the file entities in database for folder %s are out of sync.\n", pathToFolderWithSeparatorAtTheEnd));
             filePathDisjunction.stream()
                     .map(pathToFile -> pathToFile.concat("\n"))
                     .forEach(message::append);
@@ -71,9 +71,9 @@ public class FolderHandlingService {
      * @throws S3AccessException if the S3 storage cannot be accessed.
      */
     public FilesInFolder getAllFilesInFolderRecursively(final String pathToFolder) throws S3AccessException {
-        final String correctedPathToFolder = this.addPathSeparatorToTheEnd(pathToFolder);
+        final String pathToFolderWithSeparatorAtTheEnd = this.addPathSeparatorToTheEnd(pathToFolder);
         final FilesInFolder filesInFolder = new FilesInFolder();
-        final Set<String> filepathesInFolder = this.s3Repository.getFilepathesFromFolder(correctedPathToFolder);
+        final Set<String> filepathesInFolder = this.s3Repository.getFilepathesFromFolder(pathToFolderWithSeparatorAtTheEnd);
         filesInFolder.setPathToFiles(filepathesInFolder);
         return filesInFolder;
     }
