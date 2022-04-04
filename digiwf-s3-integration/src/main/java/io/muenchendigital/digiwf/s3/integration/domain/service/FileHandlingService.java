@@ -85,13 +85,13 @@ public class FileHandlingService {
     public PresignedUrl updateFile(final FileData fileData) throws S3AccessException {
         final Optional<File> fileOptional = this.fileRepository.findByPathToFile(fileData.getPathToFile());
         if (fileOptional.isEmpty()) {
-            log.info("The database entry for folder ${} does not exist.", fileData.getPathToFile());
+            log.info("The database entry for file ${} does not exist.", fileData.getPathToFile());
             final var folder = new File();
             folder.setPathToFile(fileData.getPathToFile());
             folder.setEndOfLife(fileData.getEndOfLife());
             this.fileRepository.save(folder);
         } else {
-            log.info("The database entry for folder ${} already exists.", fileData.getPathToFile());
+            log.info("The database entry for file ${} already exists.", fileData.getPathToFile());
             final File folder = fileOptional.get();
             folder.setEndOfLife(fileData.getEndOfLife());
             this.fileRepository.save(folder);
@@ -164,7 +164,7 @@ public class FileHandlingService {
     }
 
     /**
-     * Return the path to the folder for the given file path in the paramter.
+     * Return the path to the folder for the given file path in the parameter.
      * <p>
      * pathToFile: FOLDER/SUBFOLDER/file.txt
      * pathToFolder: FOLDER/SUBFOLDER
