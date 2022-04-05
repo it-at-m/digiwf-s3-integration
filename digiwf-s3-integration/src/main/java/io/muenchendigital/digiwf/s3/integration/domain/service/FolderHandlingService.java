@@ -1,5 +1,6 @@
 package io.muenchendigital.digiwf.s3.integration.domain.service;
 
+import io.muenchendigital.digiwf.s3.integration.api.validator.FolderInFilePathValidator;
 import io.muenchendigital.digiwf.s3.integration.domain.model.FilesInFolder;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.entity.File;
 import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3AccessException;
@@ -9,6 +10,7 @@ import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.S3Repo
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.SetUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,23 +37,24 @@ public class FolderHandlingService {
      */
     @Transactional
     public void deleteFolder(final String pathToFolder) throws S3AndDatabaseAsyncException, S3AccessException {
-        final Set<String> filepathesInDatabase = this.fileRepository.findByPathToFileStartingWith(pathToFolder)
+        final String pathToFolderWithSeparatorAtTheEnd = this.addPathSeparatorToTheEnd(pathToFolder);
+        final Set<String> filepathesInDatabase = this.fileRepository.findByPathToFileStartingWith(pathToFolderWithSeparatorAtTheEnd)
                 .map(File::getPathToFile)
                 .collect(Collectors.toSet());
-        final Set<String> filepathesInFolder = this.s3Repository.getFilepathesFromFolder(pathToFolder);
+        final Set<String> filepathesInFolder = this.s3Repository.getFilepathesFromFolder(pathToFolderWithSeparatorAtTheEnd);
         if (filepathesInDatabase.isEmpty() && filepathesInFolder.isEmpty()) {
             log.info("Folder in S3 and file entities in database for this folder does not exist -> everything ok.");
         } else if (SetUtils.isEqualSet(filepathesInDatabase, filepathesInFolder)) {
             // Delete all files on S3
-            log.info("All ${} files in folder ${} will be deleted.", filepathesInFolder.size(), pathToFolder);
+            log.info("All ${} files in folder ${} will be deleted.", filepathesInFolder.size(), pathToFolderWithSeparatorAtTheEnd);
             for (final String pathToFile : filepathesInFolder) {
                 this.fileHandlingService.deleteFile(pathToFile);
             }
-            log.info("All ${} files in folder ${} will be deleted..", filepathesInFolder.size(), pathToFolder);
+            log.info("All ${} files in folder ${} will be deleted..", filepathesInFolder.size(), pathToFolderWithSeparatorAtTheEnd);
         } else {
             // Out of sync
             final Set<String> filePathDisjunction = SetUtils.disjunction(filepathesInDatabase, filepathesInFolder).toSet();
-            final StringBuilder message =  new StringBuilder(String.format("The following files on S3 and the file entities in database for folder %s are out of sync.\n", pathToFolder));
+            final StringBuilder message =  new StringBuilder(String.format("The following files on S3 and the file entities in database for folder %s are out of sync.\n", pathToFolderWithSeparatorAtTheEnd));
             filePathDisjunction.stream()
                     .map(pathToFile -> pathToFile.concat("\n"))
                     .forEach(message::append);
@@ -68,10 +71,26 @@ public class FolderHandlingService {
      * @throws S3AccessException if the S3 storage cannot be accessed.
      */
     public FilesInFolder getAllFilesInFolderRecursively(final String pathToFolder) throws S3AccessException {
+        final String pathToFolderWithSeparatorAtTheEnd = this.addPathSeparatorToTheEnd(pathToFolder);
         final FilesInFolder filesInFolder = new FilesInFolder();
-        final Set<String> filepathesInFolder = this.s3Repository.getFilepathesFromFolder(pathToFolder);
+        final Set<String> filepathesInFolder = this.s3Repository.getFilepathesFromFolder(pathToFolderWithSeparatorAtTheEnd);
         filesInFolder.setPathToFiles(filepathesInFolder);
         return filesInFolder;
+    }
+
+    /**
+     * The method adds a path separator to the end of the parameter if no separator is already added.
+     *
+     * @param pathToFolder to add a separator.
+     * @return the path to folder
+     */
+    public String addPathSeparatorToTheEnd(final String pathToFolder) {
+        String correctedPathToFolder = pathToFolder;
+        if (StringUtils.isNotEmpty(pathToFolder) &&
+                !StringUtils.endsWith(pathToFolder, FolderInFilePathValidator.SEPARATOR)) {
+            correctedPathToFolder = correctedPathToFolder + FolderInFilePathValidator.SEPARATOR;
+        }
+        return correctedPathToFolder;
     }
 
 }
