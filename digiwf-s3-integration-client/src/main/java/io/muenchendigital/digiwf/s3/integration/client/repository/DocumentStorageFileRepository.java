@@ -74,7 +74,7 @@ public class DocumentStorageFileRepository {
     }
 
     /**
-     * Saves the file InputStream specified in the parameter to the document storage.
+     * Saves the file specified in the parameter to the document storage.
      *
      * @param pathToFile      defines the path to the file.
      * @param file            to save.
@@ -106,7 +106,7 @@ public class DocumentStorageFileRepository {
     }
 
     /**
-     * Updates the file InputStream specified in the parameter to the document storage.
+     * Updates the file specified in the parameter withinq the document storage.
      *
      * @param pathToFile      defines the path to the file.
      * @param file            which overwrites the file in the document storage.
