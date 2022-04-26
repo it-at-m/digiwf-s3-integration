@@ -5,6 +5,7 @@ import io.muenchendigital.digiwf.s3.integration.infrastructure.exception.S3Acces
 import io.muenchendigital.digiwf.s3.integration.infrastructure.repository.S3Repository;
 import io.muenchendigital.digiwf.s3.integration.properties.S3IntegrationProperties;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +28,10 @@ public class S3IntegrationAutoConfiguration {
                 .endpoint(this.s3IntegrationProperties.getUrl())
                 .credentials(this.s3IntegrationProperties.getAccessKey(), this.s3IntegrationProperties.getSecretKey())
                 .build();
-        return new S3Repository(this.s3IntegrationProperties.getBucketName(), minioClient);
+        return new S3Repository(
+                this.s3IntegrationProperties.getBucketName(),
+                minioClient,
+                BooleanUtils.isNotFalse(this.s3IntegrationProperties.getS3InitialConnectionTest())
+        );
     }
 }

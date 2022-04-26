@@ -24,4 +24,7 @@ public class S3IntegrationProperties {
 
     @NotBlank
     private String bucketName;
+
+    private Boolean s3InitialConnectionTest;
+
 }

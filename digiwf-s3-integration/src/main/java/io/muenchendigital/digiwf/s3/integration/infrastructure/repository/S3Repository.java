@@ -34,15 +34,27 @@ public class S3Repository {
 
     private final MinioClient client;
 
-    public S3Repository(final String bucketName, final MinioClient client) throws S3AccessException {
+    /**
+     * Ctor.
+     *
+     * @param bucketName to which this Repository should connect.
+     * @param client to communicate with the s3 storage
+     * @param s3InitialConnectionTest to enable initial connection test to the s3 storage when true.
+     * @throws S3AccessException if the initial connection test fails.
+     */
+    public S3Repository(final String bucketName,
+                        final MinioClient client,
+                        final boolean s3InitialConnectionTest) throws S3AccessException {
         this.bucketName = bucketName;
         this.client = client;
-        try {
-            this.client.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
-        } catch (final MinioException | InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException exception) {
-            final String message = "S3 initialization failed.";
-            log.error(message, exception);
-            throw new S3AccessException(message, exception);
+        if (s3InitialConnectionTest) {
+            try {
+                this.client.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
+            } catch (final MinioException | InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException exception) {
+                final String message = "S3 initialization failed.";
+                log.error(message, exception);
+                throw new S3AccessException(message, exception);
+            }
         }
     }
 
