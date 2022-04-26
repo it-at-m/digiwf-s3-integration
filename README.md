@@ -142,6 +142,7 @@ The library has several functionalities that can be configured. We have provided
 them.
 
 _For more examples, please refer to the [example-s3-integration](https://github.com/it-at-m/digiwf-s3-integration/tree/dev/example-s3-integration)
+and/or [example-s3-integration-client](https://github.com/it-at-m/digiwf-s3-integration/tree/dev/example-s3-integration-client)
 folder_
 
 ### Minimum necessary spring boot annotations
