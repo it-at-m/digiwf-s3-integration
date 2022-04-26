@@ -35,6 +35,8 @@ public class AllEndpointsUsageController {
         System.err.println(LOG_DIVIDER);
         this.clientFileUsageController.getFile();
         System.err.println(LOG_DIVIDER);
+        this.clientFileUsageController.getFileInputStream();
+        System.err.println(LOG_DIVIDER);
         this.clientFileUsageController.updateEndOfLife();
         System.err.println(LOG_DIVIDER);
         this.clientFileUsageController.deleteFile();

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.time.LocalDate;
 
@@ -44,6 +45,19 @@ public class ClientFileUsageController {
         final File tmpFile = File.createTempFile("test", ".jpg");
         Files.write(tmpFile.toPath(), binaryFile);
         log.info("File downloaded to {}.", tmpFile.toPath());
+    }
+
+    @GetMapping("/inputstream")
+    @ResponseStatus(HttpStatus.OK)
+    public void getFileInputStream() throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException, IOException {
+        try (final InputStream fileInputStream = this.documentStorageFileRepository.getFileInputStream(
+                PATH_TO_FILE,
+                3
+        )) {
+            final File tmpFile = File.createTempFile("test-from-inputstream", ".jpg");
+            Files.write(tmpFile.toPath(), fileInputStream.readAllBytes());
+            log.info("File InputStream downloaded to {}.", tmpFile.toPath());
+        };
     }
 
     @PostMapping
