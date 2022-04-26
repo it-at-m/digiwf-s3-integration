@@ -71,23 +71,13 @@ public class S3FileTransferRepository {
      *
      * @param presignedUrl to get the file.
      * @return the InputStream for the file.
-     * @throws DocumentStorageClientErrorException if the problem is with the client.
-     * @throws DocumentStorageServerErrorException if the problem is with the S3 storage.
-     * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage.
+     * @throws DocumentStorageException if the problem cannot be assigned to either the client or the S3 storage.
      */
-    public InputStream getFileInputStream(final String presignedUrl)  throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
+    public InputStream getFileInputStream(final String presignedUrl) throws DocumentStorageException {
         try {
             final var urlResource = new UrlResource(presignedUrl);
             return urlResource.getInputStream();
-        } catch (final HttpClientErrorException exception) {
-            final String message = String.format("The presigned url request failed with http status %s.", exception.getStatusCode());
-            log.error(message);
-            throw new DocumentStorageClientErrorException(message, exception);
-        } catch (final HttpServerErrorException exception) {
-            final String message = String.format("The presigned url request failed with http status %s.", exception.getStatusCode());
-            log.error(message);
-            throw new DocumentStorageServerErrorException(message, exception);
-        } catch (final RestClientException | IOException exception) {
+        } catch (final IOException exception) {
             final String message = String.format("The presigned url request failed.");
             log.error(message);
             throw new DocumentStorageException(message, exception);
