@@ -30,8 +30,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class S3Repository {
 
-    private static final String NO_SUCH_KEY = "NoSuchKey";
-
     private final String bucketName;
 
     private final MinioClient client;
