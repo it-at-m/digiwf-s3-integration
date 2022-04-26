@@ -118,6 +118,11 @@ implementation group: 'io.muenchendigital.digiwf', name: 'digiwf-s3-integration-
     - `io.muenchendigital.digiwf.s3.secretKey`
     - `io.muenchendigital.digiwf.s3.accessKey`
     - `io.muenchendigital.digiwf.s3.url`
+    - `io.muenchendigital.digiwf.s3.initialConnectionTest`
+
+`io.muenchendigital.digiwf.s3.initialConnectionTest` is an optional property which allows to enable or disable an initial connection test to the s3 bucket during boot up. 
+If the property is `true` or not set, the connection test is performed.
+If the property is explicitly set to `false`, no connection test is carried out.
 
 If you want to use the cron job cleanup, take a look at the <a href="#cron-job-cleanup">usage exmaple</a> .
 
