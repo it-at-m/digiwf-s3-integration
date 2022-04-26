@@ -49,7 +49,12 @@ public class S3Repository {
         this.client = client;
         if (s3InitialConnectionTest) {
             try {
-                this.client.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
+                final boolean bucketExists = this.client.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
+                if (!bucketExists) {
+                    final String message = "S3 bucket does not exist.";
+                    log.error(message);
+                    throw new S3AccessException(message);
+                }
             } catch (final MinioException | InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException exception) {
                 final String message = "S3 initialization failed.";
                 log.error(message, exception);

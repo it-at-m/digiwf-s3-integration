@@ -31,7 +31,7 @@ public class S3IntegrationAutoConfiguration {
         return new S3Repository(
                 this.s3IntegrationProperties.getBucketName(),
                 minioClient,
-                BooleanUtils.isNotFalse(this.s3IntegrationProperties.getS3InitialConnectionTest())
+                BooleanUtils.isNotFalse(this.s3IntegrationProperties.getInitialConnectionTest())
         );
     }
 }
