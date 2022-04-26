@@ -248,6 +248,9 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 it@m - opensource@muenchendigital.io
 
+Join our [Slack Channel](https://join.slack.com/t/digiwf/shared_invite/zt-14jxazj1j-jq0WNtXp7S7HAwJA7tKgpw) for more
+information!
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
