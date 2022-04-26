@@ -105,6 +105,22 @@ public class ClientFileUsageController {
         log.info("File updated.");
     }
 
+    @PutMapping("/inputstream")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateFileInputStream() throws IOException, DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+        final File file = ResourceUtils.getFile("classpath:files/sunflower.jpg");
+        try (final InputStream inputStream = new FileInputStream(file)) {
+            // Overwrite file on S3 with sunflower.jpg
+            this.documentStorageFileRepository.updateFileInputStream(
+                    PATH_TO_FILE,
+                    inputStream,
+                    3,
+                    LocalDate.now().plusMonths(2)
+            );
+            log.info("File InputStream updated.");
+        }
+    }
+
     @PatchMapping
     @ResponseStatus(HttpStatus.OK)
     public void updateEndOfLife() throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
