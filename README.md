@@ -95,7 +95,7 @@ _Below is an example of how you can install and setup your service_
 
 1. Use the spring initalizer and create a Spring Boot application with `Spring Web`
    dependencies [https://start.spring.io](https://start.spring.io)
-2. Add the digiwf-s3-integration dependency
+2. Add the `digiwf-s3-integration-starter` dependency
 
 With Maven:
 
@@ -142,7 +142,8 @@ The library has several functionalities that can be configured. We have provided
 them.
 
 _For more examples, please refer to the [example-s3-integration](https://github.com/it-at-m/digiwf-s3-integration/tree/dev/example-s3-integration)
-folder_
+and/or [example-s3-integration-client](https://github.com/it-at-m/digiwf-s3-integration/tree/dev/example-s3-integration-client)
+folder._
 
 ### Minimum necessary spring boot annotations
 
@@ -170,7 +171,7 @@ _Below is an example of how you can installing and setup up your service_
 
 1. Use the spring initalizer and create a Spring Boot application with `Spring Web`
    dependencies [https://start.spring.io](https://start.spring.io)
-2. Add the digiwf-s3-integration dependency
+2. Add the `digiwf-s3-integration-client-starter` dependency
 
 With Maven:
 
@@ -196,8 +197,9 @@ implementation group: 'io.muenchendigital.digiwf', name: 'digiwf-s3-integration-
 The client library provides several beans that can be used to interact with the `digiwf-s3-integration-starter`. We have provided examples that show how you can use
 them.
 
-_For more examples, please refer to the [example-s3-integration-client](https://github.com/it-at-m/digiwf-s3-integration/tree/dev/example-s3-integration-client)
-folder_
+_For more examples, please refer to the [example-s3-integration](https://github.com/it-at-m/digiwf-s3-integration/tree/dev/example-s3-integration)
+and/or [example-s3-integration-client](https://github.com/it-at-m/digiwf-s3-integration/tree/dev/example-s3-integration-client)
+folder._
 
 The images used in this example are not subject to any license.
 
@@ -245,6 +247,9 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ## Contact
 
 it@m - opensource@muenchendigital.io
+
+Join our [Slack Channel](https://join.slack.com/t/digiwf/shared_invite/zt-14jxazj1j-jq0WNtXp7S7HAwJA7tKgpw) for more
+information!
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
