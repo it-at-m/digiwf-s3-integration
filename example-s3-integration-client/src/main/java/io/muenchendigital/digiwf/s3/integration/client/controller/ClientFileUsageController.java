@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -72,6 +73,21 @@ public class ClientFileUsageController {
                 LocalDate.now().plusMonths(1)
         );
         log.info("File saved.");
+    }
+
+    @PostMapping("/inputstream")
+    @ResponseStatus(HttpStatus.OK)
+    public void saveFileInputStream() throws IOException, DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+        final File file = ResourceUtils.getFile("classpath:files/cat.jpg");
+        try (final InputStream inputStream = new FileInputStream(file)) {
+            this.documentStorageFileRepository.saveFileInputStream(
+                    PATH_TO_FILE,
+                    inputStream,
+                    3,
+                    LocalDate.now().plusMonths(1)
+            );
+            log.info("File InputStream saved.");
+        }
     }
 
     @PutMapping

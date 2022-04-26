@@ -35,9 +35,14 @@ public class AllEndpointsUsageController {
         System.err.println(LOG_DIVIDER);
         this.clientFileUsageController.getFile();
         System.err.println(LOG_DIVIDER);
-        this.clientFileUsageController.getFileInputStream();
-        System.err.println(LOG_DIVIDER);
         this.clientFileUsageController.updateEndOfLife();
+        System.err.println(LOG_DIVIDER);
+        this.clientFileUsageController.deleteFile();
+
+        System.err.println("FILE INPUTSTREAM usage");
+        this.clientFileUsageController.saveFileInputStream();
+        System.err.println(LOG_DIVIDER);
+        this.clientFileUsageController.getFileInputStream();
         System.err.println(LOG_DIVIDER);
         this.clientFileUsageController.deleteFile();
 
