@@ -95,7 +95,7 @@ _Below is an example of how you can install and setup your service_
 
 1. Use the spring initalizer and create a Spring Boot application with `Spring Web`
    dependencies [https://start.spring.io](https://start.spring.io)
-2. Add the digiwf-s3-integration dependency
+2. Add the `digiwf-s3-integration-starter` dependency
 
 With Maven:
 
@@ -171,7 +171,7 @@ _Below is an example of how you can installing and setup up your service_
 
 1. Use the spring initalizer and create a Spring Boot application with `Spring Web`
    dependencies [https://start.spring.io](https://start.spring.io)
-2. Add the digiwf-s3-integration dependency
+2. Add the `digiwf-s3-integration-client-starter` dependency
 
 With Maven:
 
