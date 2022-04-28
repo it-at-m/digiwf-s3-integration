@@ -10,7 +10,10 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.web.client.RestTemplate;
 
 @ComponentScan(
-        basePackages = "io.muenchendigital.digiwf.s3.integration.gen",
+        basePackages = {
+                "io.muenchendigital.digiwf.s3.integration.gen",
+                "io.muenchendigital.digiwf.s3.integration.client"
+        },
         excludeFilters = {
                 @ComponentScan.Filter(
                         type = FilterType.ASSIGNABLE_TYPE,

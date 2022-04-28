@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.time.LocalDate;
 
@@ -46,6 +48,19 @@ public class ClientFileUsageController {
         log.info("File downloaded to {}.", tmpFile.toPath());
     }
 
+    @GetMapping("/inputstream")
+    @ResponseStatus(HttpStatus.OK)
+    public void getFileInputStream() throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException, IOException {
+        try (final InputStream fileInputStream = this.documentStorageFileRepository.getFileInputStream(
+                PATH_TO_FILE,
+                3
+        )) {
+            final File tmpFile = File.createTempFile("test-from-inputstream", ".jpg");
+            Files.write(tmpFile.toPath(), fileInputStream.readAllBytes());
+            log.info("File InputStream downloaded to {}.", tmpFile.toPath());
+        };
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     public void saveFile() throws IOException, DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
@@ -58,6 +73,21 @@ public class ClientFileUsageController {
                 LocalDate.now().plusMonths(1)
         );
         log.info("File saved.");
+    }
+
+    @PostMapping("/inputstream")
+    @ResponseStatus(HttpStatus.OK)
+    public void saveFileInputStream() throws IOException, DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+        final File file = ResourceUtils.getFile("classpath:files/cat.jpg");
+        try (final InputStream inputStream = new FileInputStream(file)) {
+            this.documentStorageFileRepository.saveFileInputStream(
+                    PATH_TO_FILE,
+                    inputStream,
+                    3,
+                    LocalDate.now().plusMonths(1)
+            );
+            log.info("File InputStream saved.");
+        }
     }
 
     @PutMapping
@@ -73,6 +103,22 @@ public class ClientFileUsageController {
                 LocalDate.now().plusMonths(2)
         );
         log.info("File updated.");
+    }
+
+    @PutMapping("/inputstream")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateFileInputStream() throws IOException, DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+        final File file = ResourceUtils.getFile("classpath:files/sunflower.jpg");
+        try (final InputStream inputStream = new FileInputStream(file)) {
+            // Overwrite file on S3 with sunflower.jpg
+            this.documentStorageFileRepository.updateFileInputStream(
+                    PATH_TO_FILE,
+                    inputStream,
+                    3,
+                    LocalDate.now().plusMonths(2)
+            );
+            log.info("File InputStream updated.");
+        }
     }
 
     @PatchMapping

@@ -30,21 +30,25 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class S3Repository {
 
-    private static final String NO_SUCH_KEY = "NoSuchKey";
-
     private final String bucketName;
 
     private final MinioClient client;
 
-    public S3Repository(final String bucketName, final MinioClient client) throws S3AccessException {
+    /**
+     * Ctor.
+     *
+     * @param bucketName to which this Repository should connect.
+     * @param client to communicate with the s3 storage.
+     * @param s3InitialConnectionTest to enable initial connection test to the s3 storage when true.
+     * @throws S3AccessException if the initial connection test fails.
+     */
+    public S3Repository(final String bucketName,
+                        final MinioClient client,
+                        final boolean s3InitialConnectionTest) throws S3AccessException {
         this.bucketName = bucketName;
         this.client = client;
-        try {
-            this.client.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
-        } catch (final MinioException | InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException exception) {
-            final String message = "S3 initialization failed.";
-            log.error(message, exception);
-            throw new S3AccessException(message, exception);
+        if (s3InitialConnectionTest) {
+            this.initialConnectionTest(bucketName, client);
         }
     }
 
@@ -193,6 +197,28 @@ public class S3Repository {
                 | InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException
                 | IllegalArgumentException | IOException exception) {
             final String message = String.format("Failed to create a upload presigned url for file %s.", pathToFile);
+            log.error(message, exception);
+            throw new S3AccessException(message, exception);
+        }
+    }
+
+    /**
+     * Performs an initial connection test against the S3 storage.
+     *
+     * @param bucketName to which this Repository should connect.
+     * @param client to communicate with the s3 storage.
+     * @throws S3AccessException if the initial connection test fails.
+     */
+    private void initialConnectionTest(final String bucketName, final MinioClient client) throws S3AccessException {
+        try {
+            final boolean bucketExists = client.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
+            if (!bucketExists) {
+                final String message = "S3 bucket does not exist.";
+                log.error(message);
+                throw new S3AccessException(message);
+            }
+        } catch (final MinioException | InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException exception) {
+            final String message = "S3 initialization failed.";
             log.error(message, exception);
             throw new S3AccessException(message, exception);
         }
