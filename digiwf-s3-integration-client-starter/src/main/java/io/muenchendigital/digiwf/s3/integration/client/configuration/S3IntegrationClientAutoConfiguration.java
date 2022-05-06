@@ -1,5 +1,6 @@
 package io.muenchendigital.digiwf.s3.integration.client.configuration;
 
+import io.muenchendigital.digiwf.s3.integration.client.model.DefaultDocumentStorageUrl;
 import io.muenchendigital.digiwf.s3.integration.client.properties.S3IntegrationClientProperties;
 import io.muenchendigital.digiwf.s3.integration.gen.ApiClient;
 import lombok.RequiredArgsConstructor;
@@ -44,9 +45,17 @@ public class S3IntegrationClientAutoConfiguration {
      */
     @Bean
     public ApiClient s3IntegrationApiClient(final RestTemplate restTemplate) {
-        final var apiClient = new ApiClient(restTemplate);
-        apiClient.setBasePath(this.s3IntegrationClientProperties.getDocumentStorageUrl());
-        return apiClient;
+        return new ApiClient(restTemplate);
+    }
+
+    /**
+     * Bean which contains the default url to the document storage.
+     *
+     * @return the bean with the default url to the document storage.
+     */
+    @Bean
+    public DefaultDocumentStorageUrl defaultDocumentStorageUrl() {
+        return new DefaultDocumentStorageUrl(this.s3IntegrationClientProperties.getDocumentStorageUrl());
     }
 
 }
