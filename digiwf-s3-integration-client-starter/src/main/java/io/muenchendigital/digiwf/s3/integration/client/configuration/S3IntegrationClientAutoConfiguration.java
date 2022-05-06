@@ -44,9 +44,9 @@ public class S3IntegrationClientAutoConfiguration {
      */
     @Bean
     public ApiClient s3IntegrationApiClient(final RestTemplate restTemplate) {
-        final var formApiClient = new ApiClient(restTemplate);
-        formApiClient.setBasePath(this.s3IntegrationClientProperties.getDocumentStorageUrl());
-        return formApiClient;
+        final var apiClient = new ApiClient(restTemplate);
+        apiClient.setBasePath(this.s3IntegrationClientProperties.getDocumentStorageUrl());
+        return apiClient;
     }
 
 }
