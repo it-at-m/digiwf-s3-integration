@@ -200,6 +200,7 @@ We have provided examples that show how you can use them.
 Each method within the client library, which communicates directly with a `digiwf-s3-integration-service`, is available in two different flavors.
 One method that uses the document storage url defined in `io.muenchendigital.digiwf.s3.client.document-storage-url`.
 Another method that expects the document storage url within the method parameter.
+This allows to use different `digiwf-s3-integration-service` with the same client lib.
 
 _For more examples, please refer to the [example-s3-integration](https://github.com/it-at-m/digiwf-s3-integration/tree/dev/example-s3-integration)
 and/or [example-s3-integration-client](https://github.com/it-at-m/digiwf-s3-integration/tree/dev/example-s3-integration-client)
