@@ -3,6 +3,7 @@ package io.muenchendigital.digiwf.s3.integration.client.repository;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageClientErrorException;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageException;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageServerErrorException;
+import io.muenchendigital.digiwf.s3.integration.client.service.ApiClientFactory;
 import io.muenchendigital.digiwf.s3.integration.gen.api.FolderApiApi;
 import io.muenchendigital.digiwf.s3.integration.gen.model.FilesInFolderDto;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DocumentStorageFolderRepository {
 
-    private final FolderApiApi folderApi;
+    private final ApiClientFactory apiClientFactory;
 
     /**
      * Deletes the folder with all containing files on document storage.
@@ -30,8 +31,25 @@ public class DocumentStorageFolderRepository {
      * @throws DocumentStorageException            if the problem cannot be assigned directly to the document storage.
      */
     public void deleteFolder(final String pathToFolder) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
+        this.deleteFolder(
+                pathToFolder,
+                this.apiClientFactory.getDefaultDocumentStorageUrl()
+        );
+    }
+
+    /**
+     * Deletes the folder with all containing files on document storage.
+     *
+     * @param pathToFolder    which defines the folder in the document storage.
+     * @param documentStorageUrl to define to which document storage the request goes.
+     * @throws DocumentStorageClientErrorException if the problem is with the client.
+     * @throws DocumentStorageServerErrorException if the problem is with the document storage.
+     * @throws DocumentStorageException            if the problem cannot be assigned directly to the document storage.
+     */
+    public void deleteFolder(final String pathToFolder, final String documentStorageUrl) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
         try {
-            this.folderApi.delete(pathToFolder);
+            final FolderApiApi folderApi = this.apiClientFactory.getFolderApiForDocumentStorageUrl(documentStorageUrl);
+            folderApi.delete(pathToFolder);
         } catch (final HttpClientErrorException exception) {
             final String message = String.format("The request to delete a folder failed %s.", exception.getStatusCode());
             log.error(message);
@@ -56,8 +74,25 @@ public class DocumentStorageFolderRepository {
      * @throws DocumentStorageException            if the problem cannot be assigned directly to the document storage.
      */
     public List<String> getAllFilesInFolderRecursively(final String pathToFolder) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
+        return this.getAllFilesInFolderRecursively(
+                pathToFolder,
+                this.apiClientFactory.getDefaultDocumentStorageUrl()
+        );
+    }
+
+    /**
+     * Returns all files within a folder given in the parameter from document storage.
+     *
+     * @param pathToFolder    which defines the folder in the document storage.
+     * @param documentStorageUrl to define to which document storage the request goes.
+     * @throws DocumentStorageClientErrorException if the problem is with the client.
+     * @throws DocumentStorageServerErrorException if the problem is with the document storage.
+     * @throws DocumentStorageException            if the problem cannot be assigned directly to the document storage.
+     */
+    public List<String> getAllFilesInFolderRecursively(final String pathToFolder, final String documentStorageUrl) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
         try {
-            final FilesInFolderDto filesInFolderDto = this.folderApi.getAllFilesInFolderRecursively(pathToFolder);
+            final FolderApiApi folderApi = this.apiClientFactory.getFolderApiForDocumentStorageUrl(documentStorageUrl);
+            final FilesInFolderDto filesInFolderDto = folderApi.getAllFilesInFolderRecursively(pathToFolder);
             return filesInFolderDto.getPathToFiles();
         } catch (final HttpClientErrorException exception) {
             final String message = String.format("The request to get all files within a folder failed %s.", exception.getStatusCode());
