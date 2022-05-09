@@ -11,7 +11,7 @@ import org.springframework.web.client.RestTemplate;
 public class ApiClientFactory {
 
     @Getter
-    public final String defaultDocumentStorageUrl;
+    private final String defaultDocumentStorageUrl;
 
     private final RestTemplate restTemplate;
 
