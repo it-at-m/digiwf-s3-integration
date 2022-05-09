@@ -39,8 +39,11 @@ public class DocumentStorageFileRepository {
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
      */
     public byte[] getFile(final String pathToFile, final int expireInMinutes) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
-        final String presignedUrl = this.presignedUrlRepository.getPresignedUrlGetFile(pathToFile, expireInMinutes);
-        return this.s3FileTransferRepository.getFile(presignedUrl);
+        return this.getFile(
+                pathToFile,
+                expireInMinutes,
+                this.apiClientFactory.getDefaultDocumentStorageUrl()
+        );
     }
 
     /**
@@ -70,8 +73,11 @@ public class DocumentStorageFileRepository {
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
      */
     public InputStream getFileInputStream(final String pathToFile, final int expireInMinutes) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
-        final String presignedUrl = this.presignedUrlRepository.getPresignedUrlGetFile(pathToFile, expireInMinutes);
-        return this.s3FileTransferRepository.getFileInputStream(presignedUrl);
+        return this.getFileInputStream(
+                pathToFile,
+                expireInMinutes,
+                this.apiClientFactory.getDefaultDocumentStorageUrl()
+        );
     }
 
     /**
@@ -102,8 +108,13 @@ public class DocumentStorageFileRepository {
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
      */
     public void saveFile(final String pathToFile, final byte[] file, final int expireInMinutes, final LocalDate endOfLifeFolder) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
-        final String presignedUrl = this.presignedUrlRepository.getPresignedUrlSaveFile(pathToFile, expireInMinutes, endOfLifeFolder);
-        this.s3FileTransferRepository.saveFile(presignedUrl, file);
+        this.saveFile(
+                pathToFile,
+                file,
+                expireInMinutes,
+                endOfLifeFolder,
+                this.apiClientFactory.getDefaultDocumentStorageUrl()
+        );
     }
 
     /**
@@ -135,8 +146,13 @@ public class DocumentStorageFileRepository {
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
      */
     public void saveFileInputStream(final String pathToFile, final InputStream file, final int expireInMinutes, final LocalDate endOfLifeFolder) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
-        final String presignedUrl = this.presignedUrlRepository.getPresignedUrlSaveFile(pathToFile, expireInMinutes, endOfLifeFolder);
-        this.s3FileTransferRepository.saveFileInputStream(presignedUrl, file);
+        this.saveFileInputStream(
+                pathToFile,
+                file,
+                expireInMinutes,
+                endOfLifeFolder,
+                this.apiClientFactory.getDefaultDocumentStorageUrl()
+        );
     }
 
     /**
@@ -168,8 +184,13 @@ public class DocumentStorageFileRepository {
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
      */
     public void updateFile(final String pathToFile, final byte[] file, final int expireInMinutes, final LocalDate endOfLifeFolder) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
-        final String presignedUrl = this.presignedUrlRepository.getPresignedUrlUpdateFile(pathToFile, expireInMinutes, endOfLifeFolder);
-        this.s3FileTransferRepository.updateFile(presignedUrl, file);
+        this.updateFile(
+                pathToFile,
+                file,
+                expireInMinutes,
+                endOfLifeFolder,
+                this.apiClientFactory.getDefaultDocumentStorageUrl()
+        );
     }
 
     /**
@@ -201,8 +222,13 @@ public class DocumentStorageFileRepository {
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
      */
     public void updateFileInputStream(final String pathToFile, final InputStream file, final int expireInMinutes, final LocalDate endOfLifeFolder) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
-        final String presignedUrl = this.presignedUrlRepository.getPresignedUrlUpdateFile(pathToFile, expireInMinutes, endOfLifeFolder);
-        this.s3FileTransferRepository.updateFileInputStream(presignedUrl, file);
+        this.updateFileInputStream(
+                pathToFile,
+                file,
+                expireInMinutes,
+                endOfLifeFolder,
+                this.apiClientFactory.getDefaultDocumentStorageUrl()
+        );
     }
 
     /**
@@ -278,8 +304,11 @@ public class DocumentStorageFileRepository {
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
      */
     public void deleteFile(final String pathToFile, final int expireInMinutes) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
-        final String presignedUrl = this.presignedUrlRepository.getPresignedUrlDeleteFile(pathToFile, expireInMinutes);
-        this.s3FileTransferRepository.deleteFile(presignedUrl);
+        this.deleteFile(
+                pathToFile,
+                expireInMinutes,
+                this.apiClientFactory.getDefaultDocumentStorageUrl()
+        );
     }
 
     /**
