@@ -3,9 +3,9 @@ package io.muenchendigital.digiwf.s3.integration.client.repository;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageClientErrorException;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageException;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageServerErrorException;
-import io.muenchendigital.digiwf.s3.integration.client.model.DefaultDocumentStorageUrl;
 import io.muenchendigital.digiwf.s3.integration.client.repository.presignedurl.PresignedUrlRepository;
 import io.muenchendigital.digiwf.s3.integration.client.repository.transfer.S3FileTransferRepository;
+import io.muenchendigital.digiwf.s3.integration.client.service.ApiClientFactory;
 import io.muenchendigital.digiwf.s3.integration.gen.api.FileApiApi;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +26,7 @@ public class DocumentStorageFileRepository {
 
     private final S3FileTransferRepository s3FileTransferRepository;
 
-    private final FileApiApi fileApi;
-
-    private final DefaultDocumentStorageUrl defaultDocumentStorageUrl;
+    private final ApiClientFactory apiClientFactory;
 
     /**
      * Gets the file specified in the parameter from the document storage.
@@ -237,7 +235,7 @@ public class DocumentStorageFileRepository {
         this.updateEndOfLife(
                 pathToFile,
                 endOfLifeFolder,
-                this.defaultDocumentStorageUrl.getDocumentStorageUrl()
+                this.apiClientFactory.getDefaultDocumentStorageUrl()
         );
     }
 
@@ -253,8 +251,8 @@ public class DocumentStorageFileRepository {
      */
     public void updateEndOfLife(final String pathToFile, final LocalDate endOfLifeFolder, final String documentStorageUrl) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
         try {
-            this.fileApi.getApiClient().setBasePath(documentStorageUrl);
-            this.fileApi.updateEndOfLife(pathToFile, endOfLifeFolder);
+            final FileApiApi fileApi = this.apiClientFactory.getFileApiForDocumentStorageUrl(documentStorageUrl);
+            fileApi.updateEndOfLife(pathToFile, endOfLifeFolder);
         } catch (final HttpClientErrorException exception) {
             final String message = String.format("The request to update the end of life for a file  failed %s.", exception.getStatusCode());
             log.error(message);

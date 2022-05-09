@@ -3,10 +3,9 @@ package io.muenchendigital.digiwf.s3.integration.client.repository;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageClientErrorException;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageException;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageServerErrorException;
-import io.muenchendigital.digiwf.s3.integration.client.model.DefaultDocumentStorageUrl;
 import io.muenchendigital.digiwf.s3.integration.client.repository.presignedurl.PresignedUrlRepository;
 import io.muenchendigital.digiwf.s3.integration.client.repository.transfer.S3FileTransferRepository;
-import io.muenchendigital.digiwf.s3.integration.gen.ApiClient;
+import io.muenchendigital.digiwf.s3.integration.client.service.ApiClientFactory;
 import io.muenchendigital.digiwf.s3.integration.gen.api.FileApiApi;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +27,8 @@ import java.time.LocalDate;
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class DocumentStorageFileRepositoryTest {
 
-    private final DefaultDocumentStorageUrl defaultDocumentStorageUrl = new DefaultDocumentStorageUrl("the-url");
+    @Mock
+    private ApiClientFactory apiClientFactory;
 
     @Mock
     private PresignedUrlRepository presignedUrlRepository;
@@ -43,8 +43,8 @@ class DocumentStorageFileRepositoryTest {
 
     @BeforeEach
     public void beforeEach() {
-        this.documentStorageFileRepository = new DocumentStorageFileRepository(this.presignedUrlRepository, this.s3FileTransferRepository, this.fileApi, this.defaultDocumentStorageUrl);
-        Mockito.reset(this.presignedUrlRepository, this.s3FileTransferRepository, this.fileApi);
+        this.documentStorageFileRepository = new DocumentStorageFileRepository(this.presignedUrlRepository, this.s3FileTransferRepository, this.apiClientFactory);
+        Mockito.reset(this.presignedUrlRepository, this.s3FileTransferRepository, this.fileApi, this.apiClientFactory);
     }
 
     @Test
@@ -100,24 +100,25 @@ class DocumentStorageFileRepositoryTest {
         final String pathToFile = "folder/file.txt";
         final LocalDate endOfLife = LocalDate.now();
 
-        Mockito.when(this.fileApi.getApiClient()).thenReturn(new ApiClient());
+        Mockito.reset(this.presignedUrlRepository, this.s3FileTransferRepository, this.fileApi, this.apiClientFactory);
+        Mockito.when(this.apiClientFactory.getFileApiForDocumentStorageUrl(Mockito.isNull())).thenReturn(this.fileApi);
         this.documentStorageFileRepository.updateEndOfLife(pathToFile, endOfLife);
         Mockito.verify(this.fileApi, Mockito.times(1)).updateEndOfLife(pathToFile, endOfLife);
 
-        Mockito.reset(this.fileApi);
-        Mockito.when(this.fileApi.getApiClient()).thenReturn(new ApiClient());
+        Mockito.reset(this.presignedUrlRepository, this.s3FileTransferRepository, this.fileApi, this.apiClientFactory);
+        Mockito.when(this.apiClientFactory.getFileApiForDocumentStorageUrl(Mockito.isNull())).thenReturn(this.fileApi);
         Mockito.doThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST)).when(this.fileApi).updateEndOfLife(pathToFile, endOfLife);
         Assertions.assertThrows(DocumentStorageClientErrorException.class, () -> this.documentStorageFileRepository.updateEndOfLife(pathToFile, endOfLife));
         Mockito.verify(this.fileApi, Mockito.times(1)).updateEndOfLife(pathToFile, endOfLife);
 
-        Mockito.reset(this.fileApi);
-        Mockito.when(this.fileApi.getApiClient()).thenReturn(new ApiClient());
+        Mockito.reset(this.presignedUrlRepository, this.s3FileTransferRepository, this.fileApi, this.apiClientFactory);
+        Mockito.when(this.apiClientFactory.getFileApiForDocumentStorageUrl(Mockito.isNull())).thenReturn(this.fileApi);
         Mockito.doThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR)).when(this.fileApi).updateEndOfLife(pathToFile, endOfLife);
         Assertions.assertThrows(DocumentStorageServerErrorException.class, () -> this.documentStorageFileRepository.updateEndOfLife(pathToFile, endOfLife));
         Mockito.verify(this.fileApi, Mockito.times(1)).updateEndOfLife(pathToFile, endOfLife);
 
-        Mockito.reset(this.fileApi);
-        Mockito.when(this.fileApi.getApiClient()).thenReturn(new ApiClient());
+        Mockito.reset(this.presignedUrlRepository, this.s3FileTransferRepository, this.fileApi, this.apiClientFactory);
+        Mockito.when(this.apiClientFactory.getFileApiForDocumentStorageUrl(Mockito.isNull())).thenReturn(this.fileApi);
         Mockito.doThrow(new RestClientException("Something happened")).when(this.fileApi).updateEndOfLife(pathToFile, endOfLife);
         Assertions.assertThrows(DocumentStorageException.class, () -> this.documentStorageFileRepository.updateEndOfLife(pathToFile, endOfLife));
         Mockito.verify(this.fileApi, Mockito.times(1)).updateEndOfLife(pathToFile, endOfLife);

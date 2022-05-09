@@ -3,7 +3,7 @@ package io.muenchendigital.digiwf.s3.integration.client.repository;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageClientErrorException;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageException;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageServerErrorException;
-import io.muenchendigital.digiwf.s3.integration.client.model.DefaultDocumentStorageUrl;
+import io.muenchendigital.digiwf.s3.integration.client.service.ApiClientFactory;
 import io.muenchendigital.digiwf.s3.integration.gen.api.FolderApiApi;
 import io.muenchendigital.digiwf.s3.integration.gen.model.FilesInFolderDto;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DocumentStorageFolderRepository {
 
-    private final FolderApiApi folderApi;
-
-    private final DefaultDocumentStorageUrl defaultDocumentStorageUrl;
+    private final ApiClientFactory apiClientFactory;
 
     /**
      * Deletes the folder with all containing files on document storage.
@@ -35,7 +33,7 @@ public class DocumentStorageFolderRepository {
     public void deleteFolder(final String pathToFolder) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
         this.deleteFolder(
                 pathToFolder,
-                this.defaultDocumentStorageUrl.getDocumentStorageUrl()
+                this.apiClientFactory.getDefaultDocumentStorageUrl()
         );
     }
 
@@ -50,8 +48,8 @@ public class DocumentStorageFolderRepository {
      */
     public void deleteFolder(final String pathToFolder, final String documentStorageUrl) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
         try {
-            this.folderApi.getApiClient().setBasePath(documentStorageUrl);
-            this.folderApi.delete(pathToFolder);
+            final FolderApiApi folderApi = this.apiClientFactory.getFolderApiForDocumentStorageUrl(documentStorageUrl);
+            folderApi.delete(pathToFolder);
         } catch (final HttpClientErrorException exception) {
             final String message = String.format("The request to delete a folder failed %s.", exception.getStatusCode());
             log.error(message);
@@ -78,7 +76,7 @@ public class DocumentStorageFolderRepository {
     public List<String> getAllFilesInFolderRecursively(final String pathToFolder) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
         return this.getAllFilesInFolderRecursively(
                 pathToFolder,
-                this.defaultDocumentStorageUrl.getDocumentStorageUrl()
+                this.apiClientFactory.getDefaultDocumentStorageUrl()
         );
     }
 
@@ -93,8 +91,8 @@ public class DocumentStorageFolderRepository {
      */
     public List<String> getAllFilesInFolderRecursively(final String pathToFolder, final String documentStorageUrl) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
         try {
-            this.folderApi.getApiClient().setBasePath(documentStorageUrl);
-            final FilesInFolderDto filesInFolderDto = this.folderApi.getAllFilesInFolderRecursively(pathToFolder);
+            final FolderApiApi folderApi = this.apiClientFactory.getFolderApiForDocumentStorageUrl(documentStorageUrl);
+            final FilesInFolderDto filesInFolderDto = folderApi.getAllFilesInFolderRecursively(pathToFolder);
             return filesInFolderDto.getPathToFiles();
         } catch (final HttpClientErrorException exception) {
             final String message = String.format("The request to get all files within a folder failed %s.", exception.getStatusCode());

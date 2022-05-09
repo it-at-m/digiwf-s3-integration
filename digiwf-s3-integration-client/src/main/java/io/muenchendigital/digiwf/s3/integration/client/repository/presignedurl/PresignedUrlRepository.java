@@ -3,7 +3,7 @@ package io.muenchendigital.digiwf.s3.integration.client.repository.presignedurl;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageClientErrorException;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageException;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageServerErrorException;
-import io.muenchendigital.digiwf.s3.integration.client.model.DefaultDocumentStorageUrl;
+import io.muenchendigital.digiwf.s3.integration.client.service.ApiClientFactory;
 import io.muenchendigital.digiwf.s3.integration.gen.api.FileApiApi;
 import io.muenchendigital.digiwf.s3.integration.gen.model.FileDataDto;
 import io.muenchendigital.digiwf.s3.integration.gen.model.PresignedUrlDto;
@@ -21,9 +21,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class PresignedUrlRepository {
 
-    private final FileApiApi fileApi;
-
-    private final DefaultDocumentStorageUrl defaultDocumentStorageUrl;
+    private final ApiClientFactory apiClientFactory;
 
     /**
      * Fetches a presignedURL for the file named in the parameter to get a file from the document storage.
@@ -39,7 +37,7 @@ public class PresignedUrlRepository {
         return this.getPresignedUrlGetFile(
                 pathToFile,
                 expireInMinutes,
-                this.defaultDocumentStorageUrl.getDocumentStorageUrl()
+                this.apiClientFactory.getDefaultDocumentStorageUrl()
         );
     }
 
@@ -56,8 +54,8 @@ public class PresignedUrlRepository {
      */
     public String getPresignedUrlGetFile(final String pathToFile, final int expireInMinutes, final String documentStorageUrl) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
         try {
-            this.fileApi.getApiClient().setBasePath(documentStorageUrl);
-            final PresignedUrlDto presignedUrlDto = this.fileApi.get(pathToFile, expireInMinutes);
+            final FileApiApi fileApi = this.apiClientFactory.getFileApiForDocumentStorageUrl(documentStorageUrl);
+            final PresignedUrlDto presignedUrlDto = fileApi.get(pathToFile, expireInMinutes);
             return presignedUrlDto.getUrl();
         } catch (final HttpClientErrorException exception) {
             final String message = String.format("The request to create a presigned url to get a file failed %s.", exception.getStatusCode());
@@ -90,7 +88,7 @@ public class PresignedUrlRepository {
                 pathToFile,
                 expireInMinutes,
                 endOfLifeFolder,
-                this.defaultDocumentStorageUrl.getDocumentStorageUrl()
+                this.apiClientFactory.getDefaultDocumentStorageUrl()
         );
     }
 
@@ -108,12 +106,12 @@ public class PresignedUrlRepository {
      */
     public String getPresignedUrlSaveFile(final String pathToFile, final int expireInMinutes, final LocalDate endOfLifeFolder, final String documentStorageUrl) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
         try {
-            this.fileApi.getApiClient().setBasePath(documentStorageUrl);
+            final FileApiApi fileApi = this.apiClientFactory.getFileApiForDocumentStorageUrl(documentStorageUrl);
             final var fileDataDto = new FileDataDto();
             fileDataDto.setPathToFile(pathToFile);
             fileDataDto.setExpiresInMinutes(expireInMinutes);
             fileDataDto.setEndOfLife(endOfLifeFolder);
-            final PresignedUrlDto presignedUrlDto = this.fileApi.save(fileDataDto);
+            final PresignedUrlDto presignedUrlDto = fileApi.save(fileDataDto);
             return presignedUrlDto.getUrl();
         } catch (final HttpClientErrorException exception) {
             final String message = String.format("The request to create a presigned save url failed %s.", exception.getStatusCode());
@@ -146,7 +144,7 @@ public class PresignedUrlRepository {
                 pathToFile,
                 expireInMinutes,
                 endOfLifeFolder,
-                this.defaultDocumentStorageUrl.getDocumentStorageUrl()
+                this.apiClientFactory.getDefaultDocumentStorageUrl()
         );
     }
 
@@ -164,12 +162,12 @@ public class PresignedUrlRepository {
      */
     public String getPresignedUrlUpdateFile(final String pathToFile, final int expireInMinutes, final LocalDate endOfLifeFolder, final String documentStorageUrl) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
         try {
-            this.fileApi.getApiClient().setBasePath(documentStorageUrl);
+            final FileApiApi fileApi = this.apiClientFactory.getFileApiForDocumentStorageUrl(documentStorageUrl);
             final var fileDataDto = new FileDataDto();
             fileDataDto.setPathToFile(pathToFile);
             fileDataDto.setExpiresInMinutes(expireInMinutes);
             fileDataDto.setEndOfLife(endOfLifeFolder);
-            final PresignedUrlDto presignedUrlDto = this.fileApi.update(fileDataDto);
+            final PresignedUrlDto presignedUrlDto = fileApi.update(fileDataDto);
             return presignedUrlDto.getUrl();
         } catch (final HttpClientErrorException exception) {
             final String message = String.format("The request to create a presigned update url failed %s.", exception.getStatusCode());
@@ -200,7 +198,7 @@ public class PresignedUrlRepository {
         return this.getPresignedUrlDeleteFile(
                 pathToFile,
                 expireInMinutes,
-                this.defaultDocumentStorageUrl.getDocumentStorageUrl()
+                this.apiClientFactory.getDefaultDocumentStorageUrl()
         );
     }
 
@@ -217,8 +215,8 @@ public class PresignedUrlRepository {
      */
     public String getPresignedUrlDeleteFile(final String pathToFile, final int expireInMinutes, final String documentStorageUrl) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
         try {
-            this.fileApi.getApiClient().setBasePath(documentStorageUrl);
-            final PresignedUrlDto presignedUrlDto = this.fileApi.delete1(pathToFile, expireInMinutes);
+            final FileApiApi fileApi = this.apiClientFactory.getFileApiForDocumentStorageUrl(documentStorageUrl);
+            final PresignedUrlDto presignedUrlDto = fileApi.delete1(pathToFile, expireInMinutes);
             return presignedUrlDto.getUrl();
         } catch (final HttpClientErrorException exception) {
             final String message = String.format("The request to create a presigned url to delete a file failed %s.", exception.getStatusCode());
