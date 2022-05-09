@@ -41,7 +41,7 @@ public class DocumentStorageFolderRepository {
      * Deletes the folder with all containing files on document storage.
      *
      * @param pathToFolder    which defines the folder in the document storage.
-     * @param documentStorageUrl to define which document should be requested.
+     * @param documentStorageUrl to define to which document storage the request goes.
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned directly to the document storage.
@@ -84,7 +84,7 @@ public class DocumentStorageFolderRepository {
      * Returns all files within a folder given in the parameter from document storage.
      *
      * @param pathToFolder    which defines the folder in the document storage.
-     * @param documentStorageUrl to define which document should be requested.
+     * @param documentStorageUrl to define to which document storage the request goes.
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned directly to the document storage.

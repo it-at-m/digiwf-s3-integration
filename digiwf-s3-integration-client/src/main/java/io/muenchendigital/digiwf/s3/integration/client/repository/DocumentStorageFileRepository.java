@@ -48,7 +48,7 @@ public class DocumentStorageFileRepository {
      *
      * @param pathToFile      defines the path to the file.
      * @param expireInMinutes the expiration time of the presignedURL in minutes.
-     * @param documentStorageUrl to define which document should be requested.
+     * @param documentStorageUrl to define to which document storage the request goes.
      * @return the file.
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the S3 storage or document storage.
@@ -79,7 +79,7 @@ public class DocumentStorageFileRepository {
      *
      * @param pathToFile      defines the path to the file.
      * @param expireInMinutes the expiration time of the presignedURL in minutes.
-     * @param documentStorageUrl to define which document should be requested.
+     * @param documentStorageUrl to define to which document storage the request goes.
      * @return the InputStream for the file.
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the S3 storage or document storage.
@@ -113,7 +113,7 @@ public class DocumentStorageFileRepository {
      * @param file            to save.
      * @param expireInMinutes the expiration time of the presignedURL in minutes.
      * @param endOfLifeFolder the end of life of the folder defined in refId.
-     * @param documentStorageUrl to define which document should be requested.
+     * @param documentStorageUrl to define to which document storage the request goes.
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the S3 storage or document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
@@ -146,7 +146,7 @@ public class DocumentStorageFileRepository {
      * @param file            to save.
      * @param expireInMinutes the expiration time of the presignedURL in minutes.
      * @param endOfLifeFolder the end of life of the folder defined in refId.
-     * @param documentStorageUrl to define which document should be requested.
+     * @param documentStorageUrl to define to which document storage the request goes.
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the S3 storage or document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
@@ -179,7 +179,7 @@ public class DocumentStorageFileRepository {
      * @param file            which overwrites the file in the document storage.
      * @param expireInMinutes the expiration time of the presignedURL in minutes.
      * @param endOfLifeFolder the end of life of the folder defined in refId.
-     * @param documentStorageUrl to define which document should be requested.
+     * @param documentStorageUrl to define to which document storage the request goes.
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the S3 storage or document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
@@ -212,7 +212,7 @@ public class DocumentStorageFileRepository {
      * @param file            which overwrites the file in the document storage.
      * @param expireInMinutes the expiration time of the presignedURL in minutes.
      * @param endOfLifeFolder the end of life of the folder defined in refId.
-     * @param documentStorageUrl to define which document should be requested.
+     * @param documentStorageUrl to define to which document storage the request goes.
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the S3 storage or document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
@@ -244,7 +244,7 @@ public class DocumentStorageFileRepository {
      *
      * @param pathToFile      defines the path to the file.
      * @param endOfLifeFolder the end of life of the folder defined in refId.
-     * @param documentStorageUrl to define which document should be requested.
+     * @param documentStorageUrl to define to which document storage the request goes.
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the S3 storage or document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
@@ -287,7 +287,7 @@ public class DocumentStorageFileRepository {
      *
      * @param pathToFile      defines the path to the file.
      * @param expireInMinutes the expiration time of the presignedURL in minutes.
-     * @param documentStorageUrl to define which document should be requested.
+     * @param documentStorageUrl to define to which document storage the request goes.
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the S3 storage or document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.

@@ -46,7 +46,7 @@ public class PresignedUrlRepository {
      *
      * @param pathToFile defines the path to the file.
      * @param expireInMinutes the expiration time of the presignedURL in minutes.
-     * @param documentStorageUrl to define which document should be requested.
+     * @param documentStorageUrl to define to which document storage the request goes.
      * @return the presignedURL.
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the document storage.
@@ -98,7 +98,7 @@ public class PresignedUrlRepository {
      * @param pathToFile defines the path to the file.
      * @param expireInMinutes the expiration time of the presignedURL in minutes.
      * @param endOfLifeFolder the end of life of the folder defined in refId. May be null.
-     * @param documentStorageUrl to define which document should be requested.
+     * @param documentStorageUrl to define to which document storage the request goes.
      * @return the presignedURL.
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the document storage.
@@ -154,7 +154,7 @@ public class PresignedUrlRepository {
      * @param pathToFile defines the path to the file.
      * @param expireInMinutes the expiration time of the presignedURL in minutes.
      * @param endOfLifeFolder the end of life of the folder defined in refId. May be null.
-     * @param documentStorageUrl to define which document should be requested.
+     * @param documentStorageUrl to define to which document storage the request goes.
      * @return the presignedURL.
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the document storage.
@@ -207,7 +207,7 @@ public class PresignedUrlRepository {
      *
      * @param pathToFile defines the path to the file.
      * @param expireInMinutes the expiration time of the presignedURL in minutes.
-     * @param documentStorageUrl to define which document should be requested.
+     * @param documentStorageUrl to define to which document storage the request goes.
      * @return the presignedURL.
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the document storage.
