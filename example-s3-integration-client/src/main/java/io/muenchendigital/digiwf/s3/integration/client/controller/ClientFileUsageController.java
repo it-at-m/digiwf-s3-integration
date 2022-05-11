@@ -3,6 +3,7 @@ package io.muenchendigital.digiwf.s3.integration.client.controller;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageClientErrorException;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageException;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageServerErrorException;
+import io.muenchendigital.digiwf.s3.integration.client.exception.PropertyNotSetException;
 import io.muenchendigital.digiwf.s3.integration.client.repository.DocumentStorageFileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,7 @@ public class ClientFileUsageController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public void getFile() throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException, IOException {
+    public void getFile() throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException, IOException, PropertyNotSetException {
         final byte[] binaryFile = this.documentStorageFileRepository.getFile(
                 PATH_TO_FILE,
                 3
@@ -50,7 +51,7 @@ public class ClientFileUsageController {
 
     @GetMapping("/inputstream")
     @ResponseStatus(HttpStatus.OK)
-    public void getFileInputStream() throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException, IOException {
+    public void getFileInputStream() throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException, IOException, PropertyNotSetException {
         try (final InputStream fileInputStream = this.documentStorageFileRepository.getFileInputStream(
                 PATH_TO_FILE,
                 3
@@ -63,7 +64,7 @@ public class ClientFileUsageController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    public void saveFile() throws IOException, DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+    public void saveFile() throws IOException, DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException, PropertyNotSetException {
         final File file = ResourceUtils.getFile("classpath:files/cat.jpg");
         final byte[] binaryFile = Files.readAllBytes(file.toPath());
         this.documentStorageFileRepository.saveFile(
@@ -77,7 +78,7 @@ public class ClientFileUsageController {
 
     @PostMapping("/inputstream")
     @ResponseStatus(HttpStatus.OK)
-    public void saveFileInputStream() throws IOException, DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+    public void saveFileInputStream() throws IOException, DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException, PropertyNotSetException {
         final File file = ResourceUtils.getFile("classpath:files/cat.jpg");
         try (final InputStream inputStream = new FileInputStream(file)) {
             this.documentStorageFileRepository.saveFileInputStream(
@@ -92,7 +93,7 @@ public class ClientFileUsageController {
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public void updateFile() throws IOException, DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+    public void updateFile() throws IOException, DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException, PropertyNotSetException {
         final File file = ResourceUtils.getFile("classpath:files/sunflower.jpg");
         final byte[] binaryFile = Files.readAllBytes(file.toPath());
         // Overwrite file on S3 with sunflower.jpg
@@ -107,7 +108,7 @@ public class ClientFileUsageController {
 
     @PutMapping("/inputstream")
     @ResponseStatus(HttpStatus.OK)
-    public void updateFileInputStream() throws IOException, DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+    public void updateFileInputStream() throws IOException, DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException, PropertyNotSetException {
         final File file = ResourceUtils.getFile("classpath:files/sunflower.jpg");
         try (final InputStream inputStream = new FileInputStream(file)) {
             // Overwrite file on S3 with sunflower.jpg
@@ -123,7 +124,7 @@ public class ClientFileUsageController {
 
     @PatchMapping
     @ResponseStatus(HttpStatus.OK)
-    public void updateEndOfLife() throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+    public void updateEndOfLife() throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException, PropertyNotSetException {
         this.documentStorageFileRepository.updateEndOfLife(
                 PATH_TO_FILE,
                 LocalDate.now().plusMonths(999)
@@ -133,7 +134,7 @@ public class ClientFileUsageController {
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteFile() throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+    public void deleteFile() throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException, PropertyNotSetException {
         this.documentStorageFileRepository.deleteFile(
                 PATH_TO_FILE,
                 3

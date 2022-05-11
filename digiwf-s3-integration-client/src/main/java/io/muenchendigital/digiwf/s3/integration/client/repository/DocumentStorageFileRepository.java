@@ -3,6 +3,7 @@ package io.muenchendigital.digiwf.s3.integration.client.repository;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageClientErrorException;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageException;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageServerErrorException;
+import io.muenchendigital.digiwf.s3.integration.client.exception.PropertyNotSetException;
 import io.muenchendigital.digiwf.s3.integration.client.repository.presignedurl.PresignedUrlRepository;
 import io.muenchendigital.digiwf.s3.integration.client.repository.transfer.S3FileTransferRepository;
 import io.muenchendigital.digiwf.s3.integration.client.service.ApiClientFactory;
@@ -37,8 +38,9 @@ public class DocumentStorageFileRepository {
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the S3 storage or document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
+     * @throws PropertyNotSetException             if the property "io.muenchendigital.digiwf.s3.client.defaultDocumentStorageUrl" is not set.
      */
-    public byte[] getFile(final String pathToFile, final int expireInMinutes) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+    public byte[] getFile(final String pathToFile, final int expireInMinutes) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException, PropertyNotSetException {
         return this.getFile(
                 pathToFile,
                 expireInMinutes,
@@ -71,8 +73,9 @@ public class DocumentStorageFileRepository {
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the S3 storage or document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
+     * @throws PropertyNotSetException             if the property "io.muenchendigital.digiwf.s3.client.defaultDocumentStorageUrl" is not set.
      */
-    public InputStream getFileInputStream(final String pathToFile, final int expireInMinutes) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+    public InputStream getFileInputStream(final String pathToFile, final int expireInMinutes) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException, PropertyNotSetException {
         return this.getFileInputStream(
                 pathToFile,
                 expireInMinutes,
@@ -106,8 +109,9 @@ public class DocumentStorageFileRepository {
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the S3 storage or document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
+     * @throws PropertyNotSetException             if the property "io.muenchendigital.digiwf.s3.client.defaultDocumentStorageUrl" is not set.
      */
-    public void saveFile(final String pathToFile, final byte[] file, final int expireInMinutes, final LocalDate endOfLifeFolder) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+    public void saveFile(final String pathToFile, final byte[] file, final int expireInMinutes, final LocalDate endOfLifeFolder) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException, PropertyNotSetException {
         this.saveFile(
                 pathToFile,
                 file,
@@ -144,8 +148,9 @@ public class DocumentStorageFileRepository {
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the S3 storage or document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
+     * @throws PropertyNotSetException             if the property "io.muenchendigital.digiwf.s3.client.defaultDocumentStorageUrl" is not set.
      */
-    public void saveFileInputStream(final String pathToFile, final InputStream file, final int expireInMinutes, final LocalDate endOfLifeFolder) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+    public void saveFileInputStream(final String pathToFile, final InputStream file, final int expireInMinutes, final LocalDate endOfLifeFolder) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException, PropertyNotSetException {
         this.saveFileInputStream(
                 pathToFile,
                 file,
@@ -182,8 +187,9 @@ public class DocumentStorageFileRepository {
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the S3 storage or document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
+     * @throws PropertyNotSetException             if the property "io.muenchendigital.digiwf.s3.client.defaultDocumentStorageUrl" is not set.
      */
-    public void updateFile(final String pathToFile, final byte[] file, final int expireInMinutes, final LocalDate endOfLifeFolder) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+    public void updateFile(final String pathToFile, final byte[] file, final int expireInMinutes, final LocalDate endOfLifeFolder) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException, PropertyNotSetException {
         this.updateFile(
                 pathToFile,
                 file,
@@ -220,8 +226,9 @@ public class DocumentStorageFileRepository {
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the S3 storage or document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
+     * @throws PropertyNotSetException             if the property "io.muenchendigital.digiwf.s3.client.defaultDocumentStorageUrl" is not set.
      */
-    public void updateFileInputStream(final String pathToFile, final InputStream file, final int expireInMinutes, final LocalDate endOfLifeFolder) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+    public void updateFileInputStream(final String pathToFile, final InputStream file, final int expireInMinutes, final LocalDate endOfLifeFolder) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException, PropertyNotSetException {
         this.updateFileInputStream(
                 pathToFile,
                 file,
@@ -256,8 +263,9 @@ public class DocumentStorageFileRepository {
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the S3 storage or document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
+     * @throws PropertyNotSetException             if the property "io.muenchendigital.digiwf.s3.client.defaultDocumentStorageUrl" is not set.
      */
-    public void updateEndOfLife(final String pathToFile, final LocalDate endOfLifeFolder) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
+    public void updateEndOfLife(final String pathToFile, final LocalDate endOfLifeFolder) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException, PropertyNotSetException {
         this.updateEndOfLife(
                 pathToFile,
                 endOfLifeFolder,
@@ -302,8 +310,9 @@ public class DocumentStorageFileRepository {
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the S3 storage or document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the S3 storage or the document storage.
+     * @throws PropertyNotSetException             if the property "io.muenchendigital.digiwf.s3.client.defaultDocumentStorageUrl" is not set.
      */
-    public void deleteFile(final String pathToFile, final int expireInMinutes) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException {
+    public void deleteFile(final String pathToFile, final int expireInMinutes) throws DocumentStorageException, DocumentStorageClientErrorException, DocumentStorageServerErrorException, PropertyNotSetException {
         this.deleteFile(
                 pathToFile,
                 expireInMinutes,
