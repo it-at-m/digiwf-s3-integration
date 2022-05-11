@@ -3,6 +3,7 @@ package io.muenchendigital.digiwf.s3.integration.client.repository.presignedurl;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageClientErrorException;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageException;
 import io.muenchendigital.digiwf.s3.integration.client.exception.DocumentStorageServerErrorException;
+import io.muenchendigital.digiwf.s3.integration.client.exception.PropertyNotSetException;
 import io.muenchendigital.digiwf.s3.integration.client.service.ApiClientFactory;
 import io.muenchendigital.digiwf.s3.integration.gen.api.FileApiApi;
 import io.muenchendigital.digiwf.s3.integration.gen.model.FileDataDto;
@@ -32,8 +33,9 @@ public class PresignedUrlRepository {
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the document storage.
+     * @throws PropertyNotSetException             if the property "io.muenchendigital.digiwf.s3.client.defaultDocumentStorageUrl" is not set.
      */
-    public String getPresignedUrlGetFile(final String pathToFile, final int expireInMinutes) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
+    public String getPresignedUrlGetFile(final String pathToFile, final int expireInMinutes) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException, PropertyNotSetException {
         return this.getPresignedUrlGetFile(
                 pathToFile,
                 expireInMinutes,
@@ -82,8 +84,9 @@ public class PresignedUrlRepository {
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the document storage.
+     * @throws PropertyNotSetException             if the property "io.muenchendigital.digiwf.s3.client.defaultDocumentStorageUrl" is not set.
      */
-    public String getPresignedUrlSaveFile(final String pathToFile, final int expireInMinutes, final LocalDate endOfLifeFolder) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
+    public String getPresignedUrlSaveFile(final String pathToFile, final int expireInMinutes, final LocalDate endOfLifeFolder) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException, PropertyNotSetException {
         return this.getPresignedUrlSaveFile(
                 pathToFile,
                 expireInMinutes,
@@ -138,8 +141,9 @@ public class PresignedUrlRepository {
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the document storage.
+     * @throws PropertyNotSetException             if the property "io.muenchendigital.digiwf.s3.client.defaultDocumentStorageUrl" is not set.
      */
-    public String getPresignedUrlUpdateFile(final String pathToFile, final int expireInMinutes, final LocalDate endOfLifeFolder) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
+    public String getPresignedUrlUpdateFile(final String pathToFile, final int expireInMinutes, final LocalDate endOfLifeFolder) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException, PropertyNotSetException {
         return this.getPresignedUrlUpdateFile(
                 pathToFile,
                 expireInMinutes,
@@ -193,8 +197,9 @@ public class PresignedUrlRepository {
      * @throws DocumentStorageClientErrorException if the problem is with the client.
      * @throws DocumentStorageServerErrorException if the problem is with the document storage.
      * @throws DocumentStorageException            if the problem cannot be assigned to either the client or the document storage.
+     * @throws PropertyNotSetException             if the property "io.muenchendigital.digiwf.s3.client.defaultDocumentStorageUrl" is not set.
      */
-    public String getPresignedUrlDeleteFile(final String pathToFile, final int expireInMinutes) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException {
+    public String getPresignedUrlDeleteFile(final String pathToFile, final int expireInMinutes) throws DocumentStorageClientErrorException, DocumentStorageServerErrorException, DocumentStorageException, PropertyNotSetException {
         return this.getPresignedUrlDeleteFile(
                 pathToFile,
                 expireInMinutes,
